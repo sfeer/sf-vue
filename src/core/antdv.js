@@ -1,5 +1,6 @@
 // 按需加载 ant-design-vue 原生组件
 import Vue from 'vue'
+import 'ant-design-vue/dist/antd.less'
 import {
   Button,
   Radio,

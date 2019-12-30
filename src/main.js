@@ -5,6 +5,8 @@ import App from './App'
 import router from './router'
 import store from './store'
 
+import './core/use' // 全局引入
+
 Vue.config.productionTip = false
 
 new Vue({

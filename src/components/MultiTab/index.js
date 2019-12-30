@@ -20,12 +20,15 @@ MultiTab.install = function (Vue) {
   Vue.mixin({
     beforeRouteEnter(to, from, next) {
       next(vm => {
-        const tab = store.getters.tabs.find(o => o.path === to.fullPath)
-        if (tab && tab.key === undefined) {
-          const vnode = vm.$vnode
-          if (vnode && vnode.data && vnode.data.ref === 'tab-router') {
-            tab.key = vnode.key || vnode.componentOptions.Ctor.cid
-            store.dispatch('UpdateTab', tab)
+        const tabs = store.getters.tabs
+        if (tabs) {
+          const tab = tabs.find(o => o.path === to.fullPath)
+          if (tab && tab.key === undefined) {
+            const vnode = vm.$vnode
+            if (vnode && vnode.data && vnode.data.ref === 'tab-router') {
+              tab.key = vnode.key || vnode.componentOptions.Ctor.cid
+              store.dispatch('UpdateTab', tab)
+            }
           }
         }
       })

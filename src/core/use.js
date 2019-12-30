@@ -11,7 +11,12 @@ import BasicFlow from '../components/Flow/BasicFlow'
 Vue.use(MultiTab)
 Vue.component(BasicFlow.name, BasicFlow)
 Vue.use(VueStorage, {
-  namespace: 'ecp__',
-    name: 'ls',
-    storage: 'session',
+  namespace: 'sfeer__',
+  name: 'ls',
+  storage: 'local'
+})
+Vue.use({...VueStorage}, {
+  namespace: 'sfeer__',
+  name: 'ss',
+  storage: 'session'
 })

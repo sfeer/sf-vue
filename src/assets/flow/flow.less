@@ -1,0 +1,362 @@
+@tool-size: 30px;
+
+@flow-primary-color: #3892d3;
+@flow-text-color: #999;
+@flow-success-color: #32d348;
+@flow-error-color: #e65a44;
+@flow-warning-color: #ffbf00;
+
+@node-default-color: #8fd4ff;
+@node-init-color: #ccc;
+
+.sflow-wrapper {
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: #333;
+  display: flex;
+  flex-flow: column;
+
+  &.view-mode {
+    border: none;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+  }
+}
+
+.sflow-body {
+  display: flex;
+  height: 100%;
+  flex: auto;
+  align-items: stretch;
+}
+
+.sflow-header {
+  display: flex;
+  z-index: 100;
+  box-shadow: 0 0 4px 0 lighten(@flow-text-color, 10%);
+
+  .logo {
+    font-size: 20px;
+    font-weight: bolder;
+    padding: 0 10px;
+  }
+}
+
+.sflow-sidebar {
+  z-index: 100;
+  box-shadow: 0 0 4px 0 lighten(@flow-text-color, 10%);
+  overflow: auto;
+  user-select: none;
+}
+
+.sflow-tools {
+  display: flex;
+
+  .tool {
+    height: @tool-size;
+  }
+
+  .tool-icon {
+    font-size: 20px;
+    color: @flow-primary-color;
+    margin: 5px;
+  }
+}
+
+.sflow-opers {
+  border-bottom: 1px solid @flow-text-color;
+  margin-bottom: 5px;
+
+  .oper {
+    height: @tool-size;
+    cursor: pointer;
+
+
+    &.active {
+      background-color: @flow-warning-color;
+    }
+  }
+
+  .oper-icon {
+    font-size: 20px;
+    color: @flow-primary-color;
+    margin: 5px;
+  }
+
+  .oper-name {
+    display: inline-block;
+    line-height: 30px;
+    vertical-align: top;
+    margin-right: 5px;
+  }
+}
+
+.sflow-items {
+  margin-top: 5px;
+
+  .item {
+    height: @tool-size;
+    cursor: pointer;
+  }
+
+  .item-icon {
+    font-size: 16px;
+    color: @flow-primary-color;
+    margin: 7px 5px;
+  }
+
+  .item-name {
+    display: inline-block;
+    line-height: 30px;
+    vertical-align: top;
+    margin-right: 5px;
+  }
+}
+
+.sflow-view {
+  position: relative;
+  flex: auto;
+  overflow: hidden;
+  background-image: url("../../assets/flow/grid.png");
+
+  &.view-mode {
+    background-image: none;
+  }
+
+  &.draw-link {
+    cursor: url("../../assets/flow/link.png"), auto;
+
+    .node-drag {
+      cursor: url("../../assets/flow/link.png"), auto;
+    }
+  }
+
+  &.play-mode {
+    .node {
+      &.noplay {
+        background-color: lighten(@flow-text-color, 20%);
+        box-shadow: 0 0 4px 0 lighten(@flow-text-color, 25%);
+
+        &:hover {
+          box-shadow: 0 4px 6px 0 lighten(@flow-text-color, 25%);
+        }
+
+        & .node-icon {
+          color: @flow-text-color;
+        }
+      }
+
+      &.playing {
+        background-color: @flow-warning-color;
+        animation: playing 0.5s infinite alternate;
+        box-shadow: 0 0 4px 0 lighten(@flow-warning-color, 5%);
+
+        &:hover {
+          box-shadow: 0 4px 6px 0 lighten(@flow-warning-color, 5%);
+        }
+
+        & .node-icon {
+          color: darken(@flow-warning-color, 15%);
+        }
+      }
+    }
+
+    .link {
+      stroke: @flow-text-color;
+      marker-end: url(#arrow-init);
+
+      &.played {
+        stroke: @flow-primary-color;
+        marker-end: url(#arrow);
+      }
+
+      &.goback {
+        stroke: @flow-error-color;
+        marker-end: url(#arrow-error);
+        transform: translate(5px, 5px);
+      }
+
+      &.free {
+        stroke: @flow-warning-color;
+        stroke-dasharray: 6;
+        marker-end: url(#arrow-warning);
+      }
+    }
+  }
+
+  &.design-mode {
+    .node-drag {
+      cursor: move;
+    }
+  }
+
+  .node {
+    position: absolute;
+    display: flex;
+    user-select: none;
+    border: 2px solid transparent;
+    overflow: hidden;
+    background-color: @node-default-color;
+    box-shadow: 0 0 4px 0 lighten(@node-default-color, 5%);
+
+    &:hover {
+      box-shadow: 0 4px 6px 0 lighten(@node-default-color, 5%);
+    }
+
+    &.active {
+      border-color: darken(@node-default-color, 20%);
+    }
+
+    &.highlight {
+      border-color: @flow-error-color;
+    }
+  }
+
+  .node-drag {
+    width: @tool-size;
+    flex: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .node-inner {
+    flex: auto;
+    display: flex;
+    align-items: center;
+
+    .free-flow-btn {
+      position: absolute;
+      right: 5px;
+    }
+  }
+
+  .node-icon {
+    font-size: 20px;
+    color: @flow-primary-color;
+  }
+
+  .node-close {
+    position: absolute;
+    color: @flow-primary-color;
+    font-size: 14px;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+  }
+
+  .node-resize {
+    position: absolute;
+    font-size: 14px;
+    color: @flow-primary-color;
+    right: 0;
+    bottom: 0;
+    cursor: nw-resize;
+    transform: rotate(90deg);
+  }
+
+  .link-layer {
+    height: 100%;
+
+    & > svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .link {
+    stroke: @flow-primary-color;
+    stroke-width: 2;
+    fill: none;
+    marker-end: url(#arrow);
+
+    &.active {
+      stroke: @flow-error-color;
+      marker-end: url(#arrow-error);
+    }
+  }
+
+  .link-draw {
+    stroke: @flow-error-color;
+    stroke-width: 2;
+    stroke-dasharray: 6;
+    fill: none;
+    marker-end: url(#arrow-error);
+  }
+
+  .link-selecter {
+    stroke: transparent;
+    stroke-width: 20;
+    fill: none;
+    cursor: pointer;
+  }
+
+  .link-name {
+    fill: #333;
+    text-anchor: middle;
+    user-select: none;
+  }
+
+  .link-marker-arrow {
+    fill: @flow-primary-color;
+  }
+
+  .link-marker-arrow-warning {
+    fill: @flow-warning-color
+  }
+
+  .link-marker-arrow-error {
+    fill: @flow-error-color
+  }
+
+  .link-marker-arrow-init {
+    fill: @flow-text-color
+  }
+
+  .link-tools {
+    background-color: #f5f5f5;
+    position: absolute;
+    z-index: 100;
+    transform: translateX(-50%);
+    display: flex;
+
+    .tool {
+      width: 15px;
+      height: 15px;
+      margin: 2px;
+      cursor: pointer;
+    }
+
+    .tool-v {
+      background: url("../../assets/flow/link-tools.png") no-repeat 1px 1px;
+    }
+
+    .tool-h {
+      background: url("../../assets/flow/link-tools.png") no-repeat 1px -14px;
+    }
+
+    .tool-l {
+      background: url("../../assets/flow/link-tools.png") no-repeat 1px -29px;
+    }
+
+    .tool-x {
+      background: url("../../assets/flow/link-tools.png") no-repeat 1px -44px;
+    }
+  }
+
+  .link-drag {
+    background-color: transparent;
+    position: absolute;
+  }
+}
+
+@keyframes playing {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(0.95b);
+  }
+}

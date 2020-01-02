@@ -5,11 +5,12 @@
  * @param el
  * @return {{x: *, y: *}}
  */
-export function getElementLocation(el) {
-  if (el.offsetParent === null)
-    return {x: el.offsetLeft, y: el.offsetTop}
+export function getElementLocation(el, e) {
+  if (el === e.target)
+    return {x: e.offsetX, y: e.offsetY}
   else {
-    const ll = getElementLocation(el.offsetParent)
+    debugger
+    const ll = getElementLocation(el.offsetParent, e)
     return {x: el.offsetLeft + ll.x, y: el.offsetTop + ll.y}
   }
 }

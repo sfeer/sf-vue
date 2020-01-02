@@ -9,9 +9,13 @@ const routes = [
     component: () => import(/* webpackChunkName: "main" */ '../views/Home')
   },
   {
+    path: '/design',
+    component: () => import(/* webpackChunkName: "main" */ '../views/Design')
+  },
+  {
     path: '/table',
     component: () => import(/* webpackChunkName: "demo" */ '../views/demo/table')
-  },
+  }
 ]
 
 const router = new VueRouter({

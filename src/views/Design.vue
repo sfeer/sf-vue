@@ -38,6 +38,8 @@
            style="position:relative;width:100%;height: 400px;background: #3892d3;margin: 400px 0">
         <div style="height:80px; width: 120px;position: absolute; top:100px;left:100px;background: #e65a44"></div>
         <div>{{ex}},{{ey}}</div>
+        <div>{{x1}},{{y1}}</div>
+        <div>{{x2}},{{y2}}</div>
       </div>
     </a-modal>
   </div>
@@ -61,7 +63,11 @@
         cLine: null, // 当前选中分割线
 
         ex: 0,
-        ey: 0
+        ey: 0,
+        x1: 0,
+        y1: 0,
+        x2: 0,
+        y2: 0
       }
     },
 
@@ -128,9 +134,14 @@
     methods: {
       testDrag(e) {
         // const ff = getElementLocation(this.$refs.test, e)
-        console.log(this.$refs.test === e.target)
-        this.ex = e.offsetX
-        this.ey = e.offsetY
+        const test = this.$refs.test
+        console.log(test.getBoundingClientRect())
+        this.x1 = test.getBoundingClientRect().left
+        this.y1 = test.getBoundingClientRect().top
+        this.x2 = e.pageX
+        this.y2 = e.pageY
+        this.ex = this.x2 - this.x1
+        this.ey = this.y2 - this.y1
       },
 
       boxStyle(box) {

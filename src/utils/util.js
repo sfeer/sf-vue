@@ -1,21 +1,4 @@
 /**
- * 获取元素屏幕地址
- *
- * @author Sfeer
- * @param el
- * @return {{x: *, y: *}}
- */
-export function getElementLocation(el, e) {
-  if (el === e.target)
-    return {x: e.offsetX, y: e.offsetY}
-  else {
-    debugger
-    const ll = getElementLocation(el.offsetParent, e)
-    return {x: el.offsetLeft + ll.x, y: el.offsetTop + ll.y}
-  }
-}
-
-/**
  * 获取节点间重叠区域
  *
  * @author Sfeer

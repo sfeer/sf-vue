@@ -4,24 +4,44 @@
       <div class="logo">{{name}}</div>
       <div class="sflow-tools">
         <div
-          class="tool"
-          v-for="(tool,index) in tools"
-          :id="index"
-          :title="tool.name">
+            class="tool"
+            v-for="(tool,index) in tools"
+            :id="index"
+            :title="tool.name">
           <slot name="tool" :node="tool">
             <a-icon class="tool-icon" :type="tool.icon" @click="toolClick(tool)"/>
           </slot>
         </div>
+        <!-- 临时关闭内置工具栏
+          <div class="tool" title="新建">
+            <a-icon class="tool-icon" type="file"/>
+          </div>
+          <div class="tool" title="打开">
+            <a-icon class="tool-icon" type="folder"/>
+          </div>
+          <div class="tool" title="保存">
+            <a-icon class="tool-icon" type="save"/>
+          </div>
+          <div class="tool" title="撤回">
+            <a-icon class="tool-icon" type="rollback"/>
+          </div>
+          <div class="tool" title="重做">
+            <a-icon class="tool-icon" style="transform:rotateY(180deg)" type="rollback"/>
+          </div>
+          <div class="tool" title="刷新">
+            <a-icon class="tool-icon" type="reload"/>
+          </div>
+         -->
       </div>
     </div>
     <div class="sflow-body">
       <div v-if="isDesignMode" class="sflow-sidebar">
         <div class="sflow-opers">
           <div
-            class="oper"
-            title="选择"
-            :class="activeOper===null?'active':null"
-            @click="operClick(null)">
+              class="oper"
+              title="选择"
+              :class="activeOper===null?'active':null"
+              @click="operClick(null)">
             <a-icon class="oper-icon" style="transform:rotate(-45deg)" type="arrow-up"/>
             <span v-show="!sideBarCollapse" class="oper-name">选择</span>
           </div>
@@ -33,25 +53,24 @@
 
         <div class="sflow-items">
           <div
-            class="item"
-            v-for="(item,index) in items"
-            :title="item.name"
-            :key="index"
-            @mousedown="itemDragStart(item)">
+              class="item"
+              v-for="(item,index) in items"
+              :title="item.name"
+              :key="index"
+              @mousedown="itemDragStart(item)">
             <a-icon class="item-icon" :type="item.icon?item.icon:'setting'"/>
             <span v-show="!sideBarCollapse" class="item-name">{{item.name}}</span>
           </div>
         </div>
       </div>
-
       <div
-        ref="flow"
-        class="sflow-view"
-        :class="[isDrawLink?'draw-link':null, mode+'-mode']"
-        @mousedown="handleDragStart"
-        @mousemove="handleDrag"
-        @mouseup="handleDragEnd"
-        @click="handleClick">
+          ref="flow"
+          class="sflow-view"
+          :class="[isDrawLink?'draw-link':null, mode+'-mode']"
+          @mousedown="handleDragStart"
+          @mousemove="handleDrag"
+          @mouseup="handleDragEnd"
+          @click="handleClick">
         <div class="link-layer">
           <svg>
             <defs>
@@ -75,55 +94,55 @@
 
             <g v-for="link in links" :key="link.id">
               <path
-                :class="linkClassData(link)"
-                :d="link.path"/>
+                  :class="linkClassData(link)"
+                  :d="link.path"/>
               <path
-                v-if="isDesignMode"
-                class="link-selecter"
-                :d="link.path"
-                @click.stop="linkClick(link)"
-                @dblclick.stop="linkDblclick(link)"/>
+                  v-if="isDesignMode"
+                  class="link-selecter"
+                  :d="link.path"
+                  @click.stop="linkClick(link)"
+                  @dblclick.stop="linkDblclick(link)"/>
               <text
-                class="link-name"
-                :x="link.cx"
-                :y="link.cy"
-                dy="-4">{{link.name}}
+                  class="link-name"
+                  :x="link.cx"
+                  :y="link.cy"
+                  dy="-4">{{link.name}}
               </text>
             </g>
 
             <path
-              v-if="isDesignMode"
-              class="link-draw"
-              :d="drawLinkPath"/>
+                v-if="isDesignMode"
+                class="link-draw"
+                :d="drawLinkPath"/>
           </svg>
 
           <template v-if="isDesignMode">
             <div
-              v-show="activeLink"
-              class="link-tools"
-              :style="linkToolStyle">
+                v-show="activeLink"
+                class="link-tools"
+                :style="linkToolStyle">
               <div class="tool tool-v" @click="switchVLink"></div>
               <div class="tool tool-h" @click="switchHLink"></div>
               <div class="tool tool-l" @click="switchLLink"></div>
               <div class="tool tool-x" @click="deleteLink"></div>
             </div>
             <div
-              v-show="activeLink"
-              class="link-drag"
-              @mousedown.prevent="linkDragStart"
-              :style="linkDragStyle">
+                v-show="activeLink"
+                class="link-drag"
+                @mousedown.prevent="linkDragStart"
+                :style="linkDragStyle">
             </div>
           </template>
         </div>
 
         <div class="node-layer">
           <div
-            v-for="node in nodes"
-            :key="node.id"
-            :class="nodeClassData(node)"
-            :style="nodeStyle(node)"
-            @click.stop="nodeClick(node)"
-            @dblclick.stop="nodeDblclick(node)">
+              v-for="node in nodes"
+              :key="node.id"
+              :class="nodeClassData(node)"
+              :style="nodeStyle(node)"
+              @click.stop="nodeClick(node)"
+              @dblclick.stop="nodeDblclick(node)">
 
             <template v-if="node.free">
               <div class="node-drag" v-show="!node.free.show">
@@ -131,17 +150,17 @@
               </div>
               <div class="node-inner">
                 <basic-flow
-                  v-if="node.free.show"
-                  :nodes="node.free.nodes"
-                  :links="node.free.links"
-                  mode="view"/>
+                    v-if="node.free.show"
+                    :nodes="node.free.nodes"
+                    :links="node.free.links"
+                    mode="view"/>
                 <div v-else>{{node.name}}</div>
                 <a-button
-                  shape="circle"
-                  :icon="node.free.show?'minus':'plus'"
-                  type="primary"
-                  class="free-flow-btn"
-                  @click="showFreeFlow(node)"/>
+                    shape="circle"
+                    :icon="node.free.show?'minus':'plus'"
+                    type="primary"
+                    class="free-flow-btn"
+                    @click="showFreeFlow(node)"/>
               </div>
             </template>
 
@@ -151,10 +170,10 @@
               </div>
               <div class="node-inner">
                 <basic-flow
-                  v-if="node.sub"
-                  :nodes="node.sub.nodes"
-                  :links="node.sub.links"
-                  mode="view"/>
+                    v-if="node.sub"
+                    :nodes="node.sub.nodes"
+                    :links="node.sub.links"
+                    mode="view"/>
               </div>
             </template>
 
@@ -171,15 +190,15 @@
 
             <template v-if="isDesignMode">
               <a-icon
-                class="node-close"
-                v-show="activeNode===node.id"
-                type="close"
-                @click="deleteNode"/>
+                  class="node-close"
+                  v-show="activeNode===node.id"
+                  type="close"
+                  @click="deleteNode"/>
               <a-icon
-                class="node-resize"
-                v-show="activeNode===node.id"
-                type="arrows-alt"
-                @mousedown="nodeResizeStart(node)"/>
+                  class="node-resize"
+                  v-show="activeNode===node.id"
+                  type="arrows-alt"
+                  @mousedown="nodeResizeStart(node)"/>
             </template>
           </div>
         </div>
@@ -196,7 +215,7 @@
    * 2. 顶部工具栏插槽自定义，保留必要的工具
    */
 
-  import {getElementLocation, getXOverRange, getYOverRange} from '../../utils/util'
+  import {getXOverRange, getYOverRange} from '../../utils/util'
   import uuid from 'uuid'
 
   export default {
@@ -455,11 +474,11 @@
 
       // 节点开始拖拽
       nodeDragStart(node, e) {
-        if (!this.isDrawLink) { // 连线模式下禁止节点拖动
+        if (!this.isDrawLink) {
+          // 连线模式下禁止节点拖动
           this.dragNode = node.id
-          const ff = getElementLocation(this.$refs.flow),
-            ex = e.pageX - ff.x,
-            ey = e.pageY - ff.y
+          const rect = this.$refs.flow.getBoundingClientRect(),
+            ex = e.pageX - rect.left, ey = e.pageY - rect.top
           this.dragNodeX = ex - node.x
           this.dragNodeY = ey - node.y
         }
@@ -468,12 +487,11 @@
       // 主面板拖拽开始事件
       handleDragStart(e) {
         if (this.isDesignMode) {
-          if (this.isDrawLink && this.highlightNode) { // 绘制连线
-            const ff = getElementLocation(this.$refs.flow),
-              ex = e.pageX - ff.x,
-              ey = e.pageY - ff.y
-
+          if (this.isDrawLink && this.highlightNode) {
+            // 绘制连线
             this.drawLinkNode = this.highlightNode
+            const rect = this.$refs.flow.getBoundingClientRect(),
+              ex = e.pageX - rect.left, ey = e.pageY - rect.top
             this.drawLinkX = ex
             this.drawLinkY = ey
           }
@@ -483,12 +501,13 @@
       // 主面板区域鼠标移动事件，须谨慎使用
       handleDrag(e) {
         if (this.isDesignMode) {
-          const ff = getElementLocation(this.$refs.flow),
-            ex = e.pageX - ff.x,
-            ey = e.pageY - ff.y
+          const rect = this.$refs.flow.getBoundingClientRect(),
+            ex = e.pageX - rect.left, ey = e.pageY - rect.top
 
           if (this.dragNode) { // 拖拽节点
-            const node = this.nodeMap[this.dragNode]
+            const node = this.nodeMap[this.dragNode],
+              rect = this.$refs.flow.getBoundingClientRect(),
+              ex = e.pageX - rect.left, ey = e.pageY - rect.top
             node.x = ex - this.dragNodeX
             node.y = ey - this.dragNodeY
 

@@ -1,19 +1,19 @@
 <template>
-  <div class="sbox-wrapper">
+  <div class="sbox-wrapper" @mousemove="handleDrag" @mouseup="handleDragEnd">
     <div class="sbox-tools">
       <a-button type="primary" class="tool" @click="hh">水平分割</a-button>
       <a-button type="primary" class="tool" @click="vv">垂直分割</a-button>
       <a-button type="primary" class="tool" :disabled="true">预览</a-button>
       <a-button type="primary" class="tool" :disabled="true">保存</a-button>
-      <a-button type="primary" class="tool" @click="addBox">新增</a-button>
-      <a-button type="primary" class="tool" @click="deleteBox">删除</a-button>
+      <a-button type="primary" class="tool" @click="add">新增</a-button>
+      <a-button type="primary" class="tool" @click="remove">删除</a-button>
       <a-button type="primary" class="tool" @click="test">测试</a-button>
     </div>
-    <div ref="main" :style="{height:rootH+'px'}">
+    <div ref="main" class="sbox-main" :style="{height:mHeight + 'px'}">
       <s-box :boxs="boxs" ref="sbox"/>
-      <div class="resize-h" @mousemove></div>
       <resize-observer @notify="handleResize"/>
     </div>
+    <div class="resize-h" @mousedown="handleDragStart"></div>
   </div>
 </template>
 
@@ -23,8 +23,8 @@
   export default {
     data() {
       return {
-        root: null,
-        rootH: 600,
+        mHeight: 650,
+        resizeH: false,
         boxs: []
       }
     },
@@ -34,7 +34,7 @@
     methods: {
       handleResize() {
         const main = this.$refs.main
-        this.$refs.sbox.resize(main.clientWidth, main.clientHeight)
+        this.$refs.sbox.resizeRoot(main.clientWidth, main.clientHeight)
       },
 
       test() {
@@ -42,19 +42,34 @@
       },
 
       hh() {
-        this.$refs.sbox.splitH()
+        this.$refs.sbox.splitBoxH()
       },
 
       vv() {
-        this.$refs.sbox.splitV()
+        this.$refs.sbox.splitBoxV()
       },
 
-      addBox() {
-        this.$refs.sbox.addBox()
+      add() {
+        this.$refs.sbox.addRow()
       },
 
-      deleteBox() {
+      remove() {
         this.$refs.sbox.deleteBox()
+      },
+
+      handleDragStart() {
+        this.resizeH = true
+      },
+
+      handleDragEnd() {
+        this.resizeH = false
+      },
+
+      handleDrag(e) {
+        if (this.resizeH) {
+          const rect = this.$el.getBoundingClientRect()
+          this.mHeight = e.pageY - rect.top - 52
+        }
       }
     }
   }
@@ -63,6 +78,7 @@
 <style lang="less" scoped>
   .sbox-wrapper {
     padding: 10px;
+    height: 100vh;
   }
 
   .sbox-tools {
@@ -73,7 +89,14 @@
     }
   }
 
+  .sbox-main {
+    position: relative;
+  }
+
   .resize-h {
+    position: absolute;
+    left:0;
+    right: 0;
     height: 10px;
     background: #e65a44;
     cursor: ns-resize;

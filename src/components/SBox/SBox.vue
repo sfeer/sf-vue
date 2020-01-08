@@ -115,7 +115,7 @@
 
     methods: {
       // 改变根节点大小
-      resize(w, h) {
+      resizeRoot(w, h) {
         const root = this.boxMap[this.root]
         this._resizeBox(root, {x: root.x, y: root.y, w: w, h: h})
       },
@@ -224,7 +224,8 @@
         }
       },
 
-      splitH() {
+      // 对当前节点进行水平分割
+      splitBoxH() {
         const pp = this.boxMap[this.cBox]
         const box1 = {
           id: uuid().replace(/-/g, ''),
@@ -251,7 +252,8 @@
         this.cBox = box1.id
       },
 
-      splitV() {
+      // 对当前节点进行垂直分割
+      splitBoxV() {
         const pp = this.boxMap[this.cBox]
         const box1 = {
           id: uuid().replace(/-/g, ''),
@@ -278,7 +280,8 @@
         this.cBox = box1.id
       },
 
-      addBox() {
+      // 在底部添加一行区域
+      addRow() {
         const oldBox = this.boxMap[this.root]
 
         const newBox = {
@@ -307,6 +310,7 @@
         this.cBox = addBox.id
       },
 
+      // 删除当前节点
       deleteBox() {
       }
     }

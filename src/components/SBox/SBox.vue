@@ -312,6 +312,26 @@
 
       // 删除当前节点
       deleteBox() {
+        const box = this.boxMap[this.cBox]
+
+        if (box.id === this.root) {
+          console.log('不能删除根节点')
+        } else {
+          const parent = this.boxMap[box.parent],
+            next = this.boxs.find(b => b.parent === box.parent && b.id !== box.id)
+
+          if (parent.id === this.root) {
+            this.root = next.id
+            delete next.parent
+          } else {
+            next.parent = parent.parent
+          }
+
+          this._resizeBox(next, {x: parent.x, y: parent.y, w: parent.w, h: parent.h})
+          this.boxs.splice(this.boxs.findIndex(b => b.id === box.id), 1)
+          this.boxs.splice(this.boxs.findIndex(b => b.id === parent.id), 1)
+          this.cBox = next.id
+        }
       }
     }
   }

@@ -7,7 +7,7 @@
           :class="['box', {active:cBox===box.id}]"
           :style="boxStyle(box)"
           @click="boxClick(box.id)">
-        <a-button type="dashed" icon="plus" class="box-add" v-show="cBox===box.id">添加</a-button>
+        <a-button type="dashed" icon="plus" class="box-add" v-if="cBox===box.id">添加</a-button>
       </div>
     </div>
     <div class="lines">
@@ -364,13 +364,13 @@
       background: white;
       border-radius: 10px;
       box-shadow: 0 0 5px 5px rgba(240, 240, 240, 1);
+      padding: 10px;
     }
 
     .box-add {
       border-radius: 5px;
-      margin: 10px;
-      width: calc(100% - 20px);
-      height: calc(100% - 20px);
+      width: 100%;
+      height: 100%;
     }
   }
 </style>

@@ -38,7 +38,7 @@
       },
 
       test() {
-        console.log(this.boxs)
+        console.log(this.boxs, this.$refs.main.clientHeight)
       },
 
       hh() {
@@ -51,6 +51,7 @@
 
       add() {
         this.$refs.sbox.addRow()
+        this.mHeight = this.boxs.find(b => b.parent === undefined).h
       },
 
       remove() {
@@ -95,7 +96,7 @@
 
   .resize-h {
     position: absolute;
-    left:0;
+    left: 0;
     right: 0;
     height: 10px;
     background: #e65a44;

@@ -15,7 +15,15 @@ const routes = [
   {
     path: '/table',
     component: () => import(/* webpackChunkName: "demo" */ '../views/demo/table')
-  }
+  },
+  {
+    path: '/flow/design',
+    component: () => import(/* webpackChunkName: "flow" */ '../views/flow/Design')
+  },
+  {
+    path: '/flow/play',
+    component: () => import(/* webpackChunkName: "flow" */ '../views/flow/Play')
+  },
 ]
 
 const router = new VueRouter({

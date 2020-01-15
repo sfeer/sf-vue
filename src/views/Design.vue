@@ -1,13 +1,14 @@
 <template>
   <div class="sbox-wrapper" @mousemove="handleDrag" @mouseup="handleDragEnd">
     <div class="sbox-tools">
-      <a-button type="primary" class="tool" @click="hh">水平分割</a-button>
-      <a-button type="primary" class="tool" @click="vv">垂直分割</a-button>
-      <a-button type="primary" class="tool" :disabled="true">预览</a-button>
-      <a-button type="primary" class="tool" :disabled="true">保存</a-button>
-      <a-button type="primary" class="tool" @click="add">新增</a-button>
-      <a-button type="primary" class="tool" @click="remove">删除</a-button>
-      <a-button type="primary" class="tool" @click="test">测试</a-button>
+      <a-button type="primary" size="small" class="tool" @click="hh">水平分割</a-button>
+      <a-button type="primary" size="small" class="tool" @click="vv">垂直分割</a-button>
+      <a-button type="primary" size="small" class="tool" :disabled="true">预览</a-button>
+      <a-button type="primary" size="small" class="tool" :disabled="true">保存</a-button>
+      <a-button type="primary" size="small" class="tool" @click="add">新增</a-button>
+      <a-button type="primary" size="small" class="tool" @click="remove">删除</a-button>
+      <a-button type="primary" size="small" class="tool" @click="test">测试</a-button>
+      <a-button type="link" size="small" class="tool" icon="down">更多</a-button>
     </div>
     <div ref="main" class="sbox-main" :style="{height:mHeight + 'px'}">
       <s-box :boxs="boxs" ref="sbox"/>
@@ -83,7 +84,7 @@
   }
 
   .sbox-tools {
-    margin-bottom: 10px;
+    float: right;
 
     .tool {
       margin-right: 10px;
@@ -91,6 +92,7 @@
   }
 
   .sbox-main {
+    margin-top: 34px;
     position: relative;
   }
 

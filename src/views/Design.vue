@@ -1,20 +1,39 @@
 <template>
-  <div class="sbox-wrapper" @mousemove="handleDrag" @mouseup="handleDragEnd">
+  <div class="sbox-wrapper">
     <div class="sbox-tools">
-      <a-button type="primary" size="small" class="tool" @click="hh">水平分割</a-button>
-      <a-button type="primary" size="small" class="tool" @click="vv">垂直分割</a-button>
-      <a-button type="primary" size="small" class="tool" :disabled="true">预览</a-button>
-      <a-button type="primary" size="small" class="tool" :disabled="true">保存</a-button>
-      <a-button type="primary" size="small" class="tool" @click="add">新增</a-button>
-      <a-button type="primary" size="small" class="tool" @click="remove">删除</a-button>
-      <a-button type="primary" size="small" class="tool" @click="test">测试</a-button>
-      <a-button type="link" size="small" class="tool" icon="down">更多</a-button>
+      <a-tabs type="card" default-active-key="edit">
+        <a-tab-pane tab="文件" key="file">
+          <a-button type="primary" class="tool">新建</a-button>
+          <a-button type="primary" class="tool">打开</a-button>
+          <a-button type="primary" class="tool">保存</a-button>
+          <a-button type="primary" class="tool">另存为</a-button>
+          <a-button type="primary" class="tool">重置</a-button>
+          <a-button type="primary" class="tool">打印</a-button>
+        </a-tab-pane>
+        <a-tab-pane tab="编辑" key="edit">
+          <a-row>
+            <a-col :span="16">
+              <a-button type="primary" class="tool" @click="hh">水平分割</a-button>
+              <a-button type="primary" class="tool" @click="vv">垂直分割</a-button>
+              <a-button type="primary" class="tool" @click="add">新增</a-button>
+              <a-button type="primary" class="tool" @click="remove">删除</a-button>
+            </a-col>
+            <a-col :span="6">
+              <a-slider v-model="splitValue" @change="splitChange"/>
+            </a-col>
+            <a-col :span="2">当前值：{{splitValue}}</a-col>
+          </a-row>
+        </a-tab-pane>
+        <a-tab-pane tab="更多" key="more">
+          <a-button type="primary" class="tool" @click="test">测试</a-button>
+          <a-button type="primary" class="tool">调试</a-button>
+        </a-tab-pane>
+      </a-tabs>
     </div>
     <div ref="main" class="sbox-main" :style="{height:mHeight + 'px'}">
-      <s-box :boxs="boxs" ref="sbox"/>
+      <s-box :boxs="boxs" ref="sbox" @lineMove="lineMove"/>
       <resize-observer @notify="handleResize"/>
     </div>
-    <div class="resize-h" @mousedown="handleDragStart"></div>
   </div>
 </template>
 
@@ -25,7 +44,7 @@
     data() {
       return {
         mHeight: 650,
-        resizeH: false,
+        splitValue: 0,
         boxs: []
       }
     },
@@ -59,19 +78,12 @@
         this.$refs.sbox.deleteBox()
       },
 
-      handleDragStart() {
-        this.resizeH = true
+      lineMove(v) {
+        this.splitValue = Math.round(v)
       },
 
-      handleDragEnd() {
-        this.resizeH = false
-      },
-
-      handleDrag(e) {
-        if (this.resizeH) {
-          const rect = this.$el.getBoundingClientRect()
-          this.mHeight = e.pageY - rect.top - 52
-        }
+      splitChange(v) {
+        this.$refs.sbox.splitBox(v)
       }
     }
   }
@@ -84,7 +96,7 @@
   }
 
   .sbox-tools {
-    float: right;
+    margin-bottom: 10px;
 
     .tool {
       margin-right: 10px;
@@ -92,7 +104,6 @@
   }
 
   .sbox-main {
-    margin-top: 34px;
     position: relative;
   }
 

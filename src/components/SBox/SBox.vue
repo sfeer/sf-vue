@@ -29,6 +29,7 @@
       return {
         root: null,
         cBox: null, // 当前选中区域
+        dragLine: false,
         cLine: null, // 当前选中分割线
       }
     },
@@ -117,7 +118,9 @@
       // 改变根节点大小
       resizeRoot(w, h) {
         const root = this.boxMap[this.root]
-        this._resizeBox(root, {x: root.x, y: root.y, w: w, h: h})
+        root.w = w
+        root.h = h
+        this.resizeBox(root)
       },
 
       boxStyle(box) {
@@ -143,56 +146,48 @@
       },
 
       // 改变区域（递归）
-      _resizeBox(box, val) {
+      resizeBox(box) {
         if (box.leaf === false) {
           const p = this.padding / 2
           if (box.vv) {
             const c1 = this.boxs.find(b => b.parent === box.id && b.x === box.x),
               c2 = this.boxs.find(b => b.parent === box.id && b.x !== box.x)
-            this._resizeBox(c1, {
-              x: val.x,
-              y: val.y,
-              w: val.w * box.vv / 100 - p,
-              h: val.h
-            })
-            this._resizeBox(c2, {
-              x: val.x + val.w * box.vv / 100 + p,
-              y: val.y,
-              w: val.w * (100 - box.vv) / 100 - p,
-              h: val.h
-            })
+            c1.x = box.x
+            c1.y = box.y
+            c1.w = box.w * box.vv / 100 - p
+            c1.h = box.h
+            this.resizeBox(c1)
+            c2.x = box.x + box.w * box.vv / 100 + p
+            c2.y = box.y
+            c2.w = box.w * (100 - box.vv) / 100 - p
+            c2.h = box.h
+            this.resizeBox(c2)
           } else if (box.hh) {
             const c1 = this.boxs.find(b => b.parent === box.id && b.y === box.y),
               c2 = this.boxs.find(b => b.parent === box.id && b.y !== box.y)
-            this._resizeBox(c1, {
-              x: val.x,
-              y: val.y,
-              w: val.w,
-              h: val.h * box.hh / 100 - p
-            })
-            this._resizeBox(c2, {
-              x: val.x,
-              y: val.y + val.h * box.hh / 100 + p,
-              w: val.w,
-              h: val.h * (100 - box.hh) / 100 - p
-            })
+            c1.x = box.x
+            c1.y = box.y
+            c1.w = box.w
+            c1.h = box.h * box.hh / 100 - p
+            this.resizeBox(c1)
+            c2.x = box.x
+            c2.y = box.y + box.h * box.hh / 100 + p
+            c2.w = box.w
+            c2.h = box.h * (100 - box.hh) / 100 - p
+            this.resizeBox(c2)
           }
         }
-
-        box.x = val.x
-        box.y = val.y
-        box.w = val.w
-        box.h = val.h
       },
 
       // 分割线开始拖拽
       lineDragStart(line) {
         this.cLine = line
+        this.dragLine = true
       },
 
       // 主面板拖拽事件，须谨慎使用
       handleDrag(e) {
-        if (this.cLine) { // 拖拽分割线
+        if (this.dragLine) { // 拖拽分割线
           const rect = this.$el.getBoundingClientRect(),
             ex = e.pageX - rect.left, ey = e.pageY - rect.top,
             box = this.boxMap[this.cLine],
@@ -202,25 +197,39 @@
             const xx = (ex - box.x) > this.minW ? ((box.x + box.w - ex) > this.minW ? (ex - box.x) : box.w - this.minW) : this.minW
             box.vv = xx / box.w * 100
             line.x = box.x + xx - this.padding / 2
+            this.$emit('lineMove', box.vv)
           } else if (line.way === 'h') {
             const yy = (ey - box.y) > this.minH ? ((box.y + box.h - ey) > this.minH ? (ey - box.y) : box.h - this.minH) : this.minH
             box.hh = yy / box.h * 100
             line.y = box.y + yy - this.padding / 2
+            this.$emit('lineMove', box.hh)
           }
 
-          this._resizeBox(box, {
-            x: box.x,
-            y: box.y,
-            w: box.w,
-            h: box.h
-          })
+          this.resizeBox(box)
         }
       },
 
       // 主面板拖拽结束事件
       handleDragEnd() {
-        if (this.cLine) { // 拖拽连线
-          this.cLine = null
+        this.dragLine = false
+      },
+
+      // 调整当前节点的分割值
+      splitBox(v) {
+        const box = this.boxMap[this.cBox],
+          pp = this.boxMap[box.parent],
+          line = this.showLines.find(l => l.id === this.cLine)
+        if (pp.hh) {
+          pp.hh = v
+        } else if (pp.vv) {
+          pp.vv = v
+        }
+        this.resizeBox(pp)
+
+        if (line.way === 'v') {
+          line.x = pp.x + pp.w * pp.vv / 100 - this.padding / 2
+        } else if (line.way === 'h') {
+          line.y = pp.y + pp.h * pp.hh / 100 - this.padding / 2
         }
       },
 
@@ -327,7 +336,7 @@
             next.parent = parent.parent
           }
 
-          this._resizeBox(next, {x: parent.x, y: parent.y, w: parent.w, h: parent.h})
+          this.resizeBox(next, {x: parent.x, y: parent.y, w: parent.w, h: parent.h})
           this.boxs.splice(this.boxs.findIndex(b => b.id === box.id), 1)
           this.boxs.splice(this.boxs.findIndex(b => b.id === parent.id), 1)
           this.cBox = next.id

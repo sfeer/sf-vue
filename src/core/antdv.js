@@ -16,6 +16,9 @@ import {
   Menu,
   Upload,
   Skeleton,
+  Slider,
+  Row,
+  Col,
   message,
   notification
 } from 'ant-design-vue'
@@ -34,6 +37,9 @@ Vue.use(Icon)
 Vue.use(Menu)
 Vue.use(Upload)
 Vue.use(Skeleton)
+Vue.use(Slider)
+Vue.use(Row)
+Vue.use(Col)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message

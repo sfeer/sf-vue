@@ -11,7 +11,7 @@
           <a-button type="primary" class="tool">打印</a-button>
         </a-tab-pane>
         <a-tab-pane tab="编辑" key="edit">
-          <a-row>
+          <a-row type="flex" align="middle" :gutter="16">
             <a-col :span="16">
               <a-button type="primary" class="tool" @click="hh">水平分割</a-button>
               <a-button type="primary" class="tool" @click="vv">垂直分割</a-button>

@@ -72,27 +72,7 @@
       },
 
       showLines() {
-        return this.boxs.filter(o => (o.hh || o.vv) && !o.leaf).map(b => {
-          if (b.hh) { // 水平分割
-            return {
-              id: b.id,
-              x: b.x,
-              y: b.y + (b.h - this.padding) * b.hh / 100,
-              w: b.w,
-              h: this.padding,
-              way: 'h'
-            }
-          } else if (b.vv) {
-            return {
-              id: b.id,
-              x: b.x + (b.w - this.padding) * b.vv / 100,
-              y: b.y,
-              w: this.padding,
-              h: b.h,
-              way: 'v'
-            }
-          }
-        })
+        return this.boxs.filter(o => o.line).map(b => b.line)
       }
     },
 
@@ -148,33 +128,36 @@
       // 改变区域（递归）
       resizeBox(box) {
         if (box.leaf === false) {
-          const p = this.padding / 2
-          if (box.vv) {
-            const c1 = this.boxs.find(b => b.parent === box.id && b.x === box.x),
-              c2 = this.boxs.find(b => b.parent === box.id && b.x !== box.x)
-            c1.x = box.x
-            c1.y = box.y
-            c1.w = box.w * box.vv / 100 - p
-            c1.h = box.h
-            this.resizeBox(c1)
-            c2.x = box.x + box.w * box.vv / 100 + p
-            c2.y = box.y
-            c2.w = box.w * (100 - box.vv) / 100 - p
-            c2.h = box.h
-            this.resizeBox(c2)
-          } else if (box.hh) {
-            const c1 = this.boxs.find(b => b.parent === box.id && b.y === box.y),
-              c2 = this.boxs.find(b => b.parent === box.id && b.y !== box.y)
-            c1.x = box.x
-            c1.y = box.y
-            c1.w = box.w
-            c1.h = box.h * box.hh / 100 - p
-            this.resizeBox(c1)
-            c2.x = box.x
-            c2.y = box.y + box.h * box.hh / 100 + p
-            c2.w = box.w
-            c2.h = box.h * (100 - box.hh) / 100 - p
-            this.resizeBox(c2)
+          const p = this.padding / 2,
+            line = box.line
+          if (line) {
+            if (line.way === 'v') {
+              const c1 = this.boxs.find(b => b.parent === box.id && b.x === box.x),
+                c2 = this.boxs.find(b => b.parent === box.id && b.x !== box.x)
+              c1.x = box.x
+              c1.y = box.y
+              c1.w = line.value - p
+              c1.h = box.h
+              this.resizeBox(c1)
+              c2.x = box.x + line.value + p
+              c2.y = box.y
+              c2.w = box.w - line.value - p
+              c2.h = box.h
+              this.resizeBox(c2)
+            } else if (line.way === 'h') {
+              const c1 = this.boxs.find(b => b.parent === box.id && b.y === box.y),
+                c2 = this.boxs.find(b => b.parent === box.id && b.y !== box.y)
+              c1.x = box.x
+              c1.y = box.y
+              c1.w = box.w
+              c1.h = line.value - p
+              this.resizeBox(c1)
+              c2.x = box.x
+              c2.y = box.y + line.value + p
+              c2.w = box.w
+              c2.h = box.h - line.value - p
+              this.resizeBox(c2)
+            }
           }
         }
       },
@@ -189,20 +172,33 @@
       handleDrag(e) {
         if (this.dragLine) { // 拖拽分割线
           const rect = this.$el.getBoundingClientRect(),
-            ex = e.pageX - rect.left, ey = e.pageY - rect.top,
             box = this.boxMap[this.cLine],
-            line = this.showLines.find(l => l.id === this.cLine)
+            line = box.line,
+            ex = e.pageX - rect.left - box.x,
+            ey = e.pageY - rect.top - box.y
 
           if (line.way === 'v') {
-            const xx = (ex - box.x) > this.minW ? ((box.x + box.w - ex) > this.minW ? (ex - box.x) : box.w - this.minW) : this.minW
-            box.vv = xx / box.w * 100
-            line.x = box.x + xx - this.padding / 2
-            this.$emit('lineMove', box.vv)
+            if (this.minW > ex) {
+              line.value = this.minW
+            } else if (this.minW > box.w - ex) {
+              line.value = box.w - this.minW
+            } else {
+              line.value = ex
+            }
+            line.x = box.x + line.value - this.padding / 2
+            line.pc = Math.round(line.value / box.w * 100)
+            this.$emit('lineMove', line.pc)
           } else if (line.way === 'h') {
-            const yy = (ey - box.y) > this.minH ? ((box.y + box.h - ey) > this.minH ? (ey - box.y) : box.h - this.minH) : this.minH
-            box.hh = yy / box.h * 100
-            line.y = box.y + yy - this.padding / 2
-            this.$emit('lineMove', box.hh)
+            if (this.minH > ey) {
+              line.value = this.minH
+            } else if (this.minH > box.h - ey) {
+              line.value = box.h - this.minH
+            } else {
+              line.value = ey
+            }
+            line.y = box.y + line.value - this.padding / 2
+            line.pc = Math.round(line.value / box.h * 100)
+            this.$emit('lineMove', line.pc)
           }
 
           this.resizeBox(box)
@@ -235,56 +231,76 @@
 
       // 对当前节点进行水平分割
       splitBoxH() {
-        const pp = this.boxMap[this.cBox]
+        const pp = this.boxMap[this.cBox],
+          hh = Math.round(pp.h / 2)
         const box1 = {
           id: uuid().replace(/-/g, ''),
           x: pp.x,
           y: pp.y,
           w: pp.w,
-          h: (pp.h - this.padding) / 2,
+          h: hh - this.padding / 2,
           parent: pp.id,
           leaf: true
         }
         const box2 = {
           id: uuid().replace(/-/g, ''),
           x: pp.x,
-          y: pp.y + (pp.h + this.padding) / 2,
+          y: pp.y + hh + this.padding / 2,
           w: pp.w,
-          h: (pp.h - this.padding) / 2,
+          h: pp.h - hh - this.padding / 2,
           parent: pp.id,
           leaf: true
         }
         this.boxs.push(box1, box2)
 
-        pp.hh = 50
+        pp.line = {
+          id: pp.id,
+          x: pp.x,
+          y: pp.y + hh - this.padding / 2,
+          w: pp.w,
+          h: this.padding,
+          way: 'h',
+          pc: 50,
+          value: hh
+        }
         pp.leaf = false
         this.cBox = box1.id
       },
 
       // 对当前节点进行垂直分割
       splitBoxV() {
-        const pp = this.boxMap[this.cBox]
+        const pp = this.boxMap[this.cBox],
+          vv = Math.round(pp.w / 2)
         const box1 = {
           id: uuid().replace(/-/g, ''),
           x: pp.x,
           y: pp.y,
-          w: (pp.w - this.padding) / 2,
+          w: vv - this.padding / 2,
           h: pp.h,
           parent: pp.id,
           leaf: true
         }
         const box2 = {
           id: uuid().replace(/-/g, ''),
-          x: pp.x + (pp.w + this.padding) / 2,
+          x: pp.x + vv + this.padding / 2,
           y: pp.y,
-          w: (pp.w - this.padding) / 2,
+          w: pp.w - vv - this.padding / 2,
           h: pp.h,
           parent: pp.id,
           leaf: true
         }
         this.boxs.push(box1, box2)
 
-        pp.vv = 50
+        pp.line = {
+          id: pp.id,
+          x: pp.x + vv - this.padding / 2,
+          y: pp.y,
+          w: this.padding,
+          h: pp.h,
+          way: 'v',
+          pc: 50,
+          value: vv
+        }
         pp.leaf = false
         this.cBox = box1.id
       },

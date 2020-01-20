@@ -32,7 +32,7 @@
             </a-col>
             <a-col :span="2">画布高度：</a-col>
             <a-col :span="6">
-              <a-input v-model="mHeight"></a-input>
+              <a-input v-model="mHeight"/>
             </a-col>
           </a-row>
         </a-tab-pane>

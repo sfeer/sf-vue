@@ -19,19 +19,31 @@
               <a-button type="primary" class="tool" @click="remove">删除</a-button>
             </a-col>
             <a-col :span="6">
-              <a-slider v-model="splitValue" @change="splitChange"/>
+              <a-slider v-model="splitValue" @change="splitChange" :tipFormatter="v=>`${v}%`"/>
             </a-col>
-            <a-col :span="2">当前值：{{splitValue}}</a-col>
+            <a-col :span="2">占比：{{splitValue}}%</a-col>
           </a-row>
         </a-tab-pane>
         <a-tab-pane tab="更多" key="more">
-          <a-button type="primary" class="tool" @click="test">测试</a-button>
-          <a-button type="primary" class="tool">调试</a-button>
+          <a-row type="flex" align="middle" :gutter="16">
+            <a-col :span="16">
+              <a-button type="primary" class="tool" @click="test">测试</a-button>
+              <a-button type="primary" class="tool">调试</a-button>
+            </a-col>
+            <a-col :span="2">画布高度：</a-col>
+            <a-col :span="6">
+              <a-input v-model="mHeight"></a-input>
+            </a-col>
+          </a-row>
         </a-tab-pane>
       </a-tabs>
     </div>
     <div ref="main" class="sbox-main" :style="{height:mHeight + 'px'}">
-      <s-box :boxs="boxs" ref="sbox" @lineMove="lineMove"/>
+      <s-box
+          ref="sbox"
+          :boxs="boxs"
+          @lineMove="lineMove"
+          @lineClick="lineClick"/>
       <resize-observer @notify="handleResize"/>
     </div>
   </div>
@@ -51,6 +63,13 @@
 
     components: {SBox},
 
+    watch: {
+      mHeight(v) {
+        const main = this.$refs.main
+        this.$refs.sbox.resizeRoot(main.clientWidth, v)
+      }
+    },
+
     methods: {
       handleResize() {
         const main = this.$refs.main
@@ -58,7 +77,7 @@
       },
 
       test() {
-        console.log(this.boxs, this.$refs.main.clientHeight)
+        console.log(this.boxs)
       },
 
       hh() {
@@ -80,6 +99,10 @@
 
       lineMove(v) {
         this.splitValue = Math.round(v)
+      },
+
+      lineClick(line) {
+        this.splitValue = Math.round(line.pc)
       },
 
       splitChange(v) {

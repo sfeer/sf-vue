@@ -6,7 +6,7 @@
           :key="box.id"
           :class="['box', {active:cBox===box.id}]"
           :style="boxStyle(box)"
-          @click="boxClick(box.id)">
+          @click="boxClick(box)">
         <a-button type="dashed" icon="plus" class="box-add" v-if="cBox===box.id">添加</a-button>
       </div>
     </div>
@@ -16,6 +16,7 @@
           :key="line.id"
           :class="['line', {active:cLine===line.id}, 'line-'+line.way]"
           :style="lineStyle(line)"
+          @click="lineClick(line)"
           @mousedown.prevent="lineDragStart(line.id)"></div>
     </div>
   </div>
@@ -68,7 +69,7 @@
       },
 
       showBoxs() {
-        return this.boxs.filter(o => o.leaf)
+        return this.boxs.filter(o => o.line === undefined)
       },
 
       showLines() {
@@ -84,8 +85,7 @@
           x: 0,
           y: 0,
           w: this.$el.clientWidth,
-          h: this.$el.clientHeight,
-          leaf: true
+          h: this.$el.clientHeight
         })
         this.cBox = this.root
 
@@ -121,50 +121,60 @@
         }
       },
 
-      boxClick(id) {
-        this.cBox = id
+      boxClick(box) {
+        this.cBox = box.id
+        this.$emit('boxClick', box)
+      },
+
+      lineClick(line) {
+        this.$emit('lineClick', line)
       },
 
       // 改变区域（递归）
       resizeBox(box) {
-        if (box.leaf === false) {
-          const p = this.padding / 2,
-            line = box.line
-          if (line) {
-            if (line.way === 'v') {
-              const c1 = this.boxs.find(b => b.parent === box.id && b.x === box.x),
-                c2 = this.boxs.find(b => b.parent === box.id && b.x !== box.x)
-              c1.x = box.x
-              c1.y = box.y
-              c1.w = line.value - p
-              c1.h = box.h
-              this.resizeBox(c1)
-              c2.x = box.x + line.value + p
-              c2.y = box.y
-              c2.w = box.w - line.value - p
-              c2.h = box.h
-              this.resizeBox(c2)
-            } else if (line.way === 'h') {
-              const c1 = this.boxs.find(b => b.parent === box.id && b.y === box.y),
-                c2 = this.boxs.find(b => b.parent === box.id && b.y !== box.y)
-              c1.x = box.x
-              c1.y = box.y
-              c1.w = box.w
-              c1.h = line.value - p
-              this.resizeBox(c1)
-              c2.x = box.x
-              c2.y = box.y + line.value + p
-              c2.w = box.w
-              c2.h = box.h - line.value - p
-              this.resizeBox(c2)
-            }
+        if (box.line) {
+          const p = this.padding / 2, line = box.line
+          if (line.way === 'v') {
+            const vv = Math.round(box.w * line.pc / 100)
+            line.value = vv
+            line.x = box.x + vv - p
+            line.y = box.y
+            line.h = box.h
+            const cc = this.boxs.filter(b => b.parent === box.id).sort((a, b) => a.x - b.x)
+            cc[0].x = box.x
+            cc[0].y = box.y
+            cc[0].w = vv - p
+            cc[0].h = box.h
+            this.resizeBox(cc[0])
+            cc[1].x = box.x + vv + p
+            cc[1].y = box.y
+            cc[1].w = box.w - vv - p
+            cc[1].h = box.h
+            this.resizeBox(cc[1])
+          } else if (line.way === 'h') {
+            const vv = Math.round(box.h * line.pc / 100)
+            line.value = vv
+            line.y = box.y + vv - p
+            line.w = box.w
+            line.x = box.x
+            const cc = this.boxs.filter(b => b.parent === box.id).sort((a, b) => a.y - b.y)
+            cc[0].x = box.x
+            cc[0].y = box.y
+            cc[0].w = box.w
+            cc[0].h = vv - p
+            this.resizeBox(cc[0])
+            cc[1].x = box.x
+            cc[1].y = box.y + vv + p
+            cc[1].w = box.w
+            cc[1].h = box.h - vv - p
+            this.resizeBox(cc[1])
           }
         }
       },
 
       // 分割线开始拖拽
-      lineDragStart(line) {
-        this.cLine = line
+      lineDragStart(id) {
+        this.cLine = id
         this.dragLine = true
       },
 
@@ -186,7 +196,7 @@
               line.value = ex
             }
             line.x = box.x + line.value - this.padding / 2
-            line.pc = Math.round(line.value / box.w * 100)
+            line.pc = line.value / box.w * 100
             this.$emit('lineMove', line.pc)
           } else if (line.way === 'h') {
             if (this.minH > ey) {
@@ -197,7 +207,7 @@
               line.value = ey
             }
             line.y = box.y + line.value - this.padding / 2
-            line.pc = Math.round(line.value / box.h * 100)
+            line.pc = line.value / box.h * 100
             this.$emit('lineMove', line.pc)
           }
 
@@ -212,21 +222,17 @@
 
       // 调整当前节点的分割值
       splitBox(v) {
-        const box = this.boxMap[this.cBox],
-          pp = this.boxMap[box.parent],
-          line = this.showLines.find(l => l.id === this.cLine)
-        if (pp.hh) {
-          pp.hh = v
-        } else if (pp.vv) {
-          pp.vv = v
-        }
-        this.resizeBox(pp)
-
+        const box = this.boxMap[this.cLine], line = box.line
         if (line.way === 'v') {
-          line.x = pp.x + pp.w * pp.vv / 100 - this.padding / 2
+          line.pc = v
+          line.value = Math.round(box.w * v / 100)
+          line.x = box.x + line.value - this.padding / 2
         } else if (line.way === 'h') {
-          line.y = pp.y + pp.h * pp.hh / 100 - this.padding / 2
+          line.pc = v
+          line.value = Math.round(box.h * v / 100)
+          line.y = box.y + line.value - this.padding / 2
         }
+        this.resizeBox(box)
       },
 
       // 对当前节点进行水平分割
@@ -239,8 +245,7 @@
           y: pp.y,
           w: pp.w,
           h: hh - this.padding / 2,
-          parent: pp.id,
-          leaf: true
+          parent: pp.id
         }
         const box2 = {
           id: uuid().replace(/-/g, ''),
@@ -248,8 +253,7 @@
           y: pp.y + hh + this.padding / 2,
           w: pp.w,
           h: pp.h - hh - this.padding / 2,
-          parent: pp.id,
-          leaf: true
+          parent: pp.id
         }
         this.boxs.push(box1, box2)
 
@@ -263,7 +267,6 @@
           pc: 50,
           value: hh
         }
-        pp.leaf = false
         this.cBox = box1.id
       },
 
@@ -277,8 +280,7 @@
           y: pp.y,
           w: vv - this.padding / 2,
           h: pp.h,
-          parent: pp.id,
-          leaf: true
+          parent: pp.id
         }
         const box2 = {
           id: uuid().replace(/-/g, ''),
@@ -286,8 +288,7 @@
           y: pp.y,
           w: pp.w - vv - this.padding / 2,
           h: pp.h,
-          parent: pp.id,
-          leaf: true
+          parent: pp.id
         }
         this.boxs.push(box1, box2)
 
@@ -301,23 +302,34 @@
           pc: 50,
           value: vv
         }
-        pp.leaf = false
         this.cBox = box1.id
       },
 
       // 在底部添加一行区域
       addRow() {
-        const oldBox = this.boxMap[this.root]
+        const oldBox = this.boxMap[this.root],
+          newId = uuid().replace(/-/g, '')
+
+        const line = {
+          id: newId,
+          x: oldBox.x,
+          y: oldBox.y + oldBox.h,
+          w: oldBox.w,
+          h: this.padding,
+          way: 'h',
+          value: oldBox.h + this.padding / 2
+        }
 
         const newBox = {
-          id: uuid().replace(/-/g, ''),
+          id: newId,
           x: oldBox.x,
           y: oldBox.y,
           w: oldBox.w,
           h: oldBox.h + 100 + this.padding,
-          hh: (oldBox.h + this.padding / 2) * 100 / (oldBox.h + 100 + this.padding),
-          leaf: false
         }
+
+        line.pc = Math.round(line.value / newBox.h * 100)
+        newBox.line = line
 
         const addBox = {
           id: uuid().replace(/-/g, ''),
@@ -325,8 +337,7 @@
           y: oldBox.y + oldBox.h + this.padding,
           w: oldBox.w,
           h: 100,
-          parent: newBox.id,
-          leaf: true
+          parent: newBox.id
         }
 
         oldBox.parent = newBox.id
@@ -352,7 +363,12 @@
             next.parent = parent.parent
           }
 
-          this.resizeBox(next, {x: parent.x, y: parent.y, w: parent.w, h: parent.h})
+          next.x = parent.x
+          next.y = parent.y
+          next.w = parent.w
+          next.h = parent.h
+
+          this.resizeBox(next)
           this.boxs.splice(this.boxs.findIndex(b => b.id === box.id), 1)
           this.boxs.splice(this.boxs.findIndex(b => b.id === parent.id), 1)
           this.cBox = next.id

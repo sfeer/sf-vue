@@ -13,6 +13,7 @@ import {
   TreeSelect,
   Tabs,
   Icon,
+  Input,
   Menu,
   Upload,
   Skeleton,
@@ -40,6 +41,7 @@ Vue.use(Skeleton)
 Vue.use(Slider)
 Vue.use(Row)
 Vue.use(Col)
+Vue.use(Input)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message

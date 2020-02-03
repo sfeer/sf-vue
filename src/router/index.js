@@ -24,6 +24,10 @@ const routes = [
     path: '/flow/play',
     component: () => import(/* webpackChunkName: "flow" */ '../views/flow/Play')
   },
+  {
+    path: '/flow/debug',
+    component: () => import(/* webpackChunkName: "flow" */ '../views/flow/Debug')
+  },
 ]
 
 const router = new VueRouter({

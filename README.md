@@ -1,19 +1,6 @@
 # sf-vue
 
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## flow
+* 自由流程 显示监控状态
+* 子流程 和父流程在同一页面编辑
+* 自定义页面 存取

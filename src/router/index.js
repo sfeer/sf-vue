@@ -14,7 +14,7 @@ const routes = [
   },
   {
     path: '/table',
-    component: () => import(/* webpackChunkName: "demo" */ '../views/demo/table')
+    component: () => import(/* webpackChunkName: "antdv" */ '../views/antdv/table')
   },
   {
     path: '/flow/design',
@@ -28,6 +28,10 @@ const routes = [
     path: '/flow/debug',
     component: () => import(/* webpackChunkName: "flow" */ '../views/flow/Debug')
   },
+  {
+    path: '/json',
+    component: () => import(/* webpackChunkName: "json" */ '../views/json')
+  }
 ]
 
 const router = new VueRouter({

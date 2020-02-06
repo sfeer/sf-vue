@@ -1,25 +1,17 @@
 <template>
-  <div>
-    <json-view :data="json"/>
-  </div>
+  <div>111</div>
 </template>
 
 <script>
-  import jsonView from 'vue-json-views'
-
   export default {
-    components: {
-      jsonView
+    data() {
+      return {}
     },
 
-    data() {
-      return {
-        json: {
-          a: 1,
-          b: 2,
-          array: [1, 2, 3]
-        }
-      }
+    mounted() {
+      this.$http.get('/user/info').then(res => {
+        console.log(res)
+      })
     }
   }
 </script>

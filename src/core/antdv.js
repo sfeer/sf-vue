@@ -11,7 +11,7 @@ import {
   Table,
   Tree,
   TreeSelect,
-  Tabs,
+  Tag,
   Icon,
   Input,
   Menu,
@@ -33,7 +33,7 @@ Vue.use(Modal)
 Vue.use(Table)
 Vue.use(Tree)
 Vue.use(TreeSelect)
-Vue.use(Tabs)
+Vue.use(Tag)
 Vue.use(Icon)
 Vue.use(Menu)
 Vue.use(Upload)

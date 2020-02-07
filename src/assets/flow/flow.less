@@ -1,4 +1,5 @@
 @tool-size: 30px;
+@item-size: 30px;
 
 @flow-primary-color: #3892d3;
 @flow-text-color: #999;
@@ -36,12 +37,6 @@
   display: flex;
   z-index: 100;
   box-shadow: 0 0 4px 0 lighten(@flow-text-color, 10%);
-
-  .logo {
-    font-size: 20px;
-    font-weight: bolder;
-    padding: 0 10px;
-  }
 }
 
 .sflow-sidebar {
@@ -62,6 +57,11 @@
     font-size: 20px;
     color: @flow-primary-color;
     margin: 5px;
+
+    &.disabled {
+      color: @flow-text-color;
+      cursor: not-allowed;
+    }
   }
 }
 
@@ -70,9 +70,8 @@
   margin-bottom: 5px;
 
   .oper {
-    height: @tool-size;
+    height: @item-size;
     cursor: pointer;
-
 
     &.active {
       background-color: @flow-warning-color;
@@ -97,7 +96,7 @@
   margin-top: 5px;
 
   .item {
-    height: @tool-size;
+    height: @item-size;
     cursor: pointer;
   }
 
@@ -215,7 +214,7 @@
   }
 
   .node-drag {
-    width: @tool-size;
+    width: @item-size;
     flex: none;
     display: flex;
     justify-content: center;

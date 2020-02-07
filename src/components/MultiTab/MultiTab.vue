@@ -86,11 +86,6 @@
             this.leftShow = true
           }
         })
-        // alert('created')
-        // this.$nextTick(() => {
-          
-
-        // })
         // 如果tab的长度超过了盒子的长度，那就直接将上面平移
       })
 

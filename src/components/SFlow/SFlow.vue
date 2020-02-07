@@ -1,17 +1,17 @@
 <template>
   <div class="sflow-wrapper" :class="mode+'-mode'">
     <div v-if="isDesignMode" class="sflow-header">
-      <div class="logo">{{name}}</div>
       <div class="sflow-tools">
         <div
             class="tool"
             v-for="(tool,index) in tools"
-            :id="index"
+            :key="'tool-'+index"
             :title="tool.name">
           <slot name="tool" :node="tool">
-            <a-icon class="tool-icon" :type="tool.icon" @click="toolClick(tool)"/>
+            <a-icon :class="['tool-icon',{disabled:tool.disabled}]" :type="tool.icon" @click="toolClick(tool)"/>
           </slot>
         </div>
+
         <!-- 临时关闭内置工具栏
           <div class="tool" title="新建">
             <a-icon class="tool-icon" type="file"/>
@@ -56,7 +56,7 @@
               class="item"
               v-for="(item,index) in items"
               :title="item.name"
-              :key="index"
+              :key="'item-'+index"
               @mousedown="itemDragStart(item)">
             <a-icon class="item-icon" :type="item.icon?item.icon:'setting'"/>
             <span v-show="!sideBarCollapse" class="item-name">{{item.name}}</span>
@@ -149,7 +149,7 @@
                 <a-icon class="node-icon" :type="node.icon?node.icon:'setting'"/>
               </div>
               <div class="node-inner">
-                <basic-flow
+                <s-flow
                     v-if="node.free.show"
                     :nodes="node.free.nodes"
                     :links="node.free.links"
@@ -169,7 +169,7 @@
                 <a-icon class="node-icon" :type="node.icon?node.icon:'setting'"/>
               </div>
               <div class="node-inner">
-                <basic-flow
+                <s-flow
                     v-if="node.sub"
                     :nodes="node.sub.nodes"
                     :links="node.sub.links"
@@ -219,7 +219,7 @@
   import uuid from 'uuid'
 
   export default {
-    name: 'BasicFlow',
+    name: 'SFlow',
 
     data() {
       return {
@@ -240,16 +240,13 @@
         drawLinkNode: null,
         drawLinkX: 0,
         drawLinkY: 0,
-        drawLinkPath: null
+        drawLinkPath: null,
+
+        flows: []
       }
     },
 
     props: {
-      name: {
-        type: String,
-        default: '流程设计器'
-      },
-
       nodes: {
         type: Array,
         default: () => []

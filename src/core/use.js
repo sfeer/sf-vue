@@ -6,13 +6,13 @@ import './antdv'
 
 // 额外组件
 import MultiTab from '../components/MultiTab'
-import BasicFlow from '../components/Flow/BasicFlow'
+import SFlow from '../components/SFlow/SFlow'
 import 'vue-resize/dist/vue-resize.css'
 import VueResize from 'vue-resize'
 
 Vue.use(MultiTab)
 Vue.use(VueResize)
-Vue.component(BasicFlow.name, BasicFlow)
+Vue.component(SFlow.name, SFlow)
 Vue.use(VueStorage, {
   namespace: 'sfeer__',
   name: 'ls',

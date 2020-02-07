@@ -10,7 +10,7 @@
     "ant-design-vue": "^1.4.10",
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
-    "jsoneditor": "^8.4.1",
+    "jsoneditor": "^8.5.2",
     "mockjs": "^1.1.0",
     "uuid": "^3.4.0",
     "vue": "^2.6.11",

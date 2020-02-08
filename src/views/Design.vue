@@ -5,7 +5,8 @@
         <a-tab-pane tab="文件" key="file">
           <a-button type="primary" class="tool">新建</a-button>
           <a-button type="primary" class="tool">打开</a-button>
-          <a-button type="primary" class="tool">保存</a-button>
+          <a-button type="primary" class="tool" @click="save">保存</a-button>
+          <a-button type="primary" class="tool" @click="read">读取</a-button>
           <a-button type="primary" class="tool">另存为</a-button>
           <a-button type="primary" class="tool">重置</a-button>
           <a-button type="primary" class="tool">打印</a-button>
@@ -57,7 +58,8 @@
       return {
         mHeight: 650,
         splitValue: 0,
-        boxs: []
+        boxs: [],
+        saveJson: ''
       }
     },
 
@@ -91,6 +93,18 @@
       add() {
         this.$refs.sbox.addRow()
         this.mHeight = this.boxs.find(b => b.parent === undefined).h
+      },
+
+      save() {
+        this.saveJson = JSON.stringify(this.boxs)
+        console.log("TCL: save -> json", this.saveJson)
+        
+        console.log(this.boxs)
+      },
+
+      read() {
+        console.log(JSON.parse(this.saveJson))
+
       },
 
       remove() {

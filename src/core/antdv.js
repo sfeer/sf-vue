@@ -2,6 +2,7 @@
 import Vue from 'vue'
 import 'ant-design-vue/dist/antd.less'
 import {
+  Breadcrumb,
   Button,
   Radio,
   Checkbox,
@@ -9,9 +10,9 @@ import {
   Form,
   Modal,
   Table,
+  Tag,
   Tree,
   TreeSelect,
-  Tag,
   Icon,
   Input,
   Menu,
@@ -24,6 +25,7 @@ import {
   notification
 } from 'ant-design-vue'
 
+Vue.use(Breadcrumb)
 Vue.use(Button)
 Vue.use(Radio)
 Vue.use(Checkbox)
@@ -31,9 +33,9 @@ Vue.use(Select)
 Vue.use(Form)
 Vue.use(Modal)
 Vue.use(Table)
+Vue.use(Tag)
 Vue.use(Tree)
 Vue.use(TreeSelect)
-Vue.use(Tag)
 Vue.use(Icon)
 Vue.use(Menu)
 Vue.use(Upload)

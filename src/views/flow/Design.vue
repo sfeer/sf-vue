@@ -7,6 +7,7 @@
         :links="links"
         :items="items"
         :tools="tools"
+        :path="path"
         :node-class="node=>node.type"
         :link-class="link=>link.type"
         @nodeClick="nodeClick"
@@ -14,7 +15,9 @@
         @nodeDblclick="nodeDblclick"
         @toolClick="toolClick"
     />
+    <span>{{flowIndex}}</span>
     <pre>{{flowHistory}}</pre>
+    <pre>{{rootFlow}}</pre>
   </div>
 </template>
 
@@ -97,24 +100,25 @@
         },
 
         rootItems: [
-          {name: '开始', icon: 'caret-right', type: 'StartNoneEvent'},
-          {name: '定时开始', icon: 'clock-circle', type: 'StartTimerEvent'},
-          {name: '结束', icon: 'stop', type: 'EndNoneEvent'},
-          {name: '用户任务', icon: 'user', type: 'UserTask'},
-          {name: '服务任务', icon: 'setting', type: 'ServiceTask'},
-          {name: '子流程', icon: 'appstore', type: 'SubProcess'},
-          {name: '条件分支', icon: 'fork', type: 'InclusiveGateway'},
-          {name: '互斥分支', icon: 'fork', type: 'ExclusiveGateway'},
-          {name: '分支聚合', icon: 'fork', type: 'ParallelGateway'},
-          {name: '定时边界事件', icon: 'link', type: 'BoundaryTimerEvent'},
-          {name: '区域', icon: 'gateway', type: 'Area'}
+          {id: 'items-1', name: '开始', icon: 'caret-right', type: 'StartNoneEvent'},
+          {id: 'items-2', name: '定时开始', icon: 'clock-circle', type: 'StartTimerEvent'},
+          {id: 'items-3', name: '结束', icon: 'stop', type: 'EndNoneEvent'},
+          {id: 'items-4', name: '用户任务', icon: 'user', type: 'UserTask'},
+          {id: 'items-5', name: '服务任务', icon: 'setting', type: 'ServiceTask'},
+          {id: 'items-6', name: '子流程', icon: 'appstore', type: 'SubProcess'},
+          {id: 'items-7', name: '条件分支', icon: 'fork', type: 'InclusiveGateway'},
+          {id: 'items-8', name: '互斥分支', icon: 'fork', type: 'ExclusiveGateway'},
+          {id: 'items-9', name: '分支聚合', icon: 'fork', type: 'ParallelGateway'},
+          {id: 'items-10', name: '定时边界事件', icon: 'link', type: 'BoundaryTimerEvent'},
+          {id: 'items-11', name: '区域', icon: 'gateway', type: 'Area'}
         ],
 
         subItems: [
           {id: 'items-1', name: '开始', icon: 'caret-right', type: 'StartNoneEvent'},
           {id: 'items-2', name: '结束', icon: 'stop', type: 'EndNoneEvent'},
           {id: 'items-3', name: '用户任务', icon: 'user', type: 'UserTask'},
-          {id: 'items-4', name: '服务任务', icon: 'setting', type: 'ServiceTask'}
+          {id: 'items-4', name: '服务任务', icon: 'setting', type: 'ServiceTask'},
+          {id: 'items-5', name: '子流程', icon: 'appstore', type: 'SubProcess'}
         ],
 
         items: [],
@@ -122,13 +126,15 @@
         nodes: [],
 
         tools: [
-          {name: '前进', icon: 'right', type: 'forward', disabled: true},
           {name: '新增', icon: 'file'},
           {name: '保存', icon: 'save'},
           {name: '文本注释', icon: 'message', type: 'comment'}
         ],
 
+        path: [],
+
         gobackTool: {name: '后退', icon: 'left', type: 'goback', disabled: true},
+        forwardTool: {name: '前进', icon: 'right', type: 'forward', disabled: true},
 
         links: [],
 
@@ -143,12 +149,15 @@
       this.flowMap[this.rootFlow.id] = this.rootFlow
       this.flowHistory.push(this.rootFlow.id)
 
-      this.tools = [this.gobackTool, ...this.tools]
+      this.path = [{id: this.rootFlow.id, name: this.rootFlow.name}]
+
+      this.tools = [this.gobackTool, this.forwardTool, ...this.tools]
     },
 
     watch: {
-      flowIndex() {
-        this.gobackTool.disabled = !(this.flowHistory.length > 1 && this.flowIndex > 0)
+      flowIndex(v) {
+        this.gobackTool.disabled = v === 0
+        this.forwardTool.disabled = v === this.flowHistory.length - 1
       }
     },
 
@@ -162,9 +171,16 @@
           this.links = flowData.sub.links
           this.items = flowData.type === 'SubProcess' ? this.subItems : this.rootItems
 
-          this.flowHistory.push(flowId)
+          this.path = this._getPath(this.rootFlow, flowId)
         } else if (tool.type === 'forward') {
+          this.flowIndex = this.flowIndex + 1
+          const flowId = this.flowHistory[this.flowIndex]
+          const flowData = this.flowMap[flowId]
+          this.nodes = flowData.sub.nodes
+          this.links = flowData.sub.links
+          this.items = flowData.type === 'SubProcess' ? this.subItems : this.rootItems
 
+          this.path = this._getPath(this.rootFlow, flowId)
         } else if (tool.type === 'comment') {
           if (this.activeNode === null) {
             alert('请选择添加注释的节点')
@@ -182,6 +198,7 @@
         if (node.type === 'SubProcess') {
           node.w = 400
           node.h = 200
+          node.sub = {nodes: [], links: []}
         }
       },
 
@@ -191,8 +208,25 @@
           this.links = node.sub.links
           this.items = this.subItems
           this.flowMap[node.id] = node
-          this.flowHistory.push(node.id)
-          this.flowIndex = this.flowHistory.length - 1
+
+          this.path = this._getPath(this.rootFlow, node.id)
+
+          this.flowHistory = [...this.flowHistory.slice(0, this.flowIndex + 1), node.id]
+          this.flowIndex = this.flowIndex + 1
+        }
+      },
+
+      _getPath(flow, id) {
+        if (flow.id === id) {
+          return [{id: flow.id, name: flow.name}]
+        } else if (flow.sub) {
+          const xx = []
+          flow.sub.nodes.forEach(n => {
+            xx.push(...this._getPath(n, id))
+          })
+          return [{id: flow.id, name: flow.name}, ...xx]
+        } else {
+          return []
         }
       },
 

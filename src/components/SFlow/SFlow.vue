@@ -7,7 +7,7 @@
             v-for="(tool,index) in tools"
             :key="'tool-'+index"
             :title="tool.name">
-          <slot name="tool" :node="tool">
+          <slot name="tool" :tool="tool">
             <a-icon :class="['tool-icon',{disabled:tool.disabled}]" :type="tool.icon" @click="toolClick(tool)"/>
           </slot>
         </div>
@@ -33,6 +33,9 @@
           </div>
          -->
       </div>
+      <a-breadcrumb separator=">" class="sflow-path">
+        <a-breadcrumb-item v-for="p in path">{{p.name}}</a-breadcrumb-item>
+      </a-breadcrumb>
     </div>
     <div class="sflow-body">
       <div v-if="isDesignMode" class="sflow-sidebar">
@@ -153,6 +156,7 @@
                     v-if="node.free.show"
                     :nodes="node.free.nodes"
                     :links="node.free.links"
+                    :node-class="nodeClass"
                     mode="view"/>
                 <div v-else>{{node.name}}</div>
                 <a-button
@@ -173,6 +177,7 @@
                     v-if="node.sub"
                     :nodes="node.sub.nodes"
                     :links="node.sub.links"
+                    :node-class="nodeClass"
                     mode="view"/>
               </div>
             </template>
@@ -267,6 +272,11 @@
         default: () => []
       },
 
+      path: {
+        type: Array,
+        default: () => []
+      },
+
       defaultNodeWidth: {
         type: Number,
         default: 100
@@ -350,6 +360,10 @@
 
       isPlayMode() {
         return this.mode === 'play'
+      },
+
+      isViewMode() {
+        return this.mode === 'view'
       },
 
       // 连线工具栏样式

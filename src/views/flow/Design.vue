@@ -10,14 +10,12 @@
         :path="path"
         :node-class="node=>node.type"
         :link-class="link=>link.type"
+        :sub-size="subSize"
         @nodeClick="nodeClick"
         @nodeCreate="nodeCreate"
         @nodeDblclick="nodeDblclick"
         @toolClick="toolClick"
     />
-    <span>{{flowIndex}}</span>
-    <pre>{{flowHistory}}</pre>
-    <pre>{{rootFlow}}</pre>
   </div>
 </template>
 
@@ -138,7 +136,9 @@
 
         links: [],
 
-        activeNode: null
+        activeNode: null,
+
+        subSize: null
       }
     },
 
@@ -169,7 +169,14 @@
           const flowData = this.flowMap[flowId]
           this.nodes = flowData.sub.nodes
           this.links = flowData.sub.links
-          this.items = flowData.type === 'SubProcess' ? this.subItems : this.rootItems
+
+          if (flowData === 'SubProcess') {
+            this.items = this.subItems
+            this.subSize = {w: flowData.w,h: flowData.h}
+          } else {
+            this.items = this.rootItems
+            this.subSize = null
+          }
 
           this.path = this._getPath(this.rootFlow, flowId)
         } else if (tool.type === 'forward') {
@@ -178,7 +185,14 @@
           const flowData = this.flowMap[flowId]
           this.nodes = flowData.sub.nodes
           this.links = flowData.sub.links
-          this.items = flowData.type === 'SubProcess' ? this.subItems : this.rootItems
+
+          if (flowData === 'SubProcess') {
+            this.items = this.subItems
+            this.subSize = {w: flowData.w,h: flowData.h}
+          } else {
+            this.items = this.rootItems
+            this.subSize = null
+          }
 
           this.path = this._getPath(this.rootFlow, flowId)
         } else if (tool.type === 'comment') {
@@ -207,8 +221,9 @@
           this.nodes = node.sub.nodes
           this.links = node.sub.links
           this.items = this.subItems
-          this.flowMap[node.id] = node
+          this.subSize = {w: node.w,h: node.h}
 
+          this.flowMap[node.id] = node
           this.path = this._getPath(this.rootFlow, node.id)
 
           this.flowHistory = [...this.flowHistory.slice(0, this.flowIndex + 1), node.id]

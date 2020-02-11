@@ -206,6 +206,8 @@
                   @mousedown="nodeResizeStart(node)"/>
             </template>
           </div>
+
+          <div v-if="subSize" class="sub-box" :style="{width:subSize.w+'px',height:subSize.h+'px'}"></div>
         </div>
 
       </div>
@@ -316,6 +318,11 @@
       linkClass: {
         type: [String, Function],
         default: 'link'
+      },
+
+      subSize: {
+        type: Object,
+        default: () => undefined
       }
     },
 

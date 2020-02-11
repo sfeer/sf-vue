@@ -14,8 +14,7 @@
         @nodeClick="nodeClick"
         @nodeCreate="nodeCreate"
         @nodeDblclick="nodeDblclick"
-        @toolClick="toolClick"
-    />
+        @toolClick="toolClick"/>
   </div>
 </template>
 
@@ -170,9 +169,9 @@
           this.nodes = flowData.sub.nodes
           this.links = flowData.sub.links
 
-          if (flowData === 'SubProcess') {
+          if (flowData.type === 'SubProcess') {
             this.items = this.subItems
-            this.subSize = {w: flowData.w,h: flowData.h}
+            this.subSize = {w: flowData.w - 30,h: flowData.h}
           } else {
             this.items = this.rootItems
             this.subSize = null
@@ -186,9 +185,9 @@
           this.nodes = flowData.sub.nodes
           this.links = flowData.sub.links
 
-          if (flowData === 'SubProcess') {
+          if (flowData.type === 'SubProcess') {
             this.items = this.subItems
-            this.subSize = {w: flowData.w,h: flowData.h}
+            this.subSize = {w: flowData.w - 30,h: flowData.h}
           } else {
             this.items = this.rootItems
             this.subSize = null
@@ -221,7 +220,7 @@
           this.nodes = node.sub.nodes
           this.links = node.sub.links
           this.items = this.subItems
-          this.subSize = {w: node.w,h: node.h}
+          this.subSize = {w: node.w - 30,h: node.h}
 
           this.flowMap[node.id] = node
           this.path = this._getPath(this.rootFlow, node.id)

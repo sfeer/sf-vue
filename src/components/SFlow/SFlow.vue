@@ -74,140 +74,140 @@
           @mousemove="handleDrag"
           @mouseup="handleDragEnd"
           @click="handleClick">
-        <div class="link-layer">
-          <svg>
-            <defs>
-              <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"
-                      markerUnits="userSpaceOnUse">
-                <path d="M0,8 L8,4 L0,0 z" class="link-marker-arrow"/>
-              </marker>
-              <marker id="arrow-warning" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"
-                      markerUnits="userSpaceOnUse">
-                <path d="M0,8 L8,4 L0,0 z" class="link-marker-arrow-warning"/>
-              </marker>
-              <marker id="arrow-error" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"
-                      markerUnits="userSpaceOnUse">
-                <path d="M0,8 L8,4 L0,0 z" class="link-marker-arrow-error"/>
-              </marker>
-              <marker id="arrow-init" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"
-                      markerUnits="userSpaceOnUse">
-                <path d="M0,8 L8,4 L0,0 z" class="link-marker-arrow-init"/>
-              </marker>
-            </defs>
+        <div :style="{height:'100%', transform:subSize?`translate(${subOffset.x}px,${subOffset.y}px)`:null}">
+          <div v-if="subSize" class="sub-box" :style="{width:subSize.w+'px',height:subSize.h+'px',zIndex:-100}"></div>
+          <div class="link-layer">
+            <svg>
+              <defs>
+                <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"
+                        markerUnits="userSpaceOnUse">
+                  <path d="M0,8 L8,4 L0,0 z" class="link-marker-arrow"/>
+                </marker>
+                <marker id="arrow-warning" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"
+                        markerUnits="userSpaceOnUse">
+                  <path d="M0,8 L8,4 L0,0 z" class="link-marker-arrow-warning"/>
+                </marker>
+                <marker id="arrow-error" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"
+                        markerUnits="userSpaceOnUse">
+                  <path d="M0,8 L8,4 L0,0 z" class="link-marker-arrow-error"/>
+                </marker>
+                <marker id="arrow-init" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"
+                        markerUnits="userSpaceOnUse">
+                  <path d="M0,8 L8,4 L0,0 z" class="link-marker-arrow-init"/>
+                </marker>
+              </defs>
 
-            <g v-for="link in links" :key="link.id">
-              <path
-                  :class="linkClassData(link)"
-                  :d="link.path"/>
+              <g v-for="link in links" :key="link.id">
+                <path
+                    :class="linkClassData(link)"
+                    :d="link.path"/>
+                <path
+                    v-if="isDesignMode"
+                    class="link-selecter"
+                    :d="link.path"
+                    @click.stop="linkClick(link)"
+                    @dblclick.stop="linkDblclick(link)"/>
+                <text
+                    class="link-name"
+                    :x="link.cx"
+                    :y="link.cy"
+                    dy="-4">{{link.name}}
+                </text>
+              </g>
+
               <path
                   v-if="isDesignMode"
-                  class="link-selecter"
-                  :d="link.path"
-                  @click.stop="linkClick(link)"
-                  @dblclick.stop="linkDblclick(link)"/>
-              <text
-                  class="link-name"
-                  :x="link.cx"
-                  :y="link.cy"
-                  dy="-4">{{link.name}}
-              </text>
-            </g>
-
-            <path
-                v-if="isDesignMode"
-                class="link-draw"
-                :d="drawLinkPath"/>
-          </svg>
-
-          <template v-if="isDesignMode">
-            <div
-                v-show="activeLink"
-                class="link-tools"
-                :style="linkToolStyle">
-              <div class="tool tool-v" @click="switchVLink"></div>
-              <div class="tool tool-h" @click="switchHLink"></div>
-              <div class="tool tool-l" @click="switchLLink"></div>
-              <div class="tool tool-x" @click="deleteLink"></div>
-            </div>
-            <div
-                v-show="activeLink"
-                class="link-drag"
-                @mousedown.prevent="linkDragStart"
-                :style="linkDragStyle">
-            </div>
-          </template>
-        </div>
-
-        <div class="node-layer">
-          <div
-              v-for="node in nodes"
-              :key="node.id"
-              :class="nodeClassData(node)"
-              :style="nodeStyle(node)"
-              @click.stop="nodeClick(node)"
-              @dblclick.stop="nodeDblclick(node)">
-
-            <template v-if="node.free">
-              <div class="node-drag" v-show="!node.free.show">
-                <a-icon class="node-icon" :type="node.icon?node.icon:'setting'"/>
-              </div>
-              <div class="node-inner">
-                <s-flow
-                    v-if="node.free.show"
-                    :nodes="node.free.nodes"
-                    :links="node.free.links"
-                    :node-class="nodeClass"
-                    mode="view"/>
-                <div v-else>{{node.name}}</div>
-                <a-button
-                    shape="circle"
-                    :icon="node.free.show?'minus':'plus'"
-                    type="primary"
-                    class="free-flow-btn"
-                    @click="showFreeFlow(node)"/>
-              </div>
-            </template>
-
-            <template v-else-if="node.sub">
-              <div class="node-drag" @mousedown="nodeDragStart(node, $event)">
-                <a-icon class="node-icon" :type="node.icon?node.icon:'setting'"/>
-              </div>
-              <div class="node-inner">
-                <s-flow
-                    v-if="node.sub"
-                    :nodes="node.sub.nodes"
-                    :links="node.sub.links"
-                    :node-class="nodeClass"
-                    mode="view"/>
-              </div>
-            </template>
-
-            <template v-else>
-              <div class="node-drag" @mousedown="nodeDragStart(node, $event)">
-                <slot name="icon" :node="node">
-                  <a-icon class="node-icon" :type="node.icon?node.icon:'setting'"/>
-                </slot>
-              </div>
-              <div class="node-inner">
-                <slot name="node" :node="node">{{node.name}}</slot>
-              </div>
-            </template>
+                  class="link-draw"
+                  :d="drawLinkPath"/>
+            </svg>
 
             <template v-if="isDesignMode">
-              <a-icon
-                  class="node-close"
-                  v-show="activeNode===node.id"
-                  type="close"
-                  @click="deleteNode"/>
-              <a-icon
-                  class="node-resize"
-                  v-show="activeNode===node.id"
-                  type="arrows-alt"
-                  @mousedown="nodeResizeStart(node)"/>
+              <div
+                  v-show="activeLink"
+                  class="link-tools"
+                  :style="linkToolStyle">
+                <div class="tool tool-v" @click="switchVLink"></div>
+                <div class="tool tool-h" @click="switchHLink"></div>
+                <div class="tool tool-l" @click="switchLLink"></div>
+                <div class="tool tool-x" @click="deleteLink"></div>
+              </div>
+              <div
+                  v-show="activeLink"
+                  class="link-drag"
+                  @mousedown.prevent="linkDragStart"
+                  :style="linkDragStyle">
+              </div>
             </template>
           </div>
+          <div class="node-layer">
+            <div
+                v-for="node in nodes"
+                :key="node.id"
+                :class="nodeClassData(node)"
+                :style="nodeStyle(node)"
+                @click.stop="nodeClick(node)"
+                @dblclick.stop="nodeDblclick(node)">
 
-          <div v-if="subSize" class="sub-box" :style="{width:subSize.w+'px',height:subSize.h+'px'}"></div>
+              <template v-if="node.free">
+                <div class="node-drag" v-show="!node.free.show">
+                  <a-icon class="node-icon" :type="node.icon?node.icon:'setting'"/>
+                </div>
+                <div class="node-inner">
+                  <s-flow
+                      v-if="node.free.show"
+                      :nodes="node.free.nodes"
+                      :links="node.free.links"
+                      :node-class="nodeClass"
+                      mode="view"/>
+                  <div v-else>{{node.name}}</div>
+                  <a-button
+                      shape="circle"
+                      :icon="node.free.show?'minus':'plus'"
+                      type="primary"
+                      class="free-flow-btn"
+                      @click="showFreeFlow(node)"/>
+                </div>
+              </template>
+
+              <template v-else-if="node.sub">
+                <div class="node-drag" @mousedown="nodeDragStart(node, $event)">
+                  <a-icon class="node-icon" :type="node.icon?node.icon:'setting'"/>
+                </div>
+                <div class="node-inner">
+                  <s-flow
+                      v-if="node.sub"
+                      :nodes="node.sub.nodes"
+                      :links="node.sub.links"
+                      :node-class="nodeClass"
+                      mode="view"/>
+                </div>
+              </template>
+
+              <template v-else>
+                <div class="node-drag" @mousedown="nodeDragStart(node, $event)">
+                  <slot name="icon" :node="node">
+                    <a-icon class="node-icon" :type="node.icon?node.icon:'setting'"/>
+                  </slot>
+                </div>
+                <div class="node-inner">
+                  <slot name="node" :node="node">{{node.name}}</slot>
+                </div>
+              </template>
+
+              <template v-if="isDesignMode">
+                <a-icon
+                    class="node-close"
+                    v-show="activeNode===node.id"
+                    type="close"
+                    @click="deleteNode"/>
+                <a-icon
+                    class="node-resize"
+                    v-show="activeNode===node.id"
+                    type="arrows-alt"
+                    @mousedown="nodeResizeStart(node)"/>
+              </template>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -249,7 +249,9 @@
         drawLinkY: 0,
         drawLinkPath: null,
 
-        flows: []
+        flows: [],
+        // 子流程区域偏移量
+        subOffset: {x: 0, y: 0}
       }
     },
 
@@ -333,6 +335,15 @@
             this.handleLink(l)
           }
         })
+      },
+
+      subSize(v) {
+        console.log('sub-size', v)
+        if (v) {
+          const rect = this.$refs.flow.getBoundingClientRect()
+          this.subOffset.x = (rect.width - v.w) / 2
+          this.subOffset.y = (rect.height - v.h) / 2
+        }
       }
     },
 
@@ -432,6 +443,20 @@
     },
 
     methods: {
+      // 获取鼠标坐标
+      _getPosition(event) {
+        const rect = this.$refs.flow.getBoundingClientRect()
+        let ex = event.pageX - rect.left, ey = event.pageY - rect.top
+
+        // 子流程辅助框引起偏移
+        if (this.subSize) {
+          ex = ex - this.subOffset.x
+          ey = ey - this.subOffset.y
+        }
+
+        return {ex, ey}
+      },
+
       // 自由流程开关
       showFreeFlow(node) {
         const w = node.free.w, h = node.free.h
@@ -495,8 +520,7 @@
         if (!this.isDrawLink) {
           // 连线模式下禁止节点拖动
           this.dragNode = node.id
-          const rect = this.$refs.flow.getBoundingClientRect(),
-            ex = e.pageX - rect.left, ey = e.pageY - rect.top
+          const {ex, ey} = this._getPosition(e)
           this.dragNodeX = ex - node.x
           this.dragNodeY = ey - node.y
         }
@@ -508,8 +532,7 @@
           if (this.isDrawLink && this.highlightNode) {
             // 绘制连线
             this.drawLinkNode = this.highlightNode
-            const rect = this.$refs.flow.getBoundingClientRect(),
-              ex = e.pageX - rect.left, ey = e.pageY - rect.top
+            const {ex, ey} = this._getPosition(e)
             this.drawLinkX = ex
             this.drawLinkY = ey
           }
@@ -519,13 +542,10 @@
       // 主面板区域鼠标移动事件，须谨慎使用
       handleDrag(e) {
         if (this.isDesignMode) {
-          const rect = this.$refs.flow.getBoundingClientRect(),
-            ex = e.pageX - rect.left, ey = e.pageY - rect.top
+          const {ex, ey} = this._getPosition(e)
 
           if (this.dragNode) { // 拖拽节点
-            const node = this.nodeMap[this.dragNode],
-              rect = this.$refs.flow.getBoundingClientRect(),
-              ex = e.pageX - rect.left, ey = e.pageY - rect.top
+            const node = this.nodeMap[this.dragNode]
             node.x = ex - this.dragNodeX
             node.y = ey - this.dragNodeY
 

@@ -496,7 +496,6 @@
         } else if (this.isPlayMode) {
           classArr.push(node.play)
           if (node.free) {
-            console.log(221, node)
             classArr.push(node.free.show ? 'free-show' : null)
           }
         } else if (this.isViewMode && node.play) {

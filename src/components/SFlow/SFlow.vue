@@ -338,7 +338,6 @@
       },
 
       subSize(v) {
-        console.log('sub-size', v)
         if (v) {
           const rect = this.$refs.flow.getBoundingClientRect()
           this.subOffset.x = (rect.width - v.w) / 2
@@ -495,6 +494,12 @@
             highlight: this.highlightNode === node.id
           })
         } else if (this.isPlayMode) {
+          classArr.push(node.play)
+          if (node.free) {
+            console.log(221, node)
+            classArr.push(node.free.show ? 'free-show' : null)
+          }
+        } else if (this.isViewMode && node.play) {
           classArr.push(node.play)
         }
 

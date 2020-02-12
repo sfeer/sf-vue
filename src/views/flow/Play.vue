@@ -1,10 +1,12 @@
 <template>
-  <basic-flow
-      style="height:900px"
-      :nodes="nodes"
-      :links="links"
-      mode="play"
-      :node-class="node=>node.type"/>
+  <div id="sflow-play">
+    <s-flow
+        style="height:900px"
+        :nodes="nodes"
+        :links="links"
+        mode="play"
+        :node-class="node=>node.type"/>
+  </div>
 </template>
 
 <script>
@@ -35,13 +37,13 @@
             x: 730, y: 60, w: 80, h: 40
           },
           {
-            id: 'node-6', name: '自由流程', type: 'FreeProcess', icon: 'home', play: 'noplay',
+            id: 'node-6', name: '自由流程', type: 'FreeProcess', icon: 'home', play: 'playing',
             x: 620, y: 230, w: 160, h: 80,
             child: [
               {
-                id: 'node-11', name: '经理签字', type: 'UserTask', icon: 'user',
+                id: 'node-11', name: '经理签字', type: 'UserTask', icon: 'user', play: 'played',
                 child: [
-                  {id: 'node-111', name: '财务签字', type: 'UserTask', icon: 'user'}
+                  {id: 'node-111', name: '财务签字', type: 'UserTask', icon: 'user', play: 'playing'}
                 ]
               },
               {
@@ -115,15 +117,15 @@
       this.nodes.forEach(node => {
         if (node.type === 'FreeProcess') {
           // 自由流程
-          const free = {nodes: [], links: [], level: 0, leafs: 0, show: false}
-          this.loopFreeData(free, {
+          const free = {nodes: [], links: [], level: 0, leafs: 0, show: true, w: node.w, h: node.h}
+          this._loopFreeData(free, {
             id: node.id,
             name: node.name,
             child: node.child,
             icon: node.icon
           })
-          free.w = 150 * (free.level - 1) + 100 + 47
-          free.h = 60 * (free.leafs - 1) + 40
+          node.w = 150 * (free.level - 1) + 100 + 47
+          node.h = 60 * (free.leafs - 1) + 40
           node.free = free
         }
       })
@@ -131,13 +133,13 @@
 
     methods: {
       // 递归自由流程树结构数据
-      loopFreeData(data, node, level = 1) {
+      _loopFreeData(data, node, level = 1) {
         if (level > data.level) {
           data.level = level
         }
         if (node.child && node.child.length > 0) {
           node.child.forEach(o => {
-            this.loopFreeData(data, o, level + 1)
+            this._loopFreeData(data, o, level + 1)
             data.links.push({
               id: 'link_' + uuid().replace(/-/g, ''),
               s: node.id,
@@ -157,3 +159,21 @@
     }
   }
 </script>
+
+<style lang="less">
+  #sflow-play {
+    .FreeProcess.free-show {
+      background: transparent;
+      border-color: #999;
+      animation: none;
+
+      &.playing {
+        border-color: #ffbf00;
+      }
+
+      &.played {
+        border-color: #3892d3;
+      }
+    }
+  }
+</style>

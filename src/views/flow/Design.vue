@@ -1,5 +1,5 @@
 <template>
-  <div id="sflow-demo">
+  <div id="sflow-design">
     <s-flow
         style="height:600px"
         name="自定义流程名"
@@ -272,7 +272,7 @@
 <style lang="less">
   @comment-color: #f8df98;
 
-  #sflow-demo {
+  #sflow-design {
     .TextAnnotation {
       border-radius: 10px;
       background-color: @comment-color;

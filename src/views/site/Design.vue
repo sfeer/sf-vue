@@ -4,7 +4,7 @@
       <a-tabs type="card" default-active-key="edit">
         <a-tab-pane tab="文件" key="file">
           <a-button type="primary" class="tool">新建</a-button>
-          <a-button type="primary" class="tool">打开</a-button>
+          <a-button type="primary" class="tool" @click="templateClick">模版</a-button>
           <a-button type="primary" class="tool" @click="save">保存</a-button>
           <a-button type="primary" class="tool" @click="read">读取</a-button>
           <a-button type="primary" class="tool">另存为</a-button>
@@ -51,7 +51,8 @@
 </template>
 
 <script>
-  import SBox from '../components/SBox/SBox'
+  import SBox from '../../components/SBox/SBox'
+  import {getTemplateList} from '../../api/site'
 
   export default {
     data() {
@@ -98,13 +99,17 @@
       save() {
         this.saveJson = JSON.stringify(this.boxs)
         console.log("TCL: save -> json", this.saveJson)
-        
         console.log(this.boxs)
       },
 
       read() {
         console.log(JSON.parse(this.saveJson))
+      },
 
+      templateClick() {
+        getTemplateList().then(d => {
+          console.log('xx', d)
+        })
       },
 
       remove() {

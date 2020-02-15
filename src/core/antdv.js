@@ -10,6 +10,7 @@ import {
   Form,
   Modal,
   Table,
+  Tabs,
   Tag,
   Tree,
   TreeSelect,
@@ -33,6 +34,7 @@ Vue.use(Select)
 Vue.use(Form)
 Vue.use(Modal)
 Vue.use(Table)
+Vue.use(Tabs)
 Vue.use(Tag)
 Vue.use(Tree)
 Vue.use(TreeSelect)

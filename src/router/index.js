@@ -9,8 +9,8 @@ const routes = [
     component: () => import(/* webpackChunkName: "main" */ '../views/Home')
   },
   {
-    path: '/design',
-    component: () => import(/* webpackChunkName: "main" */ '../views/Design')
+    path: '/site/design',
+    component: () => import(/* webpackChunkName: "main" */ '../views/site/Design')
   },
   {
     path: '/table',

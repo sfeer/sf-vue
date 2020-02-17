@@ -1,12 +1,6 @@
 <template>
   <a-menu @click="onSelect">
-    <a-menu-item
-        v-for="item in menus"
-        :key="item.key"
-        :data="item.data"
-        xx="123"
-    >{{item.title}}
-    </a-menu-item>
+    <a-menu-item v-for="menu in menus" :key="menu.key" :data="menu.data">{{item.title}}</a-menu-item>
   </a-menu>
 </template>
 

@@ -3,7 +3,6 @@
     <div class="sbox-tools">
       <a-tabs type="card" default-active-key="edit">
         <a-tab-pane tab="文件" key="file">
-          <a-button type="primary" class="tool">新建</a-button>
           <a-button type="primary" class="tool" @click="templateClick">模版</a-button>
           <a-button type="primary" class="tool" @click="save">保存</a-button>
           <a-button type="primary" class="tool" @click="read">读取</a-button>
@@ -47,6 +46,11 @@
           @lineClick="lineClick"/>
       <resize-observer @notify="handleResize"/>
     </div>
+    <a-modal :width="920" v-model="newModalVisible" :closable="false" :footer="null">
+      <div class="sbox-templates">
+        <div class="template" v-for="t in templates" :key="t.id">{{t.name}}</div>
+      </div>
+    </a-modal>
   </div>
 </template>
 
@@ -60,7 +64,10 @@
         mHeight: 650,
         splitValue: 0,
         boxs: [],
-        saveJson: ''
+        saveJson: '',
+
+        templates: [],
+        newModalVisible: false
       }
     },
 
@@ -107,8 +114,9 @@
       },
 
       templateClick() {
-        getTemplateList().then(d => {
-          console.log('xx', d)
+        this.newModalVisible = true
+        getTemplateList().then(res => {
+          this.templates = res.data
         })
       },
 
@@ -132,29 +140,5 @@
 </script>
 
 <style lang="less" scoped>
-  .sbox-wrapper {
-    padding: 10px;
-    height: 100vh;
-  }
-
-  .sbox-tools {
-    margin-bottom: 10px;
-
-    .tool {
-      margin-right: 10px;
-    }
-  }
-
-  .sbox-main {
-    position: relative;
-  }
-
-  .resize-h {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 10px;
-    background: #e65a44;
-    cursor: ns-resize;
-  }
+  @import "../../assets/site/sbox";
 </style>

@@ -34,7 +34,7 @@
          -->
       </div>
       <a-breadcrumb separator=">" class="sflow-path">
-        <a-breadcrumb-item v-for="p in path">{{p.name}}</a-breadcrumb-item>
+        <a-breadcrumb-item v-for="p in path" :key="p.id">{{p.name}}</a-breadcrumb-item>
       </a-breadcrumb>
     </div>
     <div class="sflow-body">

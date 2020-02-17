@@ -8,14 +8,21 @@ const routes = [
     path: '/',
     component: () => import(/* webpackChunkName: "main" */ '../views/Home')
   },
+
   {
     path: '/site/design',
     component: () => import(/* webpackChunkName: "main" */ '../views/site/Design')
   },
+
   {
     path: '/table',
     component: () => import(/* webpackChunkName: "antdv" */ '../views/antdv/table')
   },
+  {
+    path: '/menu',
+    component: () => import(/* webpackChunkName: "antdv" */ '../views/antdv/menu')
+  },
+
   {
     path: '/flow/design',
     component: () => import(/* webpackChunkName: "flow" */ '../views/flow/Design')

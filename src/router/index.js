@@ -10,11 +10,6 @@ const routes = [
   },
 
   {
-    path: '/site/design',
-    component: () => import(/* webpackChunkName: "main" */ '../views/site/Design')
-  },
-
-  {
     path: '/table',
     component: () => import(/* webpackChunkName: "antdv" */ '../views/antdv/table')
   },
@@ -35,6 +30,16 @@ const routes = [
     path: '/flow/debug',
     component: () => import(/* webpackChunkName: "flow" */ '../views/flow/Debug')
   },
+
+  {
+    path: '/site',
+    component: () => import(/* webpackChunkName: "site" */ '../views/site/List')
+  },
+  {
+    path: '/site/design',
+    component: () => import(/* webpackChunkName: "site" */ '../views/site/Design')
+  },
+
   {
     path: '/json',
     component: () => import(/* webpackChunkName: "json" */ '../views/json')

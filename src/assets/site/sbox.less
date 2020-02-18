@@ -26,14 +26,38 @@
 }
 
 /* 模版 start */
-.sbox-templates {
-  display: flex;
-  justify-content: space-around;
-  height: 50px;
+.sbox-modal {
+  .row-title {
+    font-size: 1.2rem;
+    margin: 20px 0;
 
-  .template {
-    width: 120px;
-    background-color: #e65a44;
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-around;
+
+    .item {
+      cursor: pointer;
+
+      .item-title {
+        font-size: 1.1rem;
+        margin-top: 10px;
+      }
+    }
+
+    img {
+      padding: 5px;
+      border: 1px solid #bbb;
+
+      &:hover {
+        box-shadow: 0 5px 10px #999;
+      }
+    }
   }
 }
+
 /* 模版 end */

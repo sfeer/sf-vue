@@ -1,9 +1,9 @@
 <template>
   <div class="sbox-wrapper">
     <div class="sbox-tools">
-      <a-tabs type="card" default-active-key="edit">
+      <a-tabs type="card" default-active-key="file">
         <a-tab-pane tab="文件" key="file">
-          <a-button type="primary" class="tool" @click="templateClick">模版</a-button>
+          <a-button type="primary" class="tool" @click="addSbox">新建</a-button>
           <a-button type="primary" class="tool" @click="save">保存</a-button>
           <a-button type="primary" class="tool" @click="read">读取</a-button>
           <a-button type="primary" class="tool">另存为</a-button>
@@ -46,10 +46,26 @@
           @lineClick="lineClick"/>
       <resize-observer @notify="handleResize"/>
     </div>
-    <a-modal :width="920" v-model="newModalVisible" :closable="false" :footer="null">
-      <div class="sbox-templates">
-        <div class="template" v-for="t in templates" :key="t.id">{{t.name}}</div>
+    <a-modal class="sbox-modal" :width="960" v-model="newModalVisible" :closable="false" :footer="null">
+      <template v-if="historys.length>0">
+        <div class="row-title">最近打开</div>
+        <div class="row">
+          <div class="item" v-for="t in historys" :key="t.id" @click="templateClick(t)">
+            <div class="item-title">{{t.name}}</div>
+            <img :src="t.img" :alt="t.name">
+          </div>
+        </div>
+      </template>
+      <div class="row-title">常用</div>
+      <div class="row">
+        <div class="item" v-for="t in templates" :key="t.id">
+          <img :src="t.img" :alt="t.name">
+          <div class="item-title">{{t.name}}</div>
+        </div>
       </div>
+    </a-modal>
+    <a-modal class="sbox-modal" :width="920" v-model="debugModalVisible" :closable="false" :footer="null">
+      <pre>{{boxs}}</pre>
     </a-modal>
   </div>
 </template>
@@ -67,7 +83,9 @@
         saveJson: '',
 
         templates: [],
-        newModalVisible: false
+        historys: [],
+        newModalVisible: false,
+        debugModalVisible: false
       }
     },
 
@@ -87,6 +105,7 @@
       },
 
       test() {
+        this.debugModalVisible = true
         console.log(this.boxs)
       },
 
@@ -113,11 +132,17 @@
         console.log(JSON.parse(this.saveJson))
       },
 
-      templateClick() {
+      // 新建布局
+      addSbox() {
         this.newModalVisible = true
         getTemplateList().then(res => {
           this.templates = res.data
         })
+      },
+
+      templateClick(template) {
+        this.boxs = template.data
+        this.newModalVisible = false
       },
 
       remove() {

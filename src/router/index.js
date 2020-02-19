@@ -6,7 +6,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    component: () => import(/* webpackChunkName: "main" */ '../views/Home')
+    component: () => import('../views/Home')
   },
 
   {
@@ -40,9 +40,16 @@ const routes = [
     component: () => import(/* webpackChunkName: "site" */ '../views/site/Design')
   },
 
+  // JSON 编辑器
+  // {
+  //   path: '/json',
+  //   component: () => import('../views/json')
+  // },
+
+  // 富文本编辑器
   {
-    path: '/json',
-    component: () => import(/* webpackChunkName: "json" */ '../views/json')
+    path: '/quill',
+    component: () => import('../views/quill')
   }
 ]
 

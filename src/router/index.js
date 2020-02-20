@@ -50,6 +50,10 @@ const routes = [
   {
     path: '/quill',
     component: () => import('../views/quill')
+  },
+  {
+    path: '/demoIndex',
+    component: () => import('../views/Index')
   }
 ]
 

@@ -8,7 +8,6 @@ import { VueAxios } from './utils/request'
 
 import './mock' // 模拟数据
 import './core/use' // 全局引入
-import './assets/index.less'
 
 Vue.config.productionTip = false
 

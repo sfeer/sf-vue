@@ -2,7 +2,7 @@
   <div class="content">
     <div class="header">
       <div class="header-bg">
-        <img src="../assets/index/logo.png" class="logo">
+        <img src="../assets/index/logo.png" class="logo" alt="">
         <div class="name">
           <p style="letter-spacing:17px">深圳市烟草专卖局</p>
           <p>中国烟草总公司深圳市公司</p>
@@ -19,7 +19,9 @@
           <li class="menu-one">办事公开</li>
         </ul>
         <div class="searchBox">
-          <input type="text" class="search-input">
+          <label>
+            <input type="text" class="search-input">
+          </label>
           <span class="search-btn">搜索</span>
         </div>
       </div>
@@ -134,16 +136,15 @@
               <p class="text">
                 （深圳烟草）杂志
               </p>
-              
+
             </div>
           </div>
           <!-- 常用链接 -->
-          <div >
-            <a-select defaultValue="lucy" @change="handleChange" class="common-use">
-              <a-select-option value="jack">Jack</a-select-option>
-              <a-select-option value="lucy">Lucy</a-select-option>
-              <a-select-option value="disabled" disabled>Disabled</a-select-option>
-              <a-select-option value="Yiminghe">yiminghe</a-select-option>
+          <div>
+            <a-select defaultValue="link1" @change="handleChange" class="common-use">
+              <a-select-option value="link1">常用链接</a-select-option>
+              <a-select-option value="link2">常用链接</a-select-option>
+              <a-select-option value="link3">常用链接</a-select-option>
             </a-select>
           </div>
         </div>
@@ -229,18 +230,20 @@
                     <img src="../assets/index/qrcode.png" alt="" class="login-type" v-show="loginType">
                     <img src="../assets/index/account.png" alt="" class="login-type" v-show="!loginType">
                   </div>
-                  
+
                   <div class="user-name">
                     <div class="user-icon">
-
                     </div>
-                    <input type="text" placeholder="用户名" class="user-input">
+                    <label>
+                      <input type="text" placeholder="用户名" class="user-input">
+                    </label>
                   </div>
                   <div class="user-name">
                     <div class="user-icon">
-
                     </div>
-                    <input type="text" placeholder="密码" class="user-input">
+                    <label>
+                      <input type="text" placeholder="密码" class="user-input">
+                    </label>
                   </div>
                   <div class="login-tip">
                     <span style="margin-right:23px">口令修改</span>
@@ -470,7 +473,7 @@
             </ul>
           </div>
         </div>
-        </div>
+      </div>
     </div>
     <div class="footer">
       <p>本站含有烟草内容，如果您是18岁以下人士，敬请回避！</p>
@@ -481,11 +484,12 @@
   </div>
 </template>
 <script>
-  import { Carousel } from 'ant-design-vue';
+  import {Carousel} from 'ant-design-vue';
+
   export default {
     name: 'index',
     data() {
-      return{
+      return {
         loginType: false
       }
     },
@@ -500,9 +504,12 @@
         this.loginType = !this.loginType
       }
     },
-    components:{
-      [Carousel.name] : Carousel,
+    components: {
+      [Carousel.name]: Carousel,
     }
   }
-  
 </script>
+
+<style lang="less" scoped>
+  @import "../assets/index";
+</style>

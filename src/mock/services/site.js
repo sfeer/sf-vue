@@ -1,4 +1,5 @@
 import Mock from 'mockjs'
+import Vue from 'vue'
 
 const Random = Mock.Random
 const templateList = [
@@ -79,4 +80,15 @@ const templateList = [
     data: []
   }
 ]
-Mock.mock(/\/api\/templates/, 'get', templateList)
+const siteList = Vue.ls.get('sites') || []
+
+Mock.mock(/\/api\/templates/, 'get', {errcode: 0, data: templateList})
+
+Mock.mock(/\/api\/publish\/site/, 'post', req => {
+  const sites = Vue.ls.get('sites') || []
+  sites.push({...JSON.parse(req.body), status: 'publish'})
+  Vue.ls.set('sites', sites)
+  return {errcode: 0, errmsg: 'published'}
+})
+
+Mock.mock(/\/api\/sites/, 'get', {errcode: 0, data: siteList})

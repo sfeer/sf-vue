@@ -29,6 +29,7 @@
             <a-col :span="16">
               <a-button type="primary" class="tool" @click="test">测试</a-button>
               <a-button type="primary" class="tool">调试</a-button>
+              <a-button type="primary" class="tool" @click="publish">发布</a-button>
             </a-col>
             <a-col :span="2">画布高度：</a-col>
             <a-col :span="6">
@@ -71,12 +72,16 @@
 </template>
 
 <script>
+  import uuid from 'uuid'
   import SBox from '../../components/SBox/SBox'
-  import {getTemplateList} from '../../api/site'
+  import {getTemplateList, publishSite} from '../../api/site'
 
   export default {
     data() {
       return {
+        siteId: uuid().replace(/-/g, ''),
+        siteName: '',
+
         mHeight: 650,
         splitValue: 0,
         boxs: [],
@@ -135,8 +140,8 @@
       // 新建布局
       addSbox() {
         this.newModalVisible = true
-        getTemplateList().then(res => {
-          this.templates = res.data
+        getTemplateList().then(d => {
+          this.templates = d
         })
       },
 
@@ -159,6 +164,16 @@
 
       splitChange(v) {
         this.$refs.sbox.splitBox(v)
+      },
+
+      // 发布
+      publish() {
+        // TODO 使用Drawer抽屉组件
+        publishSite({
+          id: this.siteId,
+          name: this.siteName,
+          boxs: this.boxs
+        })
       }
     }
   }

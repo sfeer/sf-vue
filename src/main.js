@@ -6,8 +6,8 @@ import router from './router'
 import store from './store'
 import { VueAxios } from './utils/request'
 
-import './mock' // 模拟数据
 import './core/use' // 全局引入
+import './mock' // 模拟数据
 
 Vue.config.productionTip = false
 

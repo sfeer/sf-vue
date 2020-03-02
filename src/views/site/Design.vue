@@ -72,7 +72,7 @@
 </template>
 
 <script>
-  import uuid from 'uuid'
+  import {v4 as uuid} from 'uuid'
   import SBox from '../../components/SBox/SBox'
   import {getTemplateList, publishSite} from '../../api/site'
 

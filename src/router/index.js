@@ -39,6 +39,10 @@ const routes = [
     path: '/site/design',
     component: () => import(/* webpackChunkName: "site" */ '../views/site/Design')
   },
+  {
+    path: '/site/:sid',
+    component: () => import(/* webpackChunkName: "site" */ '../views/site/View')
+  },
 
   // JSON 编辑器
   // {

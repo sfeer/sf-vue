@@ -1,3 +1,4 @@
+<!-- 新增页面，选择合适的模版新增 -->
 <template>
   <div class="sbox-init">
     <div class="row-title">常用</div>

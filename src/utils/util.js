@@ -25,3 +25,15 @@ export function getYOverRange(source, target) {
   aa.sort((a, b) => a - b)
   return aa[1] / 2 + aa[2] / 2
 }
+
+export const getQueryParameters = (options) => {
+  const url = options.url
+  const search = url.split('?')[1]
+  if (!search) {
+    return {}
+  }
+  return JSON.parse('{"' + decodeURIComponent(search)
+    .replace(/"/g, '\\"')
+    .replace(/&/g, '","')
+    .replace(/=/g, '":"') + '"}')
+}

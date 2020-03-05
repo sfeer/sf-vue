@@ -7,10 +7,11 @@
           :class="['box', {active:cBox===box.id}]"
           :style="boxStyle(box)"
           @click="boxClick(box)">
-        <a-button type="dashed" icon="plus" class="box-add" v-if="cBox===box.id">添加</a-button>
+        <a-button v-if="isDesignMode && cBox===box.id" type="dashed" icon="plus" class="box-add">添加</a-button>
+        <div v-else-if="isViewMode">111</div>
       </div>
     </div>
-    <div class="lines">
+    <div class="lines" v-if="isDesignMode">
       <div
           v-for="line in showLines"
           :key="line.id"
@@ -56,6 +57,11 @@
         default() {
           return []
         }
+      },
+
+      mode: {
+        type: String,
+        default: 'design'
       }
     },
 
@@ -74,6 +80,14 @@
 
       showLines() {
         return this.boxs.filter(o => o.line).map(b => b.line)
+      },
+
+      isDesignMode() {
+        return this.mode === 'design'
+      },
+
+      isViewMode() {
+        return this.mode === 'view'
       }
     },
 

@@ -1,5 +1,6 @@
 import Mock from 'mockjs'
 import Vue from 'vue'
+import {getQueryParameters} from '../../utils/util'
 
 const Random = Mock.Random
 const templateList = [
@@ -92,3 +93,18 @@ Mock.mock(/\/api\/publish\/site/, 'post', req => {
 })
 
 Mock.mock(/\/api\/sites/, 'get', {errcode: 0, data: siteList})
+
+Mock.mock(/\/api\/site/, 'get', req => {
+  const params = getQueryParameters(req)
+
+  if (params && params.id) {
+    const data = siteList.find(d => d.id === params.id)
+    if (data) {
+      return {errcode: 0, data: data}
+    } else {
+      return {errcode: 102, errmsg: 'this site is not exist'}
+    }
+  } else {
+    return {errcode: 101, errmsg: 'param id is need'}
+  }
+})

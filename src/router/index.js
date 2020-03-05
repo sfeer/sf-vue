@@ -32,7 +32,7 @@ const routes = [
   },
 
   {
-    path: '/site',
+    path: '/sites',
     component: () => import(/* webpackChunkName: "site" */ '../views/site/List')
   },
   {

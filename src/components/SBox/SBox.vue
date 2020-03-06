@@ -2,23 +2,26 @@
   <div class="sbox-view" @mousemove="handleDrag" @mouseup="handleDragEnd">
     <div class="boxs">
       <div
-          v-for="box in showBoxs"
-          :key="box.id"
-          :class="['box', {active:cBox===box.id}]"
-          :style="boxStyle(box)"
-          @click="boxClick(box)">
-        <a-button v-if="isDesignMode && cBox===box.id" type="dashed" icon="plus" class="box-add">添加</a-button>
-        <div v-else-if="isViewMode">111</div>
+        v-for="box in showBoxs"
+        :key="box.id"
+        :class="['box', {active:cBox===box.id}]"
+        :style="boxStyle(box)"
+        @click="boxClick(box)">
+        <div v-if="isDesignMode" class="box-inner">
+          <a-button v-if="cBox===box.id" type="dashed" icon="plus" class="box-add">添加</a-button>
+        </div>
+<!--        <component v-else-if="isViewMode && box.component" :is="box.component.name"/>-->
+        <component v-else-if="isViewMode" :is="'Aa'"/>
       </div>
     </div>
     <div class="lines" v-if="isDesignMode">
       <div
-          v-for="line in showLines"
-          :key="line.id"
-          :class="['line', {active:cLine===line.id}, 'line-'+line.way]"
-          :style="lineStyle(line)"
-          @click="lineClick(line)"
-          @mousedown.prevent="lineDragStart(line.id)"></div>
+        v-for="line in showLines"
+        :key="line.id"
+        :class="['line', {active:cLine===line.id}, 'line-'+line.way]"
+        :style="lineStyle(line)"
+        @click="lineClick(line)"
+        @mousedown.prevent="lineDragStart(line.id)"></div>
     </div>
   </div>
 </template>
@@ -32,7 +35,7 @@
         root: null,
         cBox: null, // 当前选中区域
         dragLine: false,
-        cLine: null, // 当前选中分割线
+        cLine: null // 当前选中分割线
       }
     },
 
@@ -109,6 +112,11 @@
     },
 
     methods: {
+      // 加载小组件
+      loadComponents() {
+
+      },
+
       // 改变根节点大小
       resizeRoot(w, h) {
         const root = this.boxMap[this.root]
@@ -122,7 +130,8 @@
           top: box.y + 'px',
           left: box.x + 'px',
           width: box.w + 'px',
-          height: box.h + 'px'
+          height: box.h + 'px',
+          padding: this.padding / 2 + 'px'
         }
       },
 
@@ -157,12 +166,12 @@
             const cc = this.boxs.filter(b => b.parent === box.id).sort((a, b) => a.x - b.x)
             cc[0].x = box.x
             cc[0].y = box.y
-            cc[0].w = vv - p
+            cc[0].w = vv
             cc[0].h = box.h
             this.resizeBox(cc[0])
-            cc[1].x = box.x + vv + p
+            cc[1].x = box.x + vv
             cc[1].y = box.y
-            cc[1].w = box.w - vv - p
+            cc[1].w = box.w - vv
             cc[1].h = box.h
             this.resizeBox(cc[1])
           } else if (line.way === 'h') {
@@ -175,12 +184,12 @@
             cc[0].x = box.x
             cc[0].y = box.y
             cc[0].w = box.w
-            cc[0].h = vv - p
+            cc[0].h = vv
             this.resizeBox(cc[0])
             cc[1].x = box.x
-            cc[1].y = box.y + vv + p
+            cc[1].y = box.y + vv
             cc[1].w = box.w
-            cc[1].h = box.h - vv - p
+            cc[1].h = box.h - vv
             this.resizeBox(cc[1])
           }
         }
@@ -258,15 +267,15 @@
           x: pp.x,
           y: pp.y,
           w: pp.w,
-          h: hh - this.padding / 2,
+          h: hh,
           parent: pp.id
         }
         const box2 = {
           id: uuid().replace(/-/g, ''),
           x: pp.x,
-          y: pp.y + hh + this.padding / 2,
+          y: pp.y + hh,
           w: pp.w,
-          h: pp.h - hh - this.padding / 2,
+          h: pp.h - hh,
           parent: pp.id
         }
         this.boxs.push(box1, box2)
@@ -292,15 +301,15 @@
           id: uuid().replace(/-/g, ''),
           x: pp.x,
           y: pp.y,
-          w: vv - this.padding / 2,
+          w: vv,
           h: pp.h,
           parent: pp.id
         }
         const box2 = {
           id: uuid().replace(/-/g, ''),
-          x: pp.x + vv + this.padding / 2,
+          x: pp.x + vv,
           y: pp.y,
-          w: pp.w - vv - this.padding / 2,
+          w: pp.w - vv,
           h: pp.h,
           parent: pp.id
         }
@@ -416,6 +425,11 @@
 
     .box {
       position: absolute;
+    }
+
+    .box-inner {
+      width: 100%;
+      height: 100%;
       background: white;
       border-radius: 10px;
       box-shadow: 0 0 5px 5px rgba(240, 240, 240, 1);

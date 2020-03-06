@@ -1,15 +1,7 @@
 <template>
   <div class="sbox-wrapper">
     <div class="sbox-tools">
-      <a-tabs type="card" default-active-key="file">
-        <a-tab-pane tab="文件" key="file">
-          <a-button type="primary" class="tool" @click="addSbox">新建</a-button>
-          <a-button type="primary" class="tool" @click="save">保存</a-button>
-          <a-button type="primary" class="tool" @click="read">读取</a-button>
-          <a-button type="primary" class="tool">另存为</a-button>
-          <a-button type="primary" class="tool">重置</a-button>
-          <a-button type="primary" class="tool">打印</a-button>
-        </a-tab-pane>
+      <a-tabs type="card" default-active-key="edit">
         <a-tab-pane tab="编辑" key="edit">
           <a-row type="flex" align="middle" :gutter="16">
             <a-col :span="16">

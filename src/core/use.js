@@ -10,6 +10,9 @@ import SFlow from '../components/SFlow/SFlow'
 import 'vue-resize/dist/vue-resize.css'
 import VueResize from 'vue-resize'
 
+// 自定义网站组件
+import '../views/site/box'
+
 Vue.use(MultiTab)
 Vue.use(VueResize)
 Vue.component(SFlow.name, SFlow)

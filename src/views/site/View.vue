@@ -21,7 +21,11 @@
       console.log('site id', this.siteId)
       // 获取boxs
       getSite(this.siteId).then(d => {
-        this.boxs = d.boxs
+        if (d.errcode === 0) {
+          this.boxs = d.data.boxs
+        } else {
+          this.$message.error(d.errmsg)
+        }
       })
     }
   }

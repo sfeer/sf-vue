@@ -7,12 +7,7 @@ const service = axios.create({
 })
 
 service.interceptors.response.use(res=>{
-  const d = res.data
-  if (d.errcode === 0) {
-    return d.data
-  } else {
-    // TODO 指定错误码进行操作，注销并跳到错误页面
-  }
+  return res.data
 })
 
 const installer = {

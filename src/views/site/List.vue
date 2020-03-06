@@ -53,7 +53,7 @@
       loadData() {
         this.loading = true
         getSiteList().then(d => {
-          this.data = d
+          this.data = d.data
           this.loading = false
         })
       },

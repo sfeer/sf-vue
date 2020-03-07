@@ -9,7 +9,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "site" */ '../views/site/List')
   },
   {
-    path: '/site/design',
+    path: '/init',
+    component: () => import(/* webpackChunkName: "site" */ '../views/site/Init')
+  },
+  {
+    path: '/design/:sid',
     component: () => import(/* webpackChunkName: "site" */ '../views/site/Design')
   },
   {

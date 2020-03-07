@@ -5,14 +5,12 @@
           class="btn"
           type="primary"
           icon="plus"
-          @click="add"
-      >新增
+          @click="add">新增
       </a-button>
       <a-button
           class="btn"
           type="danger"
-          icon="like"
-      >优秀作品
+          icon="like">优秀作品
       </a-button>
     </div>
     <div class="main-content">
@@ -22,8 +20,7 @@
           :rowKey="d=>d.id"
           :dataSource="data"
           :pagination="false"
-          :loading="loading"
-      />
+          :loading="loading"/>
     </div>
   </div>
 </template>
@@ -59,7 +56,7 @@
       },
 
       add() {
-        const routeUrl = this.$router.resolve('/site/design')
+        const routeUrl = this.$router.resolve('/init')
         window.open(routeUrl.href, '_blank')
       }
     }

@@ -2,7 +2,7 @@
   <div class="design-wrapper">
     <div class="design-header">
       <a-button icon="left" type="link"/>
-      <a-input class="title-input" v-show="editTitle" v-model="siteName" @blur="titleInputBlur"></a-input>
+      <a-input ref="title" class="title-input" v-show="editTitle" v-model="siteName" @blur="titleInputBlur"></a-input>
       <div class="title" v-show="!editTitle" @click="clickTitle">{{siteName}}</div>
       <div class="blank"></div>
       <a-dropdown :trigger="['click']">
@@ -23,7 +23,7 @@
           <a-menu-item key="4">发布</a-menu-item>
           <a-menu-item key="5">生成图片</a-menu-item>
           <a-menu-divider/>
-          <a-menu-item key="6">重命名</a-menu-item>
+          <a-menu-item key="6" @click="rename">重命名</a-menu-item>
           <a-menu-item key="7">打印</a-menu-item>
         </a-menu>
       </a-dropdown>
@@ -44,20 +44,25 @@
         <span class="dropdown-title">工具</span>
         <a-menu slot="overlay">
           <a-menu-item key="1">调试</a-menu-item>
-          <a-menu-item key="2">测试</a-menu-item>
+          <a-menu-item key="2" @click="test">测试</a-menu-item>
           <a-menu-divider/>
           <a-menu-item key="3">浏览</a-menu-item>
         </a-menu>
       </a-dropdown>
     </div>
     <div class="design-tools">
-      <a-button class="button" size="large" icon="left-circle" type="link" title="撤回"/>
-      <a-button class="button" size="large" icon="right-circle" type="link" title="重做"/>
-      <!-- 分割 -->
-      <a-button class="button" size="large" icon="border-verticle" type="link" title="水平分割"/>
-      <a-button class="button" size="large" icon="border-horizontal" type="link" title="垂直分割"/>
-      <a-button class="button" size="large" icon="plus-circle" type="link" title="插入区域"/>
-      <a-button class="button" size="large" icon="minus-circle" type="link" title="删除区域"/>
+      <a-button-group class="group">
+        <a-button icon="left">撤销</a-button>
+        <a-button icon="right">重做</a-button>
+      </a-button-group>
+      <a-button-group class="group">
+        <a-button icon="border-verticle" @click="hh">水平分割</a-button>
+        <a-button icon="border-horizontal" @click="vv">垂直分割</a-button>
+      </a-button-group>
+      <a-button-group class="group">
+        <a-button icon="plus" @click="add">插入区域</a-button>
+        <a-button icon="minus" @click="remove">删除区域</a-button>
+      </a-button-group>
     </div>
     <!--
     <div class="sbox-tools">
@@ -92,42 +97,28 @@
       </a-tabs>
     </div>
     -->
-    <div ref="main" class="sbox-main" :style="{height:mHeight + 'px'}">
+    <div ref="main" class="sbox-main" :style="{height:mHeight + 'px',margin:'30px 0'}">
       <s-box
-        ref="sbox"
-        :boxs="boxs"
-        @lineMove="lineMove"
-        @lineClick="lineClick"/>
+          ref="sbox"
+          :boxs="boxs"
+          @lineMove="lineMove"
+          @lineClick="lineClick"/>
       <resize-observer @notify="handleResize"/>
     </div>
-    <a-modal class="sbox-modal" :width="960" v-model="newModalVisible" :closable="false" :footer="null">
-      <template v-if="historys.length>0">
-        <div class="row-title">最近打开</div>
-        <div class="row">
-          <div class="item" v-for="t in historys" :key="t.id" @click="templateClick(t)">
-            <div class="item-title">{{t.name}}</div>
-            <img :src="t.img" :alt="t.name">
-          </div>
-        </div>
-      </template>
-      <div class="row-title">常用</div>
-      <div class="row">
-        <div class="item" v-for="t in templates" :key="t.id">
-          <img :src="t.img" :alt="t.name">
-          <div class="item-title">{{t.name}}</div>
-        </div>
-      </div>
-    </a-modal>
-    <a-modal class="sbox-modal" :width="920" v-model="debugModalVisible" :closable="false" :footer="null">
+    <a-drawer
+        :title="sidebarTitle"
+        placement="right"
+        :closable="false"
+        :visible="sidebarVisible">
       <pre>{{boxs}}</pre>
-    </a-modal>
+    </a-drawer>
   </div>
 </template>
 
 <script>
   import SBox from '../../components/SBox/SBox'
   import {getSite, getTemplateList, publishSite} from '../../api/site'
-  import {Menu, Dropdown, Slider} from 'ant-design-vue'
+  import {Menu, Dropdown, Slider, Drawer} from 'ant-design-vue'
 
   export default {
     data() {
@@ -137,20 +128,18 @@
 
         editTitle: false,
 
+        sidebarTitle: '',
+        sidebarVisible: false,
+
         mHeight: 650,
         splitValue: 0,
-        boxs: [],
-        saveJson: '',
-
-        templates: [],
-        historys: [],
-        newModalVisible: false,
-        debugModalVisible: false
+        boxs: []
       }
     },
 
     components: {
       SBox,
+      [Drawer.name]: Drawer,
       [Dropdown.name]: Dropdown,
       [Menu.name]: Menu,
       [Menu.Item.name]: Menu.Item,
@@ -191,8 +180,16 @@
       },
 
       test() {
-        this.debugModalVisible = true
-        console.log(this.boxs)
+        this.sidebarTitle = '测试功能'
+        this.sidebarVisible = true
+      },
+
+      rename() {
+        this.editTitle = true
+        this.$nextTick(() => {
+          this.$refs.title.focus()
+          this.$refs.title.select()
+        })
       },
 
       hh() {
@@ -206,29 +203,6 @@
       add() {
         this.$refs.sbox.addRow()
         this.mHeight = this.boxs.find(b => b.parent === undefined).h
-      },
-
-      save() {
-        this.saveJson = JSON.stringify(this.boxs)
-        console.log("TCL: save -> json", this.saveJson)
-        console.log(this.boxs)
-      },
-
-      read() {
-        console.log(JSON.parse(this.saveJson))
-      },
-
-      // 新建布局
-      addSbox() {
-        this.newModalVisible = true
-        getTemplateList().then(d => {
-          this.templates = d
-        })
-      },
-
-      templateClick(template) {
-        this.boxs = template.data
-        this.newModalVisible = false
       },
 
       remove() {
@@ -265,6 +239,9 @@
       // 编辑标题
       clickTitle() {
         this.editTitle = true
+        this.$nextTick(() => {
+          this.$refs.title.focus()
+        })
       }
     }
   }
@@ -313,13 +290,10 @@
   }
 
   .design-tools {
-    padding: 3px;
-    height: 40px;
-    margin-bottom: 30px;
+    padding: 10px 5px;
     display: flex;
-    justify-content: center;
 
-    .button {
+    .group {
       margin: 0 5px;
     }
   }

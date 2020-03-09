@@ -28,5 +28,5 @@ export function getTemplate(id) {
 
 // 根据模版创建站点
 export function initSite(template) {
-  return axios.get('/init/site', template)
+  return axios.post('/init/site', template)
 }

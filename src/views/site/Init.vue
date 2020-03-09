@@ -5,10 +5,10 @@
       <div class="row-title">{{group.name}}</div>
       <div class="row">
         <div
-            class="item"
-            v-for="temp in group.templates"
-            :key="temp.id"
-            @click="selectTemplate(temp)">
+          class="item"
+          v-for="temp in group.templates"
+          :key="temp.id"
+          @click="selectTemplate(temp)">
           <img :src="temp.img" :alt="temp.name">
           <div class="item-title">{{temp.name}}</div>
         </div>
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-  import {getTemplateList} from '../../api/site'
+  import {getTemplateList, initSite} from '../../api/site'
 
   export default {
     data() {
@@ -38,7 +38,6 @@
             groups.push({name: temp.group, templates: [temp]})
           }
         })
-        console.log(11122, groups)
         return groups
       }
     },
@@ -51,7 +50,13 @@
 
     methods: {
       selectTemplate(temp) {
-        // TODO 使用选定的模版新建网页，并切换到新建网页的设计模式
+        initSite(temp).then(d=>{
+          if (d.errcode === 0) {
+            this.$router.push('/design/' + d.data)
+          } else {
+            this.$error(d.errmsg)
+          }
+        })
       }
     }
   }
@@ -69,9 +74,11 @@
 
   .item {
     margin: 0 10px;
+    cursor: pointer;
   }
 
   .item-title {
     margin: 8px 0;
+    font-size: 1rem;
   }
 </style>

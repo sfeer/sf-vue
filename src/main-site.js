@@ -4,7 +4,7 @@ import router from './router/site'
 import store from './store'
 import { VueAxios } from './utils/request'
 
-import './core/use' // 全局引入
+import './core/use-site' // 全局引入
 import './mock' // 模拟数据
 
 Vue.config.productionTip = false

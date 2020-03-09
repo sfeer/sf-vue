@@ -20,3 +20,13 @@ export function getSiteList() {
 export function getSite(id) {
   return axios.get('/site', {params: {id: id}})
 }
+
+// 获取模版
+export function getTemplate(id) {
+  return axios.get('/template', {params: {id: id}})
+}
+
+// 根据模版创建站点
+export function initSite(template) {
+  return axios.get('/init/site', template)
+}

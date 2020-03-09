@@ -5,16 +5,15 @@
           class="btn"
           type="primary"
           icon="plus"
-          @click="add">新增
-      </a-button>
-      <a-button
-          class="btn"
-          type="danger"
-          icon="like">优秀作品
-      </a-button>
+          size="large"
+          @click="add">新增</a-button>
+      <a-button class="btn" size="large">北京门户</a-button>
+      <a-button class="btn" size="large">山东门户</a-button>
+      <a-button class="btn" size="large">海南门户</a-button>
+      <a-button class="btn" size="large">深圳门户</a-button>
     </div>
     <div class="main-content">
-      <a-input-search placeholder="搜索标题" style="width:200px;margin-bottom:20px"/>
+      <a-input-search placeholder="搜索标题" style="width:300px;margin-bottom:20px" size="large"/>
       <a-table
           :columns="columns"
           :rowKey="d=>d.id"
@@ -69,7 +68,7 @@
     height: 100vh;
 
     .side-bar {
-      width: 200px;
+      width: 250px;
       border-right: 1px solid #ddd;
       padding: 20px;
 

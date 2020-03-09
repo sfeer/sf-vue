@@ -51,13 +51,13 @@
       </a-dropdown>
     </div>
     <div class="design-tools">
-      <a-button class="button" icon="redo" type="link" title="撤回"/>
-      <a-button class="button" icon="undo" type="link" title="重做"/>
+      <a-button class="button" size="large" icon="left-circle" type="link" title="撤回"/>
+      <a-button class="button" size="large" icon="right-circle" type="link" title="重做"/>
       <!-- 分割 -->
-      <a-button class="button" icon="border-verticle" type="link" title="水平分割"/>
-      <a-button class="button" icon="border-horizontal" type="link" title="垂直分割"/>
-      <a-button class="button" icon="left" type="link" title="插入区域"/>
-      <a-button class="button" icon="left" type="link" title="删除区域"/>
+      <a-button class="button" size="large" icon="border-verticle" type="link" title="水平分割"/>
+      <a-button class="button" size="large" icon="border-horizontal" type="link" title="垂直分割"/>
+      <a-button class="button" size="large" icon="plus-circle" type="link" title="插入区域"/>
+      <a-button class="button" size="large" icon="minus-circle" type="link" title="删除区域"/>
     </div>
     <!--
     <div class="sbox-tools">

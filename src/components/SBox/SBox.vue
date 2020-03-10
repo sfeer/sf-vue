@@ -240,22 +240,8 @@
 
       // 主面板拖拽结束事件
       handleDragEnd() {
+        this.cLine = null
         this.dragLine = false
-      },
-
-      // 调整当前节点的分割值
-      splitBox(v) {
-        const box = this.boxMap[this.cLine], line = box.line
-        if (line.way === 'v') {
-          line.pc = v
-          line.value = Math.round(box.w * v / 100)
-          line.x = box.x + line.value - this.padding / 2
-        } else if (line.way === 'h') {
-          line.pc = v
-          line.value = Math.round(box.h * v / 100)
-          line.y = box.y + line.value - this.padding / 2
-        }
-        this.resizeBox(box)
       },
 
       // 对当前节点进行水平分割

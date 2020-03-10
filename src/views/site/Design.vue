@@ -68,54 +68,21 @@
         <a-button icon="delete" @click="remove" title="删除区域"/>
       </a-button-group>
     </div>
-    <!--
-    <div class="sbox-tools">
-      <a-tabs type="card" default-active-key="edit">
-        <a-tab-pane tab="编辑" key="edit">
-          <a-row type="flex" align="middle" :gutter="16">
-            <a-col :span="16">
-              <a-button type="primary" class="tool" @click="hh">水平分割</a-button>
-              <a-button type="primary" class="tool" @click="vv">垂直分割</a-button>
-              <a-button type="primary" class="tool" @click="add">新增</a-button>
-              <a-button type="primary" class="tool" @click="remove">删除</a-button>
-            </a-col>
-            <a-col :span="6">
-              <a-slider v-model="splitValue" @change="splitChange" :tipFormatter="v=>`${v}%`"/>
-            </a-col>
-            <a-col :span="2">占比：{{splitValue}}%</a-col>
-          </a-row>
-        </a-tab-pane>
-        <a-tab-pane tab="更多" key="more">
-          <a-row type="flex" align="middle" :gutter="16">
-            <a-col :span="16">
-              <a-button type="primary" class="tool" @click="test">测试</a-button>
-              <a-button type="primary" class="tool">调试</a-button>
-              <a-button type="primary" class="tool" @click="publish">发布</a-button>
-            </a-col>
-            <a-col :span="2">画布高度：</a-col>
-            <a-col :span="6">
-              <a-input v-model="mHeight"/>
-            </a-col>
-          </a-row>
-        </a-tab-pane>
-      </a-tabs>
-    </div>
-    -->
     <div ref="main" class="sbox-main" :style="{height:mHeight + 'px',margin:'30px 0'}">
       <s-box
-        ref="sbox"
-        :boxs="boxs"
-        @lineMove="lineMove"
-        @lineClick="lineClick"
-        @updated="mainUpdated"/>
+          ref="sbox"
+          :boxs="boxs"
+          @lineMove="lineMove"
+          @lineClick="lineClick"
+          @updated="mainUpdated"/>
       <resize-observer @notify="handleResize"/>
     </div>
 
     <a-drawer
-      :title="sidebarTitle"
-      placement="right"
-      :closable="false"
-      :visible="sidebarVisible">
+        :title="sidebarTitle"
+        placement="right"
+        :closable="false"
+        :visible="sidebarVisible">
       <template v-if="sidebarTitle==='历史记录'">
         <!-- todo 历史列表 -->
       </template>
@@ -128,7 +95,9 @@
   import SBox from '../../components/SBox/SBox'
   import {getSite, publishSite, saveSite} from '../../api/site'
   import {Menu, Dropdown, Slider, Drawer} from 'ant-design-vue'
-  import {debounce} from '../../utils/util'
+
+  // TODO 工具栏添加分割百分比调节器，选择组件按钮，设置画布总高度按钮
+  // TODO 历史记录
 
   export default {
     data() {
@@ -187,15 +156,16 @@
 
     methods: {
       // 画布更新（防抖）
-      mainUpdated: debounce(function () {
-        // 自动保存
-        console.log('自动保存', this.siteName, this.boxs)
-        saveSite({
-          id: this.siteId,
-          name: this.siteName,
-          boxs: this.boxs
-        })
-      }, 800),
+      mainUpdated() {
+        this.mainTimeout && clearTimeout(this.mainTimeout)
+        this.mainTimeout = setTimeout(() => {
+          saveSite({
+            id: this.siteId,
+            name: this.siteName,
+            boxs: this.boxs
+          })
+        }, 800)
+      },
 
       handleResize() {
         const main = this.$refs.main
@@ -238,10 +208,6 @@
 
       lineClick(line) {
         this.splitValue = Math.round(line.pc)
-      },
-
-      splitChange(v) {
-        this.$refs.sbox.splitBox(v)
       },
 
       // 发布

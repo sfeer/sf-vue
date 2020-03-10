@@ -4,6 +4,7 @@
       <a-button icon="left" type="link"/>
       <a-input ref="title" class="title-input" v-show="editTitle" v-model="siteName" @blur="titleInputBlur"></a-input>
       <div class="title" v-show="!editTitle" @click="clickTitle">{{siteName}}</div>
+      <div class="auto-save-text">{{autoSaveText}}</div>
       <div class="blank"></div>
       <a-dropdown :trigger="['click']">
         <span class="dropdown-title">文件</span>
@@ -23,8 +24,9 @@
           <a-menu-item key="4">发布</a-menu-item>
           <a-menu-item key="5">生成图片</a-menu-item>
           <a-menu-divider/>
-          <a-menu-item key="6" @click="rename">重命名</a-menu-item>
-          <a-menu-item key="7">打印</a-menu-item>
+          <a-menu-item key="6" @click="showSidebar('历史记录')">历史记录</a-menu-item>
+          <a-menu-item key="7" @click="rename">重命名</a-menu-item>
+          <a-menu-item key="8">打印</a-menu-item>
         </a-menu>
       </a-dropdown>
       <a-dropdown :trigger="['click']">
@@ -38,13 +40,15 @@
           <a-menu-divider/>
           <a-menu-item key="5">插入区域</a-menu-item>
           <a-menu-item key="6">删除区域</a-menu-item>
+          <a-menu-divider/>
+          <a-menu-item key="8" @click="clearMain">清空</a-menu-item>
         </a-menu>
       </a-dropdown>
-      <a-dropdown :trigger="['click']" style="margin-right:50px">
+      <a-dropdown :trigger="['click']">
         <span class="dropdown-title">工具</span>
         <a-menu slot="overlay">
           <a-menu-item key="1">调试</a-menu-item>
-          <a-menu-item key="2" @click="test">测试</a-menu-item>
+          <a-menu-item key="2" @click="showSidebar('测试')">测试</a-menu-item>
           <a-menu-divider/>
           <a-menu-item key="3">浏览</a-menu-item>
         </a-menu>
@@ -52,16 +56,16 @@
     </div>
     <div class="design-tools">
       <a-button-group class="group">
-        <a-button icon="left">撤销</a-button>
-        <a-button icon="right">重做</a-button>
+        <a-button icon="left" title="撤销"></a-button>
+        <a-button icon="right" title="重做"></a-button>
       </a-button-group>
       <a-button-group class="group">
-        <a-button icon="border-verticle" @click="hh">水平分割</a-button>
-        <a-button icon="border-horizontal" @click="vv">垂直分割</a-button>
+        <a-button icon="border-verticle" @click="hh" title="水平分割"/>
+        <a-button icon="border-horizontal" @click="vv" title="垂直分割"/>
       </a-button-group>
       <a-button-group class="group">
-        <a-button icon="plus" @click="add">插入区域</a-button>
-        <a-button icon="minus" @click="remove">删除区域</a-button>
+        <a-button icon="plus-square" @click="add" title="插入区域"/>
+        <a-button icon="delete" @click="remove" title="删除区域"/>
       </a-button-group>
     </div>
     <!--
@@ -99,39 +103,49 @@
     -->
     <div ref="main" class="sbox-main" :style="{height:mHeight + 'px',margin:'30px 0'}">
       <s-box
-          ref="sbox"
-          :boxs="boxs"
-          @lineMove="lineMove"
-          @lineClick="lineClick"/>
+        ref="sbox"
+        :boxs="boxs"
+        @lineMove="lineMove"
+        @lineClick="lineClick"
+        @updated="mainUpdated"/>
       <resize-observer @notify="handleResize"/>
     </div>
+
     <a-drawer
-        :title="sidebarTitle"
-        placement="right"
-        :closable="false"
-        :visible="sidebarVisible">
-      <pre>{{boxs}}</pre>
+      :title="sidebarTitle"
+      placement="right"
+      :closable="false"
+      :visible="sidebarVisible">
+      <template v-if="sidebarTitle==='历史记录'">
+        <!-- todo 历史列表 -->
+      </template>
+      <pre v-else-if="sidebarTitle==='测试'">{{boxs}}</pre>
     </a-drawer>
   </div>
 </template>
 
 <script>
   import SBox from '../../components/SBox/SBox'
-  import {getSite, getTemplateList, publishSite} from '../../api/site'
+  import {getSite, publishSite, saveSite} from '../../api/site'
   import {Menu, Dropdown, Slider, Drawer} from 'ant-design-vue'
+  import {debounce} from '../../utils/util'
 
   export default {
     data() {
       return {
-        siteId: '',
+        siteId: this.$route.params.sid,
         siteName: '无标题',
 
         editTitle: false,
 
-        sidebarTitle: '',
+        autoSaveText: '',
+
+        sidebarTitle: '功能栏',
         sidebarVisible: false,
 
         mHeight: 650,
+        mHeightVisible: false,
+
         splitValue: 0,
         boxs: []
       }
@@ -149,14 +163,12 @@
     },
 
     created() {
-      const sid = this.$route.params.sid
-      if (sid) {
-        getSite(sid).then(res => {
+      if (this.siteId) {
+        getSite(this.siteId).then(res => {
           if (res.errcode === 0) {
             const d = res.data
-            this.siteId = d.id
             this.siteName = d.name
-            this.boxs = d.data
+            this.boxs = d.boxs
           } else {
             this.$message.error(res.errmsg)
           }
@@ -174,13 +186,24 @@
     },
 
     methods: {
+      // 画布更新（防抖）
+      mainUpdated: debounce(function () {
+        // 自动保存
+        console.log('自动保存', this.siteName, this.boxs)
+        saveSite({
+          id: this.siteId,
+          name: this.siteName,
+          boxs: this.boxs
+        })
+      }, 800),
+
       handleResize() {
         const main = this.$refs.main
         this.$refs.sbox.resizeRoot(main.clientWidth, main.clientHeight)
       },
 
-      test() {
-        this.sidebarTitle = '测试功能'
+      showSidebar(title) {
+        this.sidebarTitle = title
         this.sidebarVisible = true
       },
 
@@ -223,11 +246,9 @@
 
       // 发布
       publish() {
-        // TODO 使用Drawer抽屉组件
         publishSite({
           id: this.siteId,
           name: this.siteName,
-          boxs: this.boxs
         })
       },
 
@@ -242,6 +263,11 @@
         this.$nextTick(() => {
           this.$refs.title.focus()
         })
+      },
+
+      // 清空画布
+      clearMain() {
+        this.boxs = []
       }
     }
   }

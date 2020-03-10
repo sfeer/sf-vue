@@ -10,7 +10,7 @@
         <div v-if="isDesignMode" class="box-inner">
           <a-button v-if="cBox===box.id" type="dashed" icon="plus" class="box-add">添加</a-button>
         </div>
-<!--        <component v-else-if="isViewMode && box.component" :is="box.component.name"/>-->
+        <!--        <component v-else-if="isViewMode && box.component" :is="box.component.name"/>-->
         <component v-else-if="isViewMode" :is="'Aa'"/>
       </div>
     </div>
@@ -94,35 +94,34 @@
       }
     },
 
-    mounted() {
-      if (this.boxs.length === 0) {
-        this.root = uuid().replace(/-/g, '')
-        this.boxs.push({
-          id: this.root,
-          x: 0,
-          y: 0,
-          w: this.$el.clientWidth,
-          h: this.$el.clientHeight
-        })
-        this.cBox = this.root
-
-      } else {
-        // TODO 初始化有值时需要找到root并设置当前选择的box
+    watch: {
+      boxs(v, o) {
+        // 初始化的时候
+        if (v.length > 0 && o.length === 0) {
+          this.initBoxs(v)
+        }
       }
     },
 
     methods: {
-      // 加载小组件
-      loadComponents() {
-
+      // 初始化数据
+      initBoxs() {
+        if (this.boxs && this.boxs.length > 0) {
+          this.root = this.boxs.find(d => d.parent === undefined).id
+          this.resizeRoot(this.$el.clientWidth, this.$el.clientHeight)
+          this.cBox = this.boxs.find(d => d.line === undefined).id
+        }
       },
 
       // 改变根节点大小
       resizeRoot(w, h) {
-        const root = this.boxMap[this.root]
-        root.w = w
-        root.h = h
-        this.resizeBox(root)
+        if (this.root) {
+          const root = this.boxMap[this.root]
+          root.w = w
+          root.h = h
+          this.resizeBox(root)
+          this.$emit('updated')
+        }
       },
 
       boxStyle(box) {
@@ -235,6 +234,7 @@
           }
 
           this.resizeBox(box)
+          this.$emit('updated')
         }
       },
 
@@ -395,6 +395,8 @@
           this.boxs.splice(this.boxs.findIndex(b => b.id === box.id), 1)
           this.boxs.splice(this.boxs.findIndex(b => b.id === parent.id), 1)
           this.cBox = next.id
+
+          this.$emit('updated')
         }
       }
     }

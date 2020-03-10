@@ -11,6 +11,11 @@ export function publishSite(site) {
   return axios.post('/publish/site', site)
 }
 
+// 保存站点
+export function saveSite(site) {
+  return axios.post('/save/site', site)
+}
+
 // 获取站点列表
 export function getSiteList() {
   return axios.get('/sites')

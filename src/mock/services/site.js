@@ -1,12 +1,15 @@
 import Mock from 'mockjs'
 import Vue from 'vue'
 import {getQueryParameters} from '../../utils/util'
+import {v4 as uuid} from "uuid";
 
 const Random = Mock.Random
+
+// 常用模版
 const templateList = [
   {
     id: Random.increment(), name: '空白', group: '常用', img: Random.dataImage('250x180'),
-    data: [
+    boxs: [
       {
         "id": "a2cbbcccb4a0456ebd5779ec7f69cda5",
         "x": 0,
@@ -87,39 +90,18 @@ const templateList = [
 
 const siteList = Vue.ls.get('sites') || []
 
+// 模版列表
 Mock.mock(/\/api\/templates/, 'get', {errcode: 0, data: templateList})
 
+// 发布站点
 Mock.mock(/\/api\/publish\/site/, 'post', req => {
-  const sites = Vue.ls.get('sites') || []
-  sites.push({...JSON.parse(req.body), status: 'publish'})
-  Vue.ls.set('sites', sites)
-  return {errcode: 0, errmsg: 'published'}
-})
-
-Mock.mock(/\/api\/sites/, 'get', {errcode: 0, data: siteList})
-
-Mock.mock(/\/api\/template/, 'get', req => {
   const params = getQueryParameters(req)
-
   if (params && params.id) {
-    const data = templateList.find(d => d.id === params.id)
-    if (data) {
-      return {errcode: 0, data: data}
-    } else {
-      return {errcode: 102, errmsg: 'this template is not exist'}
-    }
-  } else {
-    return {errcode: 101, errmsg: 'param id is need'}
-  }
-})
-
-Mock.mock(/\/api\/site/, 'get', req => {
-  const params = getQueryParameters(req)
-
-  if (params && params.id) {
-    const data = siteList.find(d => d.id === params.id)
-    if (data) {
-      return {errcode: 0, data: data}
+    const site = siteList.find(d => d.id === params.id)
+    if (site) {
+      site.status = 'publish'
+      Vue.ls.set('sites', siteList)
+      return {errcode: 0, data: 'published'}
     } else {
       return {errcode: 102, errmsg: 'this site is not exist'}
     }
@@ -128,15 +110,62 @@ Mock.mock(/\/api\/site/, 'get', req => {
   }
 })
 
-Mock.mock(/\/api\/init\/site/, 'post', req=> {
-  const sites = Vue.ls.get('sites') || []
+// 保存站点
+Mock.mock(/\/api\/save\/site/, 'post', req => {
+  const site = JSON.parse(req.body)
+  const temp = siteList.find(d => d.id === site.id)
+  temp.name = site.name
+  temp.utime = new Date().getTime()
+  Vue.ls.set('sites', siteList)
+  Vue.ls.set('site-' + site.id, site.boxs)
+  return {errcode: 0, errmsg: 'saved'}
+})
+
+// 获取站点列表
+Mock.mock(/\/api\/sites/, 'get', {errcode: 0, data: Vue.ls.get('sites') || []})
+
+// 获取模版详情
+Mock.mock(/\/api\/template/, 'get', req => {
+  const params = getQueryParameters(req)
+  if (params && params.id) {
+    const data = templateList.find(d => d.id === params.id)
+    if (data) {
+      return {errcode: 0, data: data}
+    } else {
+      return {errcode: 103, errmsg: 'this template is not exist'}
+    }
+  } else {
+    return {errcode: 101, errmsg: 'param id is need'}
+  }
+})
+
+// 获取站点详情
+Mock.mock(/\/api\/site/, 'get', req => {
+  const params = getQueryParameters(req)
+  if (params && params.id) {
+    const site = siteList.find(d => d.id === params.id)
+    if (site) {
+      site.boxs = Vue.ls.get('site-' + site.id) || []
+      return {errcode: 0, data: site}
+    } else {
+      return {errcode: 102, errmsg: 'this site is not exist'}
+    }
+  } else {
+    return {errcode: 101, errmsg: 'param id is need'}
+  }
+})
+
+// 站点初始化
+Mock.mock(/\/api\/init\/site/, 'post', req => {
   const template = JSON.parse(req.body)
-  const sid = Random.id()
-  sites.push({
+  const sid = Random.uuid().replace(/-/g, '')
+  siteList.push({
     id: sid,
     name: template.name,
-    data: template.data
+    utime: new Date().getTime(),
+    ctime: new Date().getTime()
   })
-  Vue.ls.set('sites', sites)
+  Vue.ls.set('sites', siteList)
+  Vue.ls.set('site-' + sid, template.boxs)
   return {errcode: 0, data: sid}
 })

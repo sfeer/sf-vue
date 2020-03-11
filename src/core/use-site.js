@@ -6,10 +6,9 @@ import VueResize from 'vue-resize'
 
 // 自定义网站组件
 import Aa from  '../views/site/box/Aa'
-import Bb from  '../views/site/box/Bb'
 
 Vue.component(Aa.name, Aa)
-Vue.component(Bb.name, Bb)
+Vue.component('Bb', ()=>import('../views/site/box/Bb'))
 
 Vue.use(VueResize)
 

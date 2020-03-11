@@ -103,6 +103,7 @@
         if (v.length > 0 && o.length === 0) {
           this.initBoxs(v)
         }
+        this.$emit('updated')
       }
     },
 
@@ -392,8 +393,6 @@
           this.boxs.splice(this.boxs.findIndex(b => b.id === box.id), 1)
           this.boxs.splice(this.boxs.findIndex(b => b.id === parent.id), 1)
           this.cBox = next.id
-
-          this.$emit('updated')
         }
       }
     }

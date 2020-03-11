@@ -3,7 +3,13 @@
 </template>
 
 <script>
+  console.log('bbbb', 'init')
+
   export default {
-    name: 'Bb'
+    name: 'Bb',
+
+    mounted() {
+      console.log('bbbb', 'mounted')
+    }
   }
 </script>

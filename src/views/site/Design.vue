@@ -55,38 +55,38 @@
       </a-dropdown>
     </div>
     <div class="design-tools">
-      <a-button-group class="group">
-        <a-button icon="left" title="撤销"></a-button>
-        <a-button icon="right" title="重做"></a-button>
+      <a-button-group class="group" style="margin-right: 20px">
+        <a-button>撤销</a-button>
+        <a-button>重做</a-button>
       </a-button-group>
-      <a-button-group class="group">
-        <a-button icon="border-verticle" @click="hh" title="水平分割"/>
-        <a-button icon="border-horizontal" @click="vv" title="垂直分割"/>
+
+      <a-button-group class="group" v-if="toolType==='box'">
+        <a-button @click="hh">水平分割</a-button>
+        <a-button @click="vv">垂直分割</a-button>
+        <a-button @click="showWidgets">选择组件</a-button>
       </a-button-group>
-      <a-button-group class="group">
-        <a-button icon="plus-square" @click="add" title="插入区域"/>
-        <a-button icon="delete" @click="remove" title="删除区域"/>
-      </a-button-group>
+
+      <div v-else-if="toolType==='line'" style="line-height: 32px">{{splitValue}}</div>
     </div>
     <div
-      ref="main"
-      class="design-main"
-      :style="{height:mHeight + 'px',margin:'30px 0'}">
+        ref="main"
+        class="design-main"
+        :style="{height:mHeight + 'px',margin:'30px 0'}">
       <s-box
-        ref="sbox"
-        :boxs="boxs"
-        @boxClick="boxClick"
-        @boxRightClick="boxRightClick"
-        @lineDown="lineDown"
-        @lineMove="lineMove"
-        @lineClick="lineClick"
-        @updated="mainUpdated"/>
+          ref="sbox"
+          :boxs="boxs"
+          @boxClick="boxClick"
+          @boxRightClick="boxRightClick"
+          @lineDown="lineDown"
+          @lineMove="lineMove"
+          @lineClick="lineClick"
+          @updated="mainUpdated"/>
       <resize-observer @notify="handleResize"/>
       <a-menu
-        class="content-menu"
-        :style="contentMenu"
-        v-show="contentMenuVisible"
-        :selectable="false">
+          class="content-menu"
+          :style="contentMenu"
+          v-show="contentMenuVisible"
+          :selectable="false">
         <a-menu-item key="1" @click="contentMenuHsplit">水平分割</a-menu-item>
         <a-menu-item key="2" @click="contentMenuVsplit">垂直分割</a-menu-item>
         <a-menu-divider/>
@@ -100,12 +100,13 @@
     </div>
 
     <a-drawer
-      :title="sidebarTitle"
-      placement="right"
-      :closable="false"
-      :visible="sidebarVisible">
+        :title="sidebarTitle"
+        placement="right"
+        :closable="false"
+        @close="sidebarClose"
+        :visible="sidebarVisible">
       <template v-if="sidebarTitle==='历史记录'">
-      <!-- todo 历史列表 -->
+        <!-- todo 历史列表 -->
       </template>
       <pre v-else-if="sidebarTitle==='测试'">{{boxs}}</pre>
     </a-drawer>
@@ -138,6 +139,8 @@
 
         splitValue: 0,
         boxs: [],
+
+        toolType: null,
 
         // 右键菜单样式
         contentMenu: {},
@@ -194,6 +197,7 @@
       },
 
       boxClick() {
+        this.toolType = 'box'
         this.contentMenuVisible = false
       },
 
@@ -210,6 +214,8 @@
             id: this.siteId,
             name: this.siteName,
             boxs: this.boxs
+          }).then(() => {
+            console.log('自动保存')
           })
         }, 800)
       },
@@ -266,6 +272,7 @@
       },
 
       lineDown() {
+        this.toolType = 'line'
         this.contentMenuVisible = false
       },
 
@@ -296,7 +303,17 @@
 
       // 清空画布
       clearMain() {
-        this.boxs = []
+        // TODO 调用sbox组件清空方法
+      },
+
+      // 显示小部件
+      showWidgets() {
+        this.sidebarVisible=true
+        this.sidebarTitle='选择组件'
+      },
+
+      sidebarClose() {
+        this.sidebarVisible=false
       }
     }
   }

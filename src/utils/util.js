@@ -37,3 +37,54 @@ export const getQueryParameters = (options) => {
   .replace(/&/g, '","')
   .replace(/=/g, '":"') + '"}')
 }
+
+/**
+ * datetimeFormat
+ * @desc 日期+时间格式化
+ *
+ * @param {number} time - 时间戳
+ *
+ * @return {string} yyyy-mm-dd HH:MM:ss
+ */
+export function datetimeFormat(time) {
+  const t = new Date(time);
+  const year = t.getFullYear();
+  const month = ('00' + (t.getMonth() + 1)).slice(-2);
+  const date = ('00' + t.getDate()).slice(-2);
+  const hour = ('00' + t.getHours()).slice(-2);
+  const minute = ('00' + t.getMinutes()).slice(-2);
+  const second = ('00' + t.getSeconds()).slice(-2);
+  return `${year}-${month}-${date} ${hour}:${minute}:${second}`;
+}
+
+/**
+ * dateFormat
+ * @desc 日期格式化
+ *
+ * @param {number} time - 时间戳
+ *
+ * @return {string} yyyy-mm-dd
+ */
+export function dateFormat(time) {
+  const t = new Date(time);
+  const year = t.getFullYear();
+  const month = ('00' + (t.getMonth() + 1)).slice(-2);
+  const date = ('00' + t.getDate()).slice(-2);
+  return `${year}-${month}-${date}`;
+}
+
+/**
+ * timeFormat
+ * @desc 时间格式化
+ *
+ * @param {number} time - 时间戳
+ *
+ * @return {string} HH:MM:ss
+ */
+export function timeFormat(time) {
+  const t = new Date(time);
+  const hour = ('00' + t.getHours()).slice(-2);
+  const minute = ('00' + t.getMinutes()).slice(-2);
+  const second = ('00' + t.getSeconds()).slice(-2);
+  return `${hour}:${minute}:${second}`;
+}

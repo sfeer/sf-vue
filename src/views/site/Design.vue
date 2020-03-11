@@ -1,7 +1,7 @@
 <template>
   <div class="design-wrapper">
     <div class="design-header">
-      <a-button icon="left" type="link"/>
+      <a-button icon="left" type="link" @click="goback"/>
       <a-input ref="title" class="title-input" v-show="editTitle" v-model="siteName" @blur="titleInputBlur"></a-input>
       <div class="title" v-show="!editTitle" @click="clickTitle">{{siteName}}</div>
       <div class="auto-save-text">{{autoSaveText}}</div>
@@ -38,7 +38,7 @@
           <a-menu-item key="3">水平分割</a-menu-item>
           <a-menu-item key="4">垂直分割</a-menu-item>
           <a-menu-divider/>
-          <a-menu-item key="5">插入区域</a-menu-item>
+          <a-menu-item key="5">全局插入区域</a-menu-item>
           <a-menu-item key="6">删除区域</a-menu-item>
           <a-menu-divider/>
           <a-menu-item key="8" @click="clearMain">清空</a-menu-item>
@@ -68,23 +68,44 @@
         <a-button icon="delete" @click="remove" title="删除区域"/>
       </a-button-group>
     </div>
-    <div ref="main" class="sbox-main" :style="{height:mHeight + 'px',margin:'30px 0'}">
+    <div
+      ref="main"
+      class="design-main"
+      :style="{height:mHeight + 'px',margin:'30px 0'}">
       <s-box
-          ref="sbox"
-          :boxs="boxs"
-          @lineMove="lineMove"
-          @lineClick="lineClick"
-          @updated="mainUpdated"/>
+        ref="sbox"
+        :boxs="boxs"
+        @boxClick="boxClick"
+        @boxRightClick="boxRightClick"
+        @lineDown="lineDown"
+        @lineMove="lineMove"
+        @lineClick="lineClick"
+        @updated="mainUpdated"/>
       <resize-observer @notify="handleResize"/>
+      <a-menu
+        class="content-menu"
+        :style="contentMenu"
+        v-show="contentMenuVisible"
+        :selectable="false">
+        <a-menu-item key="1" @click="contentMenuHsplit">水平分割</a-menu-item>
+        <a-menu-item key="2" @click="contentMenuVsplit">垂直分割</a-menu-item>
+        <a-menu-divider/>
+        <a-menu-item key="3">上方插入</a-menu-item>
+        <a-menu-item key="4">下方插入</a-menu-item>
+        <a-menu-item key="5">左边插入</a-menu-item>
+        <a-menu-item key="6">右边插入</a-menu-item>
+        <a-menu-divider/>
+        <a-menu-item key="7" @click="remove">删除</a-menu-item>
+      </a-menu>
     </div>
 
     <a-drawer
-        :title="sidebarTitle"
-        placement="right"
-        :closable="false"
-        :visible="sidebarVisible">
+      :title="sidebarTitle"
+      placement="right"
+      :closable="false"
+      :visible="sidebarVisible">
       <template v-if="sidebarTitle==='历史记录'">
-        <!-- todo 历史列表 -->
+      <!-- todo 历史列表 -->
       </template>
       <pre v-else-if="sidebarTitle==='测试'">{{boxs}}</pre>
     </a-drawer>
@@ -116,7 +137,11 @@
         mHeightVisible: false,
 
         splitValue: 0,
-        boxs: []
+        boxs: [],
+
+        // 右键菜单样式
+        contentMenu: {},
+        contentMenuVisible: false
       }
     },
 
@@ -155,6 +180,28 @@
     },
 
     methods: {
+      // 获取鼠标坐标
+      _getPosition(event) {
+        const rect = this.$el.getBoundingClientRect()
+        return {ex: event.pageX - rect.left, ey: event.pageY - rect.top}
+      },
+
+      // 右键菜单
+      boxRightClick(e) {
+        const {ex, ey} = this._getPosition(e)
+        this.contentMenu = {top: ey + 'px', left: ex + 'px'}
+        this.contentMenuVisible = true
+      },
+
+      boxClick() {
+        this.contentMenuVisible = false
+      },
+
+      // 返回列表页面
+      goback() {
+        this.$router.back()
+      },
+
       // 画布更新（防抖）
       mainUpdated() {
         this.mainTimeout && clearTimeout(this.mainTimeout)
@@ -189,7 +236,19 @@
         this.$refs.sbox.splitBoxH()
       },
 
+      // 水平分割
+      contentMenuHsplit() {
+        this.contentMenuVisible = false
+        this.$refs.sbox.splitBoxH()
+      },
+
       vv() {
+        this.$refs.sbox.splitBoxV()
+      },
+
+      // 垂直分割
+      contentMenuVsplit() {
+        this.contentMenuVisible = false
         this.$refs.sbox.splitBoxV()
       },
 
@@ -204,6 +263,10 @@
 
       lineMove(v) {
         this.splitValue = Math.round(v)
+      },
+
+      lineDown() {
+        this.contentMenuVisible = false
       },
 
       lineClick(line) {
@@ -240,8 +303,6 @@
 </script>
 
 <style lang="less" scoped>
-  @import "../../assets/site/sbox";
-
   .design-header {
     padding: 3px;
     height: 40px;
@@ -287,6 +348,16 @@
 
     .group {
       margin: 0 5px;
+    }
+  }
+
+  .design-main {
+    .content-menu {
+      width: 150px;
+      position: absolute;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 5px 5px #eee;
     }
   }
 </style>

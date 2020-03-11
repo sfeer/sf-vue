@@ -7,10 +7,12 @@
         :class="['box', {active:cBox===box.id}]"
         :style="boxStyle(box)"
         @click="boxClick(box)">
-        <div v-if="isDesignMode" class="box-inner">
-          <a-button v-if="cBox===box.id" type="dashed" icon="plus" class="box-add">添加</a-button>
-        </div>
-        <!--        <component v-else-if="isViewMode && box.component" :is="box.component.name"/>-->
+        <template v-if="isDesignMode">
+          <div class="box-inner" @contextmenu.prevent="menuShow(box.id, $event)">
+            <a-button v-if="cBox===box.id" type="dashed" icon="plus" class="box-add">添加</a-button>
+          </div>
+        </template>
+        <!--<component v-else-if="isViewMode && box.component" :is="box.component.name"/>-->
         <component v-else-if="isViewMode" :is="'Aa'"/>
       </div>
     </div>
@@ -23,6 +25,7 @@
         @click="lineClick(line)"
         @mousedown.prevent="lineDragStart(line.id)"></div>
     </div>
+
   </div>
 </template>
 
@@ -104,6 +107,12 @@
     },
 
     methods: {
+      // 右键菜单
+      menuShow(id, e) {
+        this.cBox = id
+        this.$emit('boxRightClick', e)
+      },
+
       // 初始化数据
       initBoxs() {
         if (this.boxs && this.boxs.length > 0) {
@@ -144,6 +153,7 @@
       },
 
       boxClick(box) {
+        this.cLine = null
         this.cBox = box.id
         this.$emit('boxClick', box)
       },
@@ -196,8 +206,10 @@
 
       // 分割线开始拖拽
       lineDragStart(id) {
+        this.cBox = null
         this.cLine = id
         this.dragLine = true
+        this.$emit('lineDown', id)
       },
 
       // 主面板拖拽事件，须谨慎使用
@@ -240,7 +252,6 @@
 
       // 主面板拖拽结束事件
       handleDragEnd() {
-        this.cLine = null
         this.dragLine = false
       },
 

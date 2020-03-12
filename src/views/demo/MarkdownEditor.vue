@@ -1,28 +1,21 @@
 <template>
-  <div class="markdown-body">
-    <textarea ref="mde"></textarea>
+  <div>
+    <vue-simplemde v-model="content" preview-class="markdown-body"/>
     <div>Markdown 内容</div>
-    <pre>{{mdValue}}</pre>
+    <pre>{{content}}</pre>
   </div>
 </template>
 
 <script>
-  import SimpleMDE from 'simplemde'
+  import VueSimplemde from 'vue-simplemde'
 
   export default {
+    components: {VueSimplemde},
+
     data() {
       return {
-        simplemde: null,
-        mdValue: ''
+        content: ''
       }
-    },
-
-    mounted() {
-      this.simplemde = new SimpleMDE({element: this.$refs.mde})
-
-      this.simplemde.codemirror.on('change', () => {
-        this.mdValue = this.simplemde.value()
-      })
     }
   }
 </script>

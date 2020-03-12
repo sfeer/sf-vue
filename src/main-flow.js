@@ -4,7 +4,6 @@ import router from './router/site'
 import store from './store'
 import {VueAxios} from './utils/request'
 import './core/use-site'
-import './mock/site'
 
 Vue.config.productionTip = false
 Vue.use(VueAxios)

@@ -1,8 +1,9 @@
 <template>
   <div class="quill-warpper">
-    <quill-editor v-model="content"
-                  ref="myQuillEditor"
-                  :options="editorOption">
+    <quill-editor
+      v-model="content"
+      ref="myQuillEditor"
+      :options="editorOption">
     </quill-editor>
   </div>
 </template>

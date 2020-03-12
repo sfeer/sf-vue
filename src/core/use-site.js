@@ -5,20 +5,18 @@ import 'vue-resize/dist/vue-resize.css'
 import VueResize from 'vue-resize'
 
 // 自定义网站组件
-import Aa from  '../views/site/box/Aa'
-
-Vue.component(Aa.name, Aa)
-Vue.component('Bb', ()=>import('../views/site/box/Bb'))
+Vue.component('Aa', () => import('../views/site/box/Aa'))
+Vue.component('Bb', () => import('../views/site/box/Bb'))
 
 Vue.use(VueResize)
 
 Vue.use(VueStorage, {
-  namespace: 'sfeer__',
+  namespace: 'site__',
   name: 'ls',
   storage: 'local'
 })
 Vue.use({...VueStorage}, {
-  namespace: 'sfeer__',
+  namespace: 'site__',
   name: 'ss',
   storage: 'session'
 })

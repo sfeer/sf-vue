@@ -6,19 +6,19 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    component: () => import(/* webpackChunkName: "site" */ '../views/site/List')
+    component: () => import('../views/site/List')
   },
   {
     path: '/init',
-    component: () => import(/* webpackChunkName: "site" */ '../views/site/Init')
+    component: () => import('../views/site/Init')
   },
   {
     path: '/design/:sid',
-    component: () => import(/* webpackChunkName: "site" */ '../views/site/Design')
+    component: () => import('../views/site/Design')
   },
   {
     path: '/site/:sid',
-    component: () => import(/* webpackChunkName: "site" */ '../views/site/View')
+    component: () => import('../views/site/View')
   }
 ]
 

@@ -203,7 +203,7 @@
 
       // 返回列表页面
       goback() {
-        this.$router.back()
+        this.$router.replace('/site')
       },
 
       // 画布更新（防抖）

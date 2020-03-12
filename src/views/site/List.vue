@@ -22,7 +22,7 @@
         :pagination="false"
         :loading="loading">
         <template #name="text,record">
-          <router-link :to="'/design/'+record.id">{{text}}</router-link>
+          <router-link :to="'/site/design/'+record.id">{{text}}</router-link>
         </template>
       </a-table>
     </div>
@@ -84,7 +84,7 @@
       },
 
       add() {
-        const routeUrl = this.$router.resolve('/init')
+        const routeUrl = this.$router.resolve('/site/init')
         window.open(routeUrl.href, '_blank')
       },
 

@@ -6,6 +6,8 @@
     "serve:demo": "vue-cli-service serve --mode demo",
     "serve:flow": "vue-cli-service serve --mode flow",
     "serve:site": "vue-cli-service serve --mode site",
+    "build:demo": "vue-cli-service build --mode demo",
+    "build:flow": "vue-cli-service build --mode flow",
     "build:site": "vue-cli-service build --mode site"
   },
   "dependencies": {

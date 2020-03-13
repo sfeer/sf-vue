@@ -2,28 +2,27 @@
   <div class="sbox-view" @mousemove="handleDrag" @mouseup="handleDragEnd">
     <div class="boxs">
       <div
-        v-for="box in showBoxs"
-        :key="box.id"
-        :class="['box', {active:cBox===box.id}]"
-        :style="boxStyle(box)"
-        @click="boxClick(box)">
+          v-for="box in showBoxs"
+          :key="box.id"
+          :class="['box', {active:cBox===box.id}]"
+          :style="boxStyle(box)"
+          @click="boxClick(box)">
         <template v-if="isDesignMode">
           <div class="box-inner" @contextmenu.prevent="menuShow(box.id, $event)">
             <a-button v-if="cBox===box.id" type="dashed" icon="plus" class="box-add">添加</a-button>
+            <component v-else-if="box.component" :is="box.component.name"/>
           </div>
         </template>
-        <!--<component v-else-if="isViewMode && box.component" :is="box.component.name"/>-->
-        <component v-else-if="isViewMode" :is="'Aa'"/>
       </div>
     </div>
     <div class="lines" v-if="isDesignMode">
       <div
-        v-for="line in showLines"
-        :key="line.id"
-        :class="['line', {active:cLine===line.id}, 'line-'+line.way]"
-        :style="lineStyle(line)"
-        @click="lineClick(line)"
-        @mousedown.prevent="lineDragStart(line.id)"></div>
+          v-for="line in showLines"
+          :key="line.id"
+          :class="['line', {active:cLine===line.id}, 'line-'+line.way]"
+          :style="lineStyle(line)"
+          @click="lineClick(line)"
+          @mousedown.prevent="lineDragStart(line.id)"></div>
     </div>
 
   </div>
@@ -108,6 +107,12 @@
     },
 
     methods: {
+      // 绑定小部件
+      addWidget(name, params) {
+        const box = this.boxMap[this.cBox]
+        box.component = {name: name, params: params}
+      },
+
       // 右键菜单
       menuShow(id, e) {
         this.cBox = id

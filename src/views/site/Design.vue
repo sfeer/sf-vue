@@ -102,6 +102,7 @@
     <a-drawer
         :title="sidebarTitle"
         placement="right"
+        :width="320"
         :closable="false"
         @close="sidebarClose"
         :visible="sidebarVisible">
@@ -109,8 +110,8 @@
         <!-- todo 历史列表 -->
       </template>
       <template v-else-if="sidebarTitle==='选择组件'">
-        <div @click="selectWidget('Aa')">AA</div>
-        <div>BB</div>
+        <div class="widget" @click="addWidget('Aa')">AA</div>
+        <div class="widget" @click="addWidget('Bb')">BB</div>
       </template>
       <pre v-else-if="sidebarTitle==='测试'">{{boxs}}</pre>
     </a-drawer>
@@ -122,6 +123,7 @@
   import {getSite, publishSite, saveSite} from '../../api/site'
   import {Menu, Dropdown, Slider, Drawer} from 'ant-design-vue'
 
+  // TODO SBox 点击先是切换然后显示添加，点击添加直接选择小部件
   // TODO 工具栏添加分割百分比调节器，选择组件按钮，设置画布总高度按钮
   // TODO 历史记录
 
@@ -195,7 +197,8 @@
 
       // 区域绑定小部件
       addWidget(name) {
-        this.$refs.sbox.addWidget(name, value)
+        this.$refs.sbox.addWidget(name)
+        this.sidebarVisible = false
       },
 
       // 获取鼠标坐标
@@ -385,5 +388,13 @@
       border: 1px solid #ccc;
       box-shadow: 0 0 5px 5px #eee;
     }
+  }
+
+  .widget {
+    width: 250px;
+    height: 180px;
+    background-color: #dcf5ff;
+    margin-bottom: 20px;
+    cursor: pointer;
   }
 </style>

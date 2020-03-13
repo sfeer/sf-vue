@@ -108,6 +108,10 @@
       <template v-if="sidebarTitle==='历史记录'">
         <!-- todo 历史列表 -->
       </template>
+      <template v-else-if="sidebarTitle==='选择组件'">
+        <div @click="selectWidget('Aa')">AA</div>
+        <div>BB</div>
+      </template>
       <pre v-else-if="sidebarTitle==='测试'">{{boxs}}</pre>
     </a-drawer>
   </div>
@@ -183,6 +187,17 @@
     },
 
     methods: {
+      // 显示小部件
+      showWidgets() {
+        this.sidebarVisible=true
+        this.sidebarTitle='选择组件'
+      },
+
+      // 区域绑定小部件
+      addWidget(name) {
+        this.$refs.sbox.addWidget(name, value)
+      },
+
       // 获取鼠标坐标
       _getPosition(event) {
         const rect = this.$el.getBoundingClientRect()
@@ -304,12 +319,6 @@
       // 清空画布
       clearMain() {
         // TODO 调用sbox组件清空方法
-      },
-
-      // 显示小部件
-      showWidgets() {
-        this.sidebarVisible=true
-        this.sidebarTitle='选择组件'
       },
 
       sidebarClose() {

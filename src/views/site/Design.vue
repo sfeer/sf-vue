@@ -24,7 +24,7 @@
           <a-menu-item key="4">发布</a-menu-item>
           <a-menu-item key="5">生成图片</a-menu-item>
           <a-menu-divider/>
-          <a-menu-item key="6" @click="showSidebar('历史记录')">历史记录</a-menu-item>
+          <a-menu-item key="6" @click="showSidebar('history')">历史记录</a-menu-item>
           <a-menu-item key="7" @click="rename">重命名</a-menu-item>
           <a-menu-item key="8">打印</a-menu-item>
         </a-menu>
@@ -48,7 +48,7 @@
         <span class="dropdown-title">工具</span>
         <a-menu slot="overlay">
           <a-menu-item key="1">调试</a-menu-item>
-          <a-menu-item key="2" @click="showSidebar('测试')">测试</a-menu-item>
+          <a-menu-item key="2" @click="showSidebar('test')">测试</a-menu-item>
           <a-menu-divider/>
           <a-menu-item key="3">浏览</a-menu-item>
         </a-menu>
@@ -63,7 +63,6 @@
       <a-button-group class="group" v-if="toolType==='box'">
         <a-button @click="hh">水平分割</a-button>
         <a-button @click="vv">垂直分割</a-button>
-        <a-button @click="showWidgets">选择组件</a-button>
       </a-button-group>
 
       <div v-else-if="toolType==='line'" style="line-height: 32px">{{splitValue}}</div>
@@ -76,6 +75,7 @@
           ref="sbox"
           :boxs="boxs"
           @boxClick="boxClick"
+          @boxSelect="boxSelect"
           @boxRightClick="boxRightClick"
           @lineDown="lineDown"
           @lineMove="lineMove"
@@ -106,14 +106,14 @@
         :closable="false"
         @close="sidebarClose"
         :visible="sidebarVisible">
-      <template v-if="sidebarTitle==='历史记录'">
-        <!-- todo 历史列表 -->
+      <template v-if="sidebarType==='history'">
+        <!-- TODO 历史列表 -->
       </template>
-      <template v-else-if="sidebarTitle==='选择组件'">
+      <template v-else-if="sidebarType==='widget'">
         <div class="widget" @click="addWidget('Aa')">AA</div>
         <div class="widget" @click="addWidget('Bb')">BB</div>
       </template>
-      <pre v-else-if="sidebarTitle==='测试'">{{boxs}}</pre>
+      <pre v-else-if="sidebarType==='test'">{{boxs}}</pre>
     </a-drawer>
   </div>
 </template>
@@ -137,7 +137,7 @@
 
         autoSaveText: '',
 
-        sidebarTitle: '功能栏',
+        sidebarType: null,
         sidebarVisible: false,
 
         mHeight: 650,
@@ -188,11 +188,25 @@
       }
     },
 
+    computed: {
+      sidebarTitle() {
+        if (this.sidebarType === 'widget') {
+          return '选择组件'
+        } else if (this.sidebarType === 'test') {
+          return '测试'
+        } else if (this.sidebarType === 'history') {
+          return '历史记录'
+        } else {
+          return ''
+        }
+      }
+    },
+
     methods: {
       // 显示小部件
-      showWidgets() {
-        this.sidebarVisible=true
-        this.sidebarTitle='选择组件'
+      boxSelect() {
+        this.sidebarVisible = true
+        this.sidebarType = 'widget'
       },
 
       // 区域绑定小部件
@@ -243,8 +257,8 @@
         this.$refs.sbox.resizeRoot(main.clientWidth, main.clientHeight)
       },
 
-      showSidebar(title) {
-        this.sidebarTitle = title
+      showSidebar(type) {
+        this.sidebarType = type
         this.sidebarVisible = true
       },
 
@@ -325,7 +339,7 @@
       },
 
       sidebarClose() {
-        this.sidebarVisible=false
+        this.sidebarVisible = false
       }
     }
   }

@@ -9,7 +9,12 @@
           @click="boxClick(box)">
         <template v-if="isDesignMode">
           <div class="box-inner" @contextmenu.prevent="menuShow(box.id, $event)">
-            <a-button v-if="cBox===box.id" type="dashed" icon="plus" class="box-add">添加</a-button>
+            <a-button
+                v-if="cBox===box.id"
+                type="dashed"
+                icon="plus"
+                class="box-add"
+                @click="boxSelect">添加</a-button>
             <component v-else-if="box.component" :is="box.component.name"/>
           </div>
         </template>
@@ -107,10 +112,16 @@
     },
 
     methods: {
+      // box选择小部件
+      boxSelect() {
+        this.$emit('boxSelect')
+      },
+
       // 绑定小部件
       addWidget(name, params) {
         const box = this.boxMap[this.cBox]
         box.component = {name: name, params: params}
+        this.cBox = null
       },
 
       // 右键菜单

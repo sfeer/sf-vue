@@ -87,15 +87,15 @@
           :style="contentMenu"
           v-show="contentMenuVisible"
           :selectable="false">
-        <a-menu-item key="1" @click="contentMenuHsplit">水平分割</a-menu-item>
-        <a-menu-item key="2" @click="contentMenuVsplit">垂直分割</a-menu-item>
+        <a-menu-item key="1" @click="contentMenuClick('hh')">水平分割</a-menu-item>
+        <a-menu-item key="2" @click="contentMenuClick('vv')">垂直分割</a-menu-item>
         <a-menu-divider/>
         <a-menu-item key="3">上方插入</a-menu-item>
         <a-menu-item key="4">下方插入</a-menu-item>
         <a-menu-item key="5">左边插入</a-menu-item>
         <a-menu-item key="6">右边插入</a-menu-item>
         <a-menu-divider/>
-        <a-menu-item key="7" @click="remove">删除</a-menu-item>
+        <a-menu-item key="7" @click="contentMenuClick('remove')">删除</a-menu-item>
       </a-menu>
     </div>
 
@@ -123,8 +123,8 @@
   import {getSite, publishSite, saveSite} from '../../api/site'
   import {Menu, Dropdown, Slider, Drawer} from 'ant-design-vue'
 
-  // TODO SBox 点击先是切换然后显示添加，点击添加直接选择小部件
-  // TODO 工具栏添加分割百分比调节器，选择组件按钮，设置画布总高度按钮
+  // TODO 移动line时候高亮当前box的区域
+  // TODO 工具栏添加分割百分比调节器，设置画布总高度按钮
   // TODO 历史记录
 
   export default {
@@ -203,6 +203,18 @@
     },
 
     methods: {
+      // 右键菜单点击事件
+      contentMenuClick(type) {
+        if (type === 'vv') {
+          this.vv()
+        } else if (type === 'hh') {
+          this.hh()
+        } else if (type === 'remove') {
+          this.remove()
+        }
+        this.contentMenuVisible = false
+      },
+
       // 显示小部件
       boxSelect() {
         this.sidebarVisible = true
@@ -270,23 +282,13 @@
         })
       },
 
+      // 水平分割
       hh() {
         this.$refs.sbox.splitBoxH()
       },
 
-      // 水平分割
-      contentMenuHsplit() {
-        this.contentMenuVisible = false
-        this.$refs.sbox.splitBoxH()
-      },
-
-      vv() {
-        this.$refs.sbox.splitBoxV()
-      },
-
       // 垂直分割
-      contentMenuVsplit() {
-        this.contentMenuVisible = false
+      vv() {
         this.$refs.sbox.splitBoxV()
       },
 

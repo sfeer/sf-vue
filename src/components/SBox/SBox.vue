@@ -7,20 +7,19 @@
           :class="['box', {active:cBox===box.id}]"
           :style="boxStyle(box)"
           @click="boxClick(box)">
-        <template v-if="isDesignMode">
-          <div class="box-inner" @contextmenu.prevent="menuShow(box.id, $event)">
-            <a-button
-                v-if="cBox===box.id"
-                type="dashed"
-                icon="plus"
-                class="box-add"
-                @click="boxSelect">添加</a-button>
-            <component v-else-if="box.component" :is="box.component.name"/>
-          </div>
-        </template>
+        <div class="box-inner" @contextmenu.prevent="menuShow(box.id, $event)">
+          <a-button
+              v-if="cBox===box.id"
+              type="dashed"
+              icon="plus"
+              class="box-add"
+              @click="boxSelect">添加
+          </a-button>
+          <component v-else-if="box.component" :is="box.component.name"/>
+        </div>
       </div>
     </div>
-    <div class="lines" v-if="isDesignMode">
+    <div class="lines">
       <div
           v-for="line in showLines"
           :key="line.id"
@@ -28,6 +27,7 @@
           :style="lineStyle(line)"
           @click="lineClick(line)"
           @mousedown.prevent="lineDragStart(line.id)"></div>
+      <div class="line-box" :style="lineBoxStyle" v-show="cLine"></div>
     </div>
 
   </div>
@@ -67,15 +67,25 @@
         default() {
           return []
         }
-      },
-
-      mode: {
-        type: String,
-        default: 'design'
       }
     },
 
     computed: {
+      // 分割线所属区域的样式
+      lineBoxStyle() {
+        if (this.cLine) {
+          const box = this.boxs.find(b => b.line && b.line.id === this.cLine)
+          return {
+            top: (box.y + this.padding / 2) + 'px',
+            left: (box.x + this.padding / 2) + 'px',
+            width: (box.w - this.padding) + 'px',
+            height: (box.h - this.padding) + 'px'
+          }
+        } else {
+          return null
+        }
+      },
+
       boxMap() {
         const res = {}
         this.boxs.forEach(o => {
@@ -90,14 +100,6 @@
 
       showLines() {
         return this.boxs.filter(o => o.line).map(b => b.line)
-      },
-
-      isDesignMode() {
-        return this.mode === 'design'
-      },
-
-      isViewMode() {
-        return this.mode === 'view'
       }
     },
 
@@ -187,8 +189,8 @@
             const vv = Math.round(box.w * line.pc / 100)
             line.value = vv
             line.x = box.x + vv - p
-            line.y = box.y
-            line.h = box.h
+            line.y = box.y + this.padding / 2
+            line.h = box.h - this.padding
             const cc = this.boxs.filter(b => b.parent === box.id).sort((a, b) => a.x - b.x)
             cc[0].x = box.x
             cc[0].y = box.y
@@ -204,8 +206,8 @@
             const vv = Math.round(box.h * line.pc / 100)
             line.value = vv
             line.y = box.y + vv - p
-            line.w = box.w
-            line.x = box.x
+            line.w = box.w - this.padding
+            line.x = box.x + this.padding / 2
             const cc = this.boxs.filter(b => b.parent === box.id).sort((a, b) => a.y - b.y)
             cc[0].x = box.x
             cc[0].y = box.y
@@ -296,15 +298,17 @@
 
         pp.line = {
           id: pp.id,
-          x: pp.x,
+          x: pp.x + this.padding / 2,
           y: pp.y + hh - this.padding / 2,
-          w: pp.w,
+          w: pp.w - this.padding,
           h: this.padding,
           way: 'h',
           pc: 50,
           value: hh
         }
-        this.cBox = box1.id
+
+        this.cBox = null
+        this.cLine = pp.id
       },
 
       // 对当前节点进行垂直分割
@@ -332,14 +336,16 @@
         pp.line = {
           id: pp.id,
           x: pp.x + vv - this.padding / 2,
-          y: pp.y,
+          y: pp.y + this.padding / 2,
           w: this.padding,
-          h: pp.h,
+          h: pp.h - this.padding,
           way: 'v',
           pc: 50,
           value: vv
         }
-        this.cBox = box1.id
+
+        this.cBox = null
+        this.cLine = pp.id
       },
 
       // 在底部添加一行区域
@@ -427,6 +433,14 @@
       &.active {
         background: #ffbbba;
       }
+    }
+
+    .line-box {
+      position: absolute;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 0 5px 5px #ffbbba;
+      pointer-events: none;
     }
 
     .line-h {

@@ -122,7 +122,6 @@
   import {getSite, publishSite, saveSite} from '../../api/site'
   import {Menu, Dropdown, Slider, Drawer} from 'ant-design-vue'
 
-  // TODO 移动line时候高亮当前box的区域
   // TODO 工具栏添加分割百分比调节器，设置画布总高度按钮
   // TODO 历史记录
 

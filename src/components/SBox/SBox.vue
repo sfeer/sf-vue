@@ -130,6 +130,7 @@
         const box = this.boxMap[this.cBox]
         box.component = {name: name, params: params}
         this.cBox = null
+        this.$emit('updated')
       },
 
       // 右键菜单

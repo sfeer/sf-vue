@@ -81,7 +81,6 @@
           @lineMove="lineMove"
           @lineClick="lineClick"
           @updated="mainUpdated"/>
-      <resize-observer @notify="handleResize"/>
       <a-menu
           class="content-menu"
           :style="contentMenu"
@@ -262,11 +261,6 @@
             console.log('自动保存')
           })
         }, 800)
-      },
-
-      handleResize() {
-        const main = this.$refs.main
-        this.$refs.sbox.resizeRoot(main.clientWidth, main.clientHeight)
       },
 
       showSidebar(type) {

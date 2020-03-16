@@ -29,7 +29,7 @@
           @mousedown.prevent="lineDragStart(line.id)"></div>
       <div class="line-box" :style="lineBoxStyle" v-show="cLine"></div>
     </div>
-
+    <resize-observer @notify="handleResize"/>
   </div>
 </template>
 
@@ -37,6 +37,8 @@
   import {v4 as uuid} from 'uuid'
 
   export default {
+    name: 'SBox',
+
     data() {
       return {
         root: null,
@@ -114,6 +116,10 @@
     },
 
     methods: {
+      handleResize() {
+        this.resizeRoot(this.$el.clientWidth, this.$el.clientHeight)
+      },
+
       // box选择小部件
       boxSelect() {
         this.$emit('boxSelect')

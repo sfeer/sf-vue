@@ -1,9 +1,9 @@
 <template>
-  <s-box :boxs="boxs" mode="view"/>
+  <s-box-view :boxs="boxs" mode="view"/>
 </template>
 
 <script>
-  import SBox from '../../components/SBox/SBox'
+  import SBoxView from '../../components/SBox/SBoxView'
   import {getSite} from '../../api/site'
 
   export default {
@@ -14,7 +14,7 @@
       }
     },
 
-    components: {SBox},
+    components: {SBoxView},
 
     created() {
       this.siteId = this.$route.params.sid

@@ -2,18 +2,18 @@
   <div class="sbox-view" @mousemove="handleDrag" @mouseup="handleDragEnd">
     <div class="boxs">
       <div
-        v-for="box in showBoxs"
-        :key="box.id"
-        :class="['box', {active:cBox===box.id}]"
-        :style="boxStyle(box)"
-        @click="boxClick(box)">
+          v-for="box in showBoxs"
+          :key="box.id"
+          :class="['box', {active:cBox===box.id}]"
+          :style="boxStyle(box)"
+          @click="boxClick(box)">
         <div class="box-inner" @contextmenu.prevent="menuShow(box.id, $event)">
           <a-button
-            v-if="cBox===box.id"
-            type="dashed"
-            icon="plus"
-            class="box-add"
-            @click="boxSelect">添加
+              v-if="cBox===box.id"
+              type="dashed"
+              icon="plus"
+              class="box-add"
+              @click="boxSelect">添加
           </a-button>
           <component v-else-if="box.component" :is="box.component.name"/>
         </div>
@@ -21,12 +21,12 @@
     </div>
     <div class="lines">
       <div
-        v-for="line in showLines"
-        :key="line.id"
-        :class="['line', {active:cLine===line.id}, 'line-'+line.way]"
-        :style="lineStyle(line)"
-        @click="lineClick(line)"
-        @mousedown.prevent="lineDragStart(line.id)"></div>
+          v-for="line in showLines"
+          :key="line.id"
+          :class="['line', {active:cLine===line.id}, 'line-'+line.way]"
+          :style="lineStyle(line)"
+          @click="lineClick(line)"
+          @mousedown.prevent="lineDragStart(line.id)"></div>
       <div class="line-box" :style="lineBoxStyle" v-show="cLine"></div>
     </div>
     <resize-observer @notify="handleResize"/>
@@ -110,12 +110,13 @@
     },
 
     watch: {
-      boxs(v, o) {
-        // 初始化的时候
-        if (v.length > 0 && o.length === 0) {
-          this.initBoxs(v)
+      boxs() {
+        if (this.rootBox.w !== this.$el.clientWidth) {
+          // 根节点resize
+          this.rootBox.w = this.$el.clientWidth
+          this.resizeBox(this.rootBox)
         }
-        this.$emit('updated')
+        this.$emit('update')
       }
     },
 
@@ -131,7 +132,9 @@
       },
 
       handleResize() {
-        this.resizeRoot(this.$el.clientWidth, this.$el.clientHeight)
+        this.rootBox.w = this.$el.clientWidth
+        this.rootBox.h = this.$el.clientHeight
+        this.resizeBox(this.rootBox)
       },
 
       // box选择小部件
@@ -144,31 +147,13 @@
         const box = this.boxMap[this.cBox]
         box.component = {name: name, params: params}
         this.cBox = null
-        this.$emit('updated')
+        this.sBoxUpdate()
       },
 
       // 右键菜单
       menuShow(id, e) {
         this.cBox = id
         this.$emit('boxRightClick', e)
-      },
-
-      // 初始化数据
-      initBoxs() {
-        if (this.boxs && this.boxs.length > 0) {
-          this.resizeRoot(this.$el.clientWidth, this.$el.clientHeight)
-          this.cBox = this.boxs.find(d => d.line === undefined).id
-        }
-      },
-
-      // 改变根节点大小
-      resizeRoot(w, h) {
-        if (this.rootBox) {
-          this.rootBox.w = w
-          this.rootBox.h = h
-          this.resizeBox(this.rootBox)
-          this.$emit('updated')
-        }
       },
 
       boxStyle(box) {
@@ -282,9 +267,13 @@
             line.pc = line.value / box.h * 100
             this.$emit('lineMove', line.pc)
           }
-
           this.resizeBox(box)
-          this.$emit('updated')
+          // 防抖处理
+          this.bBoxTimeout && clearTimeout(this.bBoxTimeout)
+          this.bBoxTimeout = setTimeout(() => {
+            // 触发watch
+            this.boxs.splice(0, this.boxs.length, ...this.boxs)
+          }, 300)
         }
       },
 

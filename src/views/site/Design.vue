@@ -4,7 +4,7 @@
       <a-button icon="left" type="link" @click="goback"/>
       <a-input ref="title" class="title-input" v-show="editTitle" v-model="siteName" @blur="titleInputBlur"></a-input>
       <div class="title" v-show="!editTitle" @click="clickTitle">{{siteName}}</div>
-      <div class="auto-save-text">{{autoSaveText}}</div>
+      <div class="auto-save-text" style="line-height:33px">{{autoSaveText}}</div>
       <div class="blank"></div>
       <a-dropdown :trigger="['click']">
         <span class="dropdown-title">文件</span>
@@ -38,7 +38,7 @@
           <a-menu-item key="3">水平分割</a-menu-item>
           <a-menu-item key="4">垂直分割</a-menu-item>
           <a-menu-divider/>
-          <a-menu-item key="5">全局插入区域</a-menu-item>
+          <a-menu-item key="5" @click="add">全局插入区域</a-menu-item>
           <a-menu-item key="6">删除区域</a-menu-item>
           <a-menu-divider/>
           <a-menu-item key="8" @click="clearMain">清空</a-menu-item>
@@ -55,9 +55,9 @@
       </a-dropdown>
     </div>
     <div class="design-tools">
-      <a-button-group class="group" style="margin-right: 20px">
-        <a-button>撤销</a-button>
-        <a-button>重做</a-button>
+      <a-button-group class="group" v-if="historys.length>0" style="margin-right:20px">
+        <a-button :disabled="!canHisRevoke" @click="hisRevoke">撤销</a-button>
+        <a-button :disabled="!canHisRedo" @click="hisRedo">重做</a-button>
       </a-button-group>
 
       <a-button-group class="group" v-if="toolType==='box'">
@@ -80,7 +80,7 @@
           @lineDown="lineDown"
           @lineMove="lineMove"
           @lineClick="lineClick"
-          @updated="mainUpdated"/>
+          @update="mainUpdate"/>
       <a-menu
           class="content-menu"
           :style="contentMenu"
@@ -121,9 +121,9 @@
   import SBox from '../../components/SBox/SBox'
   import {getSite, publishSite, saveSite} from '../../api/site'
   import {Menu, Dropdown, Slider, Drawer} from 'ant-design-vue'
+  import {timeFormat} from '../../utils/util'
 
   // TODO 工具栏添加分割百分比调节器，设置画布总高度按钮
-  // TODO 历史记录
 
   export default {
     data() {
@@ -139,7 +139,6 @@
         sidebarVisible: false,
 
         mHeight: 650,
-        mHeightVisible: false,
 
         splitValue: 0,
         boxs: [],
@@ -151,7 +150,8 @@
         contentMenuVisible: false,
 
         historys: [],
-        hisIndex: 0
+        hisIndex: 0,
+        useHistory: false // 是否在进行历史记录操作
       }
     },
 
@@ -182,13 +182,6 @@
       document.title = this.siteName
     },
 
-    watch: {
-      mHeight(v) {
-        const main = this.$refs.main
-        this.$refs.sbox.resizeRoot(main.clientWidth, v)
-      }
-    },
-
     computed: {
       sidebarTitle() {
         if (this.sidebarType === 'widget') {
@@ -200,10 +193,36 @@
         } else {
           return ''
         }
-      }
+      },
+
+      // 是否可以撤销
+      canHisRevoke() {
+        return this.historys.length > 0 && this.hisIndex > 0
+      },
+
+      // 是否可以重做
+      canHisRedo() {
+        return this.historys.length - this.hisIndex > 1
+      },
     },
 
     methods: {
+      // 历史记录撤销
+      hisRevoke() {
+        this.useHistory = true
+        this.hisIndex -= 1
+        this.boxs = this.historys[this.hisIndex].boxs
+        console.log('revoke')
+      },
+
+      // 历史记录重做
+      hisRedo() {
+        this.useHistory = true
+        this.hisIndex += 1
+        this.boxs = this.historys[this.hisIndex].boxs
+        console.log('redo')
+      },
+
       // 右键菜单点击事件
       contentMenuClick(type) {
         if (type === 'vv') {
@@ -251,18 +270,26 @@
         this.$router.replace('/site')
       },
 
-      // 画布更新（防抖）
-      mainUpdated() {
-        this.mainTimeout && clearTimeout(this.mainTimeout)
-        this.mainTimeout = setTimeout(() => {
-          saveSite({
-            id: this.siteId,
-            name: this.siteName,
-            boxs: this.boxs
-          }).then(() => {
-            console.log('自动保存')
-          })
-        }, 800)
+      // 数据更新
+      mainUpdate() {
+        saveSite({
+          id: this.siteId,
+          name: this.siteName,
+          boxs: this.boxs
+        }).then(() => {
+          console.log('自动保存')
+          const time = new Date().getTime()
+          this.autoSaveText = '自动保存：' + timeFormat(time)
+
+          if (this.useHistory) {
+            this.useHistory = false // 重置
+          } else {
+            const clone = JSON.parse(JSON.stringify(this.boxs))
+            // 覆盖当前历史记录回撤的位置
+            this.historys.splice(this.hisIndex,this.historys.length-1-this.hisIndex, {boxs: clone, time: time})
+            this.hisIndex = this.historys.length - 1
+          }
+        })
       },
 
       showSidebar(type) {

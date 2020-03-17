@@ -2,18 +2,18 @@
   <div class="sbox-view" @mousemove="handleDrag" @mouseup="handleDragEnd">
     <div class="boxs">
       <div
-          v-for="box in showBoxs"
-          :key="box.id"
-          :class="['box', {active:cBox===box.id}]"
-          :style="boxStyle(box)"
-          @click="boxClick(box)">
+        v-for="box in showBoxs"
+        :key="box.id"
+        :class="['box', {active:cBox===box.id}]"
+        :style="boxStyle(box)"
+        @click="boxClick(box)">
         <div class="box-inner" @contextmenu.prevent="menuShow(box.id, $event)">
           <a-button
-              v-if="cBox===box.id"
-              type="dashed"
-              icon="plus"
-              class="box-add"
-              @click="boxSelect">添加
+            v-if="cBox===box.id"
+            type="dashed"
+            icon="plus"
+            class="box-add"
+            @click="boxSelect">添加
           </a-button>
           <component v-else-if="box.component" :is="box.component.name"/>
         </div>
@@ -21,12 +21,12 @@
     </div>
     <div class="lines">
       <div
-          v-for="line in showLines"
-          :key="line.id"
-          :class="['line', {active:cLine===line.id}, 'line-'+line.way]"
-          :style="lineStyle(line)"
-          @click="lineClick(line)"
-          @mousedown.prevent="lineDragStart(line.id)"></div>
+        v-for="line in showLines"
+        :key="line.id"
+        :class="['line', {active:cLine===line.id}, 'line-'+line.way]"
+        :style="lineStyle(line)"
+        @click="lineClick(line)"
+        @mousedown.prevent="lineDragStart(line.id)"></div>
       <div class="line-box" :style="lineBoxStyle" v-show="cLine"></div>
     </div>
     <resize-observer @notify="handleResize"/>
@@ -41,7 +41,6 @@
 
     data() {
       return {
-        root: null,
         cBox: null, // 当前选中区域
         dragLine: false,
         cLine: null // 当前选中分割线
@@ -102,6 +101,11 @@
 
       showLines() {
         return this.boxs.filter(o => o.line).map(b => b.line)
+      },
+
+      // 根节点
+      rootBox() {
+        return this.boxs.find(d => d.parent === undefined)
       }
     },
 
@@ -116,6 +120,16 @@
     },
 
     methods: {
+      // 清空根节点
+      clearRoot() {
+        if (this.rootBox) {
+          delete this.rootBox.line
+          this.boxs.splice(0, this.boxs.length, this.rootBox)
+          this.cBox = this.rootBox.id
+          this.cLine = null
+        }
+      },
+
       handleResize() {
         this.resizeRoot(this.$el.clientWidth, this.$el.clientHeight)
       },
@@ -142,7 +156,6 @@
       // 初始化数据
       initBoxs() {
         if (this.boxs && this.boxs.length > 0) {
-          this.root = this.boxs.find(d => d.parent === undefined).id
           this.resizeRoot(this.$el.clientWidth, this.$el.clientHeight)
           this.cBox = this.boxs.find(d => d.line === undefined).id
         }
@@ -150,11 +163,10 @@
 
       // 改变根节点大小
       resizeRoot(w, h) {
-        if (this.root) {
-          const root = this.boxMap[this.root]
-          root.w = w
-          root.h = h
-          this.resizeBox(root)
+        if (this.rootBox) {
+          this.rootBox.w = w
+          this.rootBox.h = h
+          this.resizeBox(this.rootBox)
           this.$emit('updated')
         }
       },
@@ -357,7 +369,7 @@
 
       // 在底部添加一行区域
       addRow() {
-        const oldBox = this.boxMap[this.root],
+        const oldBox = this.rootBox,
           newId = uuid().replace(/-/g, '')
 
         const line = {
@@ -391,7 +403,6 @@
         }
 
         oldBox.parent = newBox.id
-        this.root = newBox.id
         this.boxs.push(newBox, addBox)
         this.cBox = addBox.id
       },
@@ -400,14 +411,13 @@
       deleteBox() {
         const box = this.boxMap[this.cBox]
 
-        if (box.id === this.root) {
+        if (box.id === this.rootBox.id) {
           console.log('不能删除根节点')
         } else {
           const parent = this.boxMap[box.parent],
             next = this.boxs.find(b => b.parent === box.parent && b.id !== box.id)
 
-          if (parent.id === this.root) {
-            this.root = next.id
+          if (parent.id === this.rootBox.id) {
             delete next.parent
           } else {
             next.parent = parent.parent

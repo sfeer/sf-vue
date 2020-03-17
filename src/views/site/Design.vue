@@ -148,7 +148,10 @@
 
         // 右键菜单样式
         contentMenu: {},
-        contentMenuVisible: false
+        contentMenuVisible: false,
+
+        historys: [],
+        hisIndex: 0
       }
     },
 
@@ -330,7 +333,7 @@
 
       // 清空画布
       clearMain() {
-        // TODO 调用sbox组件清空方法
+        this.$refs.sbox.clearRoot()
       },
 
       sidebarClose() {

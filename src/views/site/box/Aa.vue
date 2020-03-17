@@ -1,5 +1,5 @@
 <template>
-  <div>aaaaaaaa</div>
+  <div class="aa">aaaaaaaa</div>
 </template>
 
 <script>
@@ -13,3 +13,11 @@
     }
   }
 </script>
+
+<style scoped>
+  .aa {
+    width: 100%;
+    height: 100%;
+    background: #e69889;
+  }
+</style>

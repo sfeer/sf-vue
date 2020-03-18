@@ -47,10 +47,9 @@
       <a-dropdown :trigger="['click']">
         <span class="dropdown-title">工具</span>
         <a-menu slot="overlay">
-          <a-menu-item key="1">调试</a-menu-item>
-          <a-menu-item key="2" @click="showSidebar('test')">测试</a-menu-item>
+          <a-menu-item key="1" @click="showSidebar('test')">测试</a-menu-item>
           <a-menu-divider/>
-          <a-menu-item key="3">浏览</a-menu-item>
+          <a-menu-item key="2">浏览</a-menu-item>
         </a-menu>
       </a-dropdown>
     </div>
@@ -68,24 +67,24 @@
       <div v-else-if="toolType==='line'" style="line-height: 32px">{{splitValue}}</div>
     </div>
     <div
-        ref="main"
-        class="design-main"
-        :style="{height:mHeight + 'px',margin:'30px 0'}">
+      ref="main"
+      class="design-main"
+      :style="{height:mHeight + 'px',margin:'30px 0'}">
       <s-box
-          ref="sbox"
-          :boxs="boxs"
-          @boxClick="boxClick"
-          @boxSelect="boxSelect"
-          @boxRightClick="boxRightClick"
-          @lineDown="lineDown"
-          @lineMove="lineMove"
-          @lineClick="lineClick"
-          @update="mainUpdate"/>
+        ref="sbox"
+        :boxs="boxs"
+        @boxClick="boxClick"
+        @boxSelect="boxSelect"
+        @boxRightClick="boxRightClick"
+        @lineDown="lineDown"
+        @lineMove="lineMove"
+        @lineClick="lineClick"
+        @update="mainUpdate"/>
       <a-menu
-          class="content-menu"
-          :style="contentMenu"
-          v-show="contentMenuVisible"
-          :selectable="false">
+        class="content-menu"
+        :style="contentMenu"
+        v-show="contentMenuVisible"
+        :selectable="false">
         <a-menu-item key="1" @click="contentMenuClick('hh')">水平分割</a-menu-item>
         <a-menu-item key="2" @click="contentMenuClick('vv')">垂直分割</a-menu-item>
         <a-menu-divider/>
@@ -99,12 +98,12 @@
     </div>
 
     <a-drawer
-        :title="sidebarTitle"
-        placement="right"
-        :width="320"
-        :closable="false"
-        @close="sidebarClose"
-        :visible="sidebarVisible">
+      :title="sidebarTitle"
+      placement="right"
+      :width="320"
+      :closable="false"
+      @close="sidebarClose"
+      :visible="sidebarVisible">
       <template v-if="sidebarType==='history'">
         <!-- TODO 历史列表 -->
       </template>
@@ -112,7 +111,9 @@
         <div class="widget" @click="addWidget('Aa')">AA</div>
         <div class="widget" @click="addWidget('Bb')">BB</div>
       </template>
-      <pre v-else-if="sidebarType==='test'">{{boxs}}</pre>
+      <template v-else-if="sidebarType==='test'">
+        <pre>{{boxs}}</pre>
+      </template>
     </a-drawer>
   </div>
 </template>
@@ -211,16 +212,18 @@
       hisRevoke() {
         this.useHistory = true
         this.hisIndex -= 1
-        this.boxs = this.historys[this.hisIndex].boxs
-        console.log('revoke')
+        const boxs = this.historys[this.hisIndex].boxs
+        // 从历史记录中克隆
+        this.boxs = JSON.parse(JSON.stringify(boxs))
       },
 
       // 历史记录重做
       hisRedo() {
         this.useHistory = true
         this.hisIndex += 1
-        this.boxs = this.historys[this.hisIndex].boxs
-        console.log('redo')
+        const boxs = this.historys[this.hisIndex].boxs
+        // 从历史记录中克隆
+        this.boxs = JSON.parse(JSON.stringify(boxs))
       },
 
       // 右键菜单点击事件
@@ -277,7 +280,6 @@
           name: this.siteName,
           boxs: this.boxs
         }).then(() => {
-          console.log('自动保存')
           const time = new Date().getTime()
           this.autoSaveText = '自动保存：' + timeFormat(time)
 
@@ -286,7 +288,11 @@
           } else {
             const clone = JSON.parse(JSON.stringify(this.boxs))
             // 覆盖当前历史记录回撤的位置
-            this.historys.splice(this.hisIndex,this.historys.length-1-this.hisIndex, {boxs: clone, time: time})
+            this.historys.splice(
+              this.hisIndex + 1,
+              this.historys.length - 1 - this.hisIndex,
+              {boxs: clone, time: time}
+            )
             this.hisIndex = this.historys.length - 1
           }
         })

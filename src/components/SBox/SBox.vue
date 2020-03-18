@@ -2,18 +2,18 @@
   <div class="sbox-view" @mousemove="handleDrag" @mouseup="handleDragEnd">
     <div class="boxs">
       <div
-          v-for="box in showBoxs"
-          :key="box.id"
-          :class="['box', {active:cBox===box.id}]"
-          :style="boxStyle(box)"
-          @click="boxClick(box)">
+        v-for="box in showBoxs"
+        :key="box.id"
+        :class="['box', {active:cBox===box.id}]"
+        :style="boxStyle(box)"
+        @click="boxClick(box)">
         <div class="box-inner" @contextmenu.prevent="menuShow(box.id, $event)">
           <a-button
-              v-if="cBox===box.id"
-              type="dashed"
-              icon="plus"
-              class="box-add"
-              @click="boxSelect">添加
+            v-if="cBox===box.id"
+            type="dashed"
+            icon="plus"
+            class="box-add"
+            @click="boxSelect">添加
           </a-button>
           <component v-else-if="box.component" :is="box.component.name"/>
         </div>
@@ -21,12 +21,12 @@
     </div>
     <div class="lines">
       <div
-          v-for="line in showLines"
-          :key="line.id"
-          :class="['line', {active:cLine===line.id}, 'line-'+line.way]"
-          :style="lineStyle(line)"
-          @click="lineClick(line)"
-          @mousedown.prevent="lineDragStart(line.id)"></div>
+        v-for="line in showLines"
+        :key="line.id"
+        :class="['line', {active:cLine===line.id}, 'line-'+line.way]"
+        :style="lineStyle(line)"
+        @click="lineClick(line)"
+        @mousedown.prevent="lineDragStart(line.id)"></div>
       <div class="line-box" :style="lineBoxStyle" v-show="cLine"></div>
     </div>
     <resize-observer @notify="handleResize"/>
@@ -147,7 +147,8 @@
         const box = this.boxMap[this.cBox]
         box.component = {name: name, params: params}
         this.cBox = null
-        this.sBoxUpdate()
+        // 触发监听
+        this.$set(this.boxs, this.boxs.findIndex(d => d.id === this.cBox), box)
       },
 
       // 右键菜单

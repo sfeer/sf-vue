@@ -29,6 +29,11 @@ const routes = [
   {
     path: '/demo/mde',
     component: () => import('../views/demo/MarkdownEditor')
+  },
+
+  {
+    path: '/demo/clone',
+    component: () => import('../views/demo/Clone')
   }
 ]
 

@@ -4,8 +4,6 @@ import {getQueryParameters} from '../../utils/util'
 
 const Random = Mock.Random
 
-Random.guid()
-
 // 常用模版
 const templateList = [
   {

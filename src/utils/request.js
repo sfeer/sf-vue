@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Vue from 'vue'
 
 // 创建 axios 实例
 const service = axios.create({
@@ -6,7 +7,15 @@ const service = axios.create({
   timeout: 6000
 })
 
-service.interceptors.response.use(res=>{
+service.interceptors.request.use(req => {
+  const token = Vue.ls.get('token')
+  if (token) {
+    req.headers['token'] = token
+  }
+  return req
+})
+
+service.interceptors.response.use(res => {
   return res.data
 })
 

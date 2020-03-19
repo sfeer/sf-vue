@@ -5,11 +5,14 @@ if (process.env.VUE_APP_PROJECT === 'SITE') {
   pages = {demo: 'src/main-demo.js'}
 } else if (process.env.VUE_APP_PROJECT === 'FLOW') {
   pages = {flow: 'src/main-flow.js'}
+} else if (process.env.VUE_APP_PROJECT === 'QYWX') {
+  pages = {flow: 'src/main-qywx.js'}
 } else {
   pages = {
     site: 'src/main-site.js',
     demo: 'src/main-demo.js',
-    flow: 'src/main-flow.js'
+    flow: 'src/main-flow.js',
+    qywx: 'src/main-qywx.js'
   }
 }
 

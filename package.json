@@ -5,10 +5,11 @@
   "scripts": {
     "serve:demo": "vue-cli-service serve --mode demo",
     "serve:flow": "vue-cli-service serve --mode flow",
-    "serve:site": "vue-cli-service serve --mode site",
     "serve:qywx": "vue-cli-service serve --mode qywx",
+    "serve:site": "vue-cli-service serve --mode site",
     "build": "vue-cli-service build",
-    "build:qywx": "vue-cli-service build --mode qywx"
+    "build:qywx": "vue-cli-service build --mode qywx",
+    "build:site": "vue-cli-service build --mode site"
   },
   "dependencies": {
     "ant-design-vue": "^1.4.12",
@@ -18,7 +19,7 @@
     "jsoneditor": "^8.6.3",
     "mockjs": "^1.1.0",
     "uuid": "^7.0.2",
-    "vant": "^2.5.5",
+    "vant": "^2.5.7",
     "vconsole": "^3.3.4",
     "vue": "^2.6.11",
     "vue-ls": "^3.2.1",

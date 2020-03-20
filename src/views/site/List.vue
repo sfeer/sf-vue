@@ -12,6 +12,7 @@
       <a-button class="btn" size="large">山东门户</a-button>
       <a-button class="btn" size="large">海南门户</a-button>
       <a-button class="btn" size="large">深圳门户</a-button>
+      <a-button class="btn" size="large" type="primary" @click="changeColor('#d346dd')">换肤</a-button>
     </div>
     <div class="main-content">
       <a-input-search placeholder="搜索标题" style="width:300px;margin-bottom:20px" size="large"/>
@@ -75,6 +76,10 @@
     },
 
     methods: {
+      // 换肤
+      changeColor(newColor) {
+      },
+
       loadData() {
         this.loading = true
         getSiteList().then(d => {
@@ -86,10 +91,6 @@
       add() {
         const routeUrl = this.$router.resolve('/site/init')
         window.open(routeUrl.href, '_blank')
-      },
-
-      dateFormat(timestamp, format = 'yyyy-MM-dd') {
-
       }
     }
   }

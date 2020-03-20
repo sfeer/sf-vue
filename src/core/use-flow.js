@@ -15,8 +15,3 @@ Vue.use(VueStorage, {
   name: 'ls',
   storage: 'local'
 })
-Vue.use({...VueStorage}, {
-  namespace: 'flow__',
-  name: 'ss',
-  storage: 'session'
-})

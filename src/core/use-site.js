@@ -9,10 +9,6 @@ import VueMeta from 'vue-meta'
 Vue.component('Aa', () => import('../views/site/box/Aa'))
 Vue.component('Bb', () => import('../views/site/box/Bb'))
 
-import(/* webpackChunkName: "green" */'../assets/site/theme-green.less')
-import(/* webpackChunkName: "red" */'../assets/site/theme-red.less')
-import(/* webpackChunkName: "yellow" */ '../assets/site/theme-yellow.less')
-
 Vue.use(VueResize)
 Vue.use(VueMeta, {
   refreshOnceOnNavigation: true

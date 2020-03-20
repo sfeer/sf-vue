@@ -3,10 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve:demo": "vue-cli-service serve --mode demo",
-    "serve:flow": "vue-cli-service serve --mode flow",
-    "serve:qywx": "vue-cli-service serve --mode qywx",
-    "serve:site": "vue-cli-service serve --mode site",
+    "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "build:qywx": "vue-cli-service build --mode qywx",
     "build:site": "vue-cli-service build --mode site"

@@ -1,27 +1,35 @@
 <template>
-  <div class="site-list-wrap">
+  <div class="site-list-wrap" :class="`theme-${primaryTheme}`">
     <div class="side-bar">
       <a-button
-        class="btn"
-        type="primary"
-        icon="plus"
-        size="large"
-        @click="add">新增
+          class="btn"
+          type="primary"
+          icon="plus"
+          size="large"
+          @click="add">新增
       </a-button>
       <a-button class="btn" size="large">北京门户</a-button>
       <a-button class="btn" size="large">山东门户</a-button>
       <a-button class="btn" size="large">海南门户</a-button>
       <a-button class="btn" size="large">深圳门户</a-button>
-      <a-button class="btn" size="large" type="primary" @click="changeColor('#d346dd')">换肤</a-button>
+      <div>
+        <a-tag
+            class="color-item"
+            :color="item.color" v-for="(item, index) in themeList"
+            :key="index"
+            @click="changeTheme(item.name)">
+          <a-icon type="check" v-if="item.name === primaryTheme"></a-icon>
+        </a-tag>
+      </div>
     </div>
     <div class="main-content">
       <a-input-search placeholder="搜索标题" style="width:300px;margin-bottom:20px" size="large"/>
       <a-table
-        :columns="columns"
-        :rowKey="d=>d.id"
-        :dataSource="data"
-        :pagination="false"
-        :loading="loading">
+          :columns="columns"
+          :rowKey="d=>d.id"
+          :dataSource="data"
+          :pagination="false"
+          :loading="loading">
         <template #name="text,record">
           <router-link :to="'/site/design/'+record.id">{{text}}</router-link>
         </template>
@@ -67,7 +75,14 @@
             dataIndex: 'ctime',
             customRender: v => ({children: datetimeFormat(v)})
           }
-        ]
+        ],
+
+        themeList: [
+          {name: 'red', color: '#f55b54'},
+          {name: 'green', color: '#87d068'},
+          {name: 'yellow', color: '#f5e357'}
+        ],
+        primaryTheme: 'red'
       }
     },
 
@@ -77,7 +92,8 @@
 
     methods: {
       // 换肤
-      changeColor(newColor) {
+      changeTheme(theme) {
+        this.primaryTheme = theme
       },
 
       loadData() {
@@ -101,6 +117,18 @@
     display: flex;
     height: 100vh;
 
+    &.theme-red {
+      background-color: lighten(#f55b54, 30);
+    }
+
+    &.theme-green {
+      background-color: lighten(#87d068, 30);
+    }
+
+    &.theme-yellow {
+      background-color: lighten(#f5e357, 30);
+    }
+
     .side-bar {
       width: 250px;
       border-right: 1px solid #ddd;
@@ -115,6 +143,24 @@
     .main-content {
       flex: auto;
       margin: 20px;
+    }
+  }
+
+  .color-item {
+    width: 20px;
+    height: 20px;
+    border-radius: 2px;
+    float: left;
+    cursor: pointer;
+    margin-right: 8px;
+    padding-left: 0;
+    padding-right: 0;
+    text-align: center;
+    color: #fff;
+    font-weight: 700;
+
+    i {
+      font-size: 14px;
     }
   }
 </style>

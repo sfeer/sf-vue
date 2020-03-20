@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '../store'
+import {getOauthUrl, getUserId} from '../api/qywx'
 
 Vue.use(VueRouter)
 
@@ -31,7 +32,9 @@ router.beforeEach((to, from, next) => {
     }
   } else if (qCode) {
     // 使用OAuth2返回的code获取用户标识，同时完成移动平台后台服务的认证
+    getUserId(qCode).then(d=>{
 
+    })
   } else {
     getOauthUrl(location.href).then(d => {
       location.href = d

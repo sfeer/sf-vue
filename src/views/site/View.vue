@@ -10,7 +10,14 @@
     data() {
       return {
         siteId: '',
-        boxs: []
+        boxs: [],
+        metas: []
+      }
+    },
+
+    metaInfo() {
+      return {
+        meta: this.metas
       }
     },
 
@@ -23,6 +30,12 @@
       getSite(this.siteId).then(d => {
         if (d.errcode === 0) {
           this.boxs = d.data.boxs
+
+          // 获取meta
+          this.metas = [
+            {content: 'haha', name: 'aaa'},
+            {content: 'hehe', name: 'bbb'}
+          ]
         } else {
           this.$message.error(d.errmsg)
         }

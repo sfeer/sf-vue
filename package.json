@@ -3,10 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "build:qywx": "vue-cli-service build --mode qywx",
-    "build:site": "vue-cli-service build --mode site"
+    "serve:demo": "vue-cli-service serve src/main-demo.js",
+    "serve:flow": "vue-cli-service serve src/main-flow.js",
+    "serve:qywx": "vue-cli-service serve src/main-qywx.js",
+    "serve:site": "vue-cli-service serve src/main-site.js",
+    "build:demo": "vue-cli-service build src/main-demo.js",
+    "build:flow": "vue-cli-service build src/main-flow.js",
+    "build:qywx": "vue-cli-service build src/main-qywx.js",
+    "build:site": "vue-cli-service build src/main-site.js"
   },
   "dependencies": {
     "ant-design-vue": "^1.4.12",

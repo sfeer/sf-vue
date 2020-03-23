@@ -31,7 +31,7 @@
           :pagination="false"
           :loading="loading">
         <template #name="text,record">
-          <router-link :to="'/site/design/'+record.id">{{text}}</router-link>
+          <router-link :to="'/design/'+record.id">{{text}}</router-link>
         </template>
       </a-table>
     </div>
@@ -101,11 +101,13 @@
         getSiteList().then(d => {
           this.data = d.data
           this.loading = false
+
+          document.dispatchEvent(new Event('render-event'))
         })
       },
 
       add() {
-        const routeUrl = this.$router.resolve('/site/init')
+        const routeUrl = this.$router.resolve('/init')
         window.open(routeUrl.href, '_blank')
       }
     }

@@ -39,6 +39,8 @@
         } else {
           this.$message.error(d.errmsg)
         }
+
+        document.dispatchEvent(new Event('render-event'))
       })
     }
   }

@@ -5,19 +5,19 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/site',
+    path: '/',
     component: () => import('../views/site/List')
   },
   {
-    path: '/site/init',
+    path: '/init',
     component: () => import('../views/site/Init')
   },
   {
-    path: '/site/design/:sid',
+    path: '/design/:sid',
     component: () => import('../views/site/Design')
   },
   {
-    path: '/site/view/:sid',
+    path: '/view/:sid',
     component: () => import('../views/site/View')
   }
 ]

@@ -1,4 +1,25 @@
+const path = require('path')
+
 const vueConfig = {
+  configureWebpack: config => {
+    if (process.env.NODE_ENV === 'production') {
+      // 预渲染
+      const PrerenderSPAPlugin = require('prerender-spa-plugin')
+      const Renderer = PrerenderSPAPlugin.PuppeteerRenderer
+
+      config.plugins.push(
+        new PrerenderSPAPlugin({
+          staticDir: path.join(__dirname, 'dist'),
+          routes: ['/', '/view/5DF1Bdf4d239c11B2Af7E2567DB41DE3'],
+          renderer: new Renderer({
+            headless: false,
+            renderAfterDocumentEvent: 'render-event'
+          })
+        })
+      )
+    }
+  },
+
   css: {
     loaderOptions: {
       less: {
@@ -8,24 +29,6 @@ const vueConfig = {
   },
 
   productionSourceMap: false
-}
-
-// 发布在show.longjitech.com上的多页应用
-if (process.env.VUE_APP_PROJECT === 'SITE') {
-  vueConfig.pages = {site: 'src/main-site.js'}
-} else if (process.env.VUE_APP_PROJECT === 'DEMO') {
-  vueConfig.pages = {demo: 'src/main-demo.js'}
-} else if (process.env.VUE_APP_PROJECT === 'FLOW') {
-  vueConfig.pages = {flow: 'src/main-flow.js'}
-} else if (process.env.VUE_APP_PROJECT === 'QYWX') {
-  vueConfig.pages = {qywx: 'src/main-qywx.js'}
-} else {
-  vueConfig.pages = {
-    site: 'src/main-site.js',
-    demo: 'src/main-demo.js',
-    flow: 'src/main-flow.js',
-    qywx: 'src/main-qywx.js'
-  }
 }
 
 module.exports = vueConfig

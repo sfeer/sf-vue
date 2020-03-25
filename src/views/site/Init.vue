@@ -52,7 +52,7 @@
       selectTemplate(temp) {
         initSite(temp).then(d=>{
           if (d.errcode === 0) {
-            this.$router.push('/design/' + d.data)
+            this.$router.push('/site/design/' + d.data)
           } else {
             this.$error(d.errmsg)
           }

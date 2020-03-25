@@ -1,16 +1,31 @@
 const path = require('path')
 
+const pageNames = []
+if (process.env.VUE_APP_PAGES) {
+  pageNames.push(...process.env.VUE_APP_PAGES.split(','))
+}
+
+let pages
+if(process.env.NODE_ENV === 'production') {
+  pages = {index: 'src/main.js'}
+  pageNames.forEach(d => {
+    pages[d] = `src/main-${d}.js`
+  })
+} else {
+  pages = undefined
+}
+
 const vueConfig = {
   configureWebpack: config => {
-    if (process.env.NODE_ENV === 'production') {
-      // 预渲染
+    if (process.env.VUE_APP_PRERENDER === 'true') {
+      // 网站预渲染
       const PrerenderSPAPlugin = require('prerender-spa-plugin')
       const Renderer = PrerenderSPAPlugin.PuppeteerRenderer
 
       config.plugins.push(
         new PrerenderSPAPlugin({
           staticDir: path.join(__dirname, 'dist'),
-          routes: ['/', '/view/5DF1Bdf4d239c11B2Af7E2567DB41DE3'],
+          routes: ['/'],
           renderer: new Renderer({
             headless: false,
             renderAfterDocumentEvent: 'render-event'
@@ -27,6 +42,8 @@ const vueConfig = {
       }
     }
   },
+
+  pages: pages,
 
   productionSourceMap: false
 }

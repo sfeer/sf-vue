@@ -445,7 +445,7 @@
       // 获取鼠标坐标
       _getPosition(event) {
         const rect = this.$refs.flow.getBoundingClientRect()
-        let ex = event.pageX - rect.left, ey = event.pageY - rect.top
+        let ex = event.clientX - rect.left, ey = event.clientY - rect.top
 
         // 子流程辅助框引起偏移
         if (this.subSize) {

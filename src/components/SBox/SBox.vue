@@ -133,7 +133,7 @@
 
       handleResize() {
         this.rootBox.w = this.$el.clientWidth
-        this.rootBox.h = this.$el.clientHeight
+        // this.rootBox.h = this.$el.clientHeight
         this.resizeBox(this.rootBox)
       },
 
@@ -242,8 +242,8 @@
           const rect = this.$el.getBoundingClientRect(),
             box = this.boxMap[this.cLine],
             line = box.line,
-            ex = e.pageX - rect.left - box.x,
-            ey = e.pageY - rect.top - box.y
+            ex = e.clientX - rect.left - box.x,
+            ey = e.clientY - rect.top - box.y
 
           if (line.way === 'v') {
             if (this.minW > ex) {

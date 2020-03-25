@@ -101,13 +101,11 @@
         getSiteList().then(d => {
           this.data = d.data
           this.loading = false
-
-          document.dispatchEvent(new Event('render-event'))
         })
       },
 
       add() {
-        const routeUrl = this.$router.resolve('/init')
+        const routeUrl = this.$router.resolve('/site/init')
         window.open(routeUrl.href, '_blank')
       }
     }

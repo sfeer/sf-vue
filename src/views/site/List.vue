@@ -31,7 +31,7 @@
           :pagination="false"
           :loading="loading">
         <template #name="text,record">
-          <router-link :to="'/design/'+record.id">{{text}}</router-link>
+          <router-link :to="'/site/design/'+record.id">{{text}}</router-link>
         </template>
       </a-table>
     </div>

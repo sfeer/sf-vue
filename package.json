@@ -6,7 +6,7 @@
     "serve:demo": "vue-cli-service serve src/main-demo.js",
     "serve:flow": "vue-cli-service serve src/main-flow.js",
     "serve:qywx": "vue-cli-service serve src/main-qywx.js",
-    "serve:site": "vue-cli-service serve src/main-site.js",
+    "serve:site": "vue-cli-service serve --open src/main-site.js",
     "build": "vue-cli-service build"
   },
   "dependencies": {

@@ -8,13 +8,15 @@
         :style="boxStyle(box)"
         @click="boxClick(box)">
         <div class="box-inner" @contextmenu.prevent="menuShow(box.id, $event)">
-          <a-button
-            v-if="cBox===box.id"
-            type="dashed"
-            icon="plus"
-            class="box-add"
-            @click="boxSelect">添加
-          </a-button>
+          <template v-if="cBox===box.id">
+            <a-button
+              type="dashed"
+              icon="plus"
+              class="box-add"
+              @click="boxSelect">添加
+            </a-button>
+            <a-button class="box-resize" icon="arrows-alt"></a-button>
+          </template>
           <component v-else-if="box.component" :is="box.component.name"/>
         </div>
       </div>
@@ -29,7 +31,6 @@
         @mousedown.prevent="lineDragStart(line.id)"></div>
       <div class="line-box" :style="lineBoxStyle" v-show="cLine"></div>
     </div>
-    <resize-observer @notify="handleResize"/>
   </div>
 </template>
 
@@ -55,7 +56,7 @@
 
       minW: {
         type: Number,
-        default: 100
+        default: 5
       },
 
       minH: {
@@ -78,8 +79,8 @@
           const box = this.boxs.find(b => b.line && b.line.id === this.cLine)
           return {
             top: (box.y + this.padding / 2) + 'px',
-            left: (box.x + this.padding / 2) + 'px',
-            width: (box.w - this.padding) + 'px',
+            left: `calc(${box.x}% + ${this.padding / 2}px)`,
+            width: `calc(${box.w}% - ${this.padding}px)`,
             height: (box.h - this.padding) + 'px'
           }
         } else {
@@ -111,11 +112,6 @@
 
     watch: {
       boxs() {
-        if (this.rootBox.w !== this.$el.clientWidth) {
-          // 根节点resize
-          this.rootBox.w = this.$el.clientWidth
-          this.resizeBox(this.rootBox)
-        }
         this.$emit('update')
       }
     },
@@ -129,12 +125,6 @@
           this.cBox = this.rootBox.id
           this.cLine = null
         }
-      },
-
-      handleResize() {
-        this.rootBox.w = this.$el.clientWidth
-        // this.rootBox.h = this.$el.clientHeight
-        this.resizeBox(this.rootBox)
       },
 
       // box选择小部件
@@ -160,20 +150,35 @@
       boxStyle(box) {
         return {
           top: box.y + 'px',
-          left: box.x + 'px',
-          width: box.w + 'px',
+          left: box.x + '%',
+          width: box.w + '%',
           height: box.h + 'px',
           padding: this.padding / 2 + 'px'
         }
       },
 
       lineStyle(line) {
-        return {
-          top: line.y + 'px',
-          left: line.x + 'px',
-          width: line.w + 'px',
-          height: line.h + 'px'
+        const box = this.boxMap[line.id]
+        if (line.way === 'v') {
+          return {
+            top: box.y + 'px',
+            left: line.x + '%',
+            width: this.padding + 'px',
+            height: (box.h - this.padding) + 'px',
+            margin: `${this.padding / 2}px 0 0 -${this.padding / 2}px`
+          }
+        } else if (line.way === 'h') {
+          return {
+            top: line.y + 'px',
+            left: box.x + '%',
+            width: `calc(${box.w}% - ${this.padding}px)`,
+            height: this.padding + 'px',
+            margin: `-${this.padding / 2}px 0 0 ${this.padding / 2}px`
+          }
+        } else {
+          return null
         }
+
       },
 
       boxClick(box) {
@@ -186,16 +191,13 @@
         this.$emit('lineClick', line)
       },
 
-      // 改变区域（递归）
+      // 改变区域（递归），保持分割线的百分比不变
       resizeBox(box) {
         if (box.line) {
-          const p = this.padding / 2, line = box.line
+          const line = box.line
           if (line.way === 'v') {
-            const vv = Math.round(box.w * line.pc / 100)
-            line.value = vv
-            line.x = box.x + vv - p
-            line.y = box.y + this.padding / 2
-            line.h = box.h - this.padding
+            const vv = box.w * line.pc / 100
+            line.x = box.x + vv
             const cc = this.boxs.filter(b => b.parent === box.id).sort((a, b) => a.x - b.x)
             cc[0].x = box.x
             cc[0].y = box.y
@@ -208,11 +210,8 @@
             cc[1].h = box.h
             this.resizeBox(cc[1])
           } else if (line.way === 'h') {
-            const vv = Math.round(box.h * line.pc / 100)
-            line.value = vv
-            line.y = box.y + vv - p
-            line.w = box.w - this.padding
-            line.x = box.x + this.padding / 2
+            const vv = box.h * line.pc / 100
+            line.y = box.y + vv
             const cc = this.boxs.filter(b => b.parent === box.id).sort((a, b) => a.y - b.y)
             cc[0].x = box.x
             cc[0].y = box.y
@@ -242,30 +241,26 @@
           const rect = this.$el.getBoundingClientRect(),
             box = this.boxMap[this.cLine],
             line = box.line,
-            ex = e.clientX - rect.left - box.x,
-            ey = e.clientY - rect.top - box.y
+            ex = (e.clientX - rect.left) / rect.width * 100,
+            ey = e.clientY - rect.top
 
           if (line.way === 'v') {
-            if (this.minW > ex) {
-              line.value = this.minW
-            } else if (this.minW > box.w - ex) {
-              line.value = box.w - this.minW
+            if (ex < box.x + this.minW) {
+              line.pc = this.minW / box.w * 100
+            } else if (ex > box.x + box.w - this.minW) {
+              line.pc = (box.w - this.minW) / box.w * 100
             } else {
-              line.value = ex
+              line.pc = (ex - box.x) / box.w * 100
             }
-            line.x = box.x + line.value - this.padding / 2
-            line.pc = line.value / box.w * 100
             this.$emit('lineMove', line.pc)
           } else if (line.way === 'h') {
-            if (this.minH > ey) {
-              line.value = this.minH
-            } else if (this.minH > box.h - ey) {
-              line.value = box.h - this.minH
+            if (ey < box.y + this.minH) {
+              line.pc = this.minH / box.h * 100
+            } else if (ey > box.y + box.h - this.minH) {
+              line.pc = (box.h - this.minH) / box.h * 100
             } else {
-              line.value = ey
+              line.pc = (ey - box.y) / box.h * 100
             }
-            line.y = box.y + line.value - this.padding / 2
-            line.pc = line.value / box.h * 100
             this.$emit('lineMove', line.pc)
           }
           this.resizeBox(box)
@@ -285,8 +280,7 @@
 
       // 对当前节点进行水平分割
       splitBoxH() {
-        const pp = this.boxMap[this.cBox],
-          hh = Math.round(pp.h / 2)
+        const pp = this.boxMap[this.cBox], hh = pp.h / 2
         const box1 = {
           id: uuid().replace(/-/g, ''),
           x: pp.x,
@@ -307,13 +301,9 @@
 
         pp.line = {
           id: pp.id,
-          x: pp.x + this.padding / 2,
-          y: pp.y + hh - this.padding / 2,
-          w: pp.w - this.padding,
-          h: this.padding,
+          y: pp.y + hh,
           way: 'h',
-          pc: 50,
-          value: hh
+          pc: 50
         }
 
         this.cBox = null
@@ -322,8 +312,8 @@
 
       // 对当前节点进行垂直分割
       splitBoxV() {
-        const pp = this.boxMap[this.cBox],
-          vv = Math.round(pp.w / 2)
+        const pp = this.boxMap[this.cBox], vv = pp.w / 2
+
         const box1 = {
           id: uuid().replace(/-/g, ''),
           x: pp.x,
@@ -344,13 +334,9 @@
 
         pp.line = {
           id: pp.id,
-          x: pp.x + vv - this.padding / 2,
-          y: pp.y + this.padding / 2,
-          w: this.padding,
-          h: pp.h - this.padding,
+          x: pp.x + vv,
           way: 'v',
-          pc: 50,
-          value: vv
+          pc: 50
         }
 
         this.cBox = null
@@ -380,7 +366,7 @@
           h: oldBox.h + 100 + this.padding,
         }
 
-        line.pc = Math.round(line.value / newBox.h * 100)
+        line.pc = line.value / newBox.h * 100
         newBox.line = line
 
         const addBox = {
@@ -475,6 +461,13 @@
       border-radius: 5px;
       width: 100%;
       height: 100%;
+    }
+
+    .box-resize {
+      position: absolute;
+      right: 5px;
+      bottom: 5px;
+      transform: rotate(90deg);
     }
   }
 </style>

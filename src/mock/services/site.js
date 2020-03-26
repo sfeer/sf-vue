@@ -12,6 +12,18 @@ const templateList = [
     id: Random.increment(), name: '空白', group: '常用', img: Random.dataImage('250x180'),
     boxs: [
       {
+        "id": "a2cbbcccb4a0456ebd5779ec7f693214",
+        "x": 0,
+        "y": 0,
+        "w": 100,
+        "h": 650
+      }
+    ]
+  },
+  {
+    id: Random.increment(), name: '首页', group: '推荐', img: Random.dataImage('250x180'),
+    boxs: [
+      {
         "id": "a2cbbcccb4a0456ebd5779ec7f69cda5",
         "x": 0,
         "y": 0,
@@ -71,9 +83,6 @@ const templateList = [
         "parent": "1c9cfa03d0434709b4eb661cf2ce2e98"
       }
     ]
-  },
-  {
-    id: Random.increment(), name: '首页', group: '推荐', img: Random.dataImage('250x180')
   },
   {
     id: Random.increment(), name: '详情', group: '推荐', img: Random.dataImage('250x180')

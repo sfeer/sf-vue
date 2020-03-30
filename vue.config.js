@@ -45,7 +45,9 @@ const vueConfig = {
 
   pages: pages,
 
-  productionSourceMap: false
+  productionSourceMap: false,
+
+  // transpileDependencies: ['ant-design-vue']
 }
 
 module.exports = vueConfig

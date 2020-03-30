@@ -19,6 +19,10 @@ const routes = [
   {
     path: '/site/view/:sid',
     component: () => import('../views/site/View')
+  },
+  {
+    path: '/site/x-design',
+    component: () => import('../views/site/XDesign')
   }
 ]
 

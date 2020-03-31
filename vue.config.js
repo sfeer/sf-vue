@@ -6,7 +6,7 @@ if (process.env.VUE_APP_PAGES) {
 }
 
 let pages
-if(process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production') {
   pages = {index: 'src/main.js'}
   pageNames.forEach(d => {
     pages[d] = `src/main-${d}.js`
@@ -39,6 +39,18 @@ const vueConfig = {
     loaderOptions: {
       less: {
         javascriptEnabled: true
+      }
+    }
+  },
+
+  devServer: {
+    port: 8000,
+    proxy: {
+      '/ewebeditor': {
+        target: 'http://192.168.0.78:8080/ewebeditor/',
+        changeOrigin: true,
+        logLevel: 'debug',
+        pathRewrite: {'^/ewebeditor': ''}
       }
     }
   },

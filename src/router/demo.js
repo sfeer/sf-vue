@@ -22,13 +22,14 @@ const routes = [
   // 富文本编辑器
   {
     path: '/demo/rte',
-    component: () => import('../views/demo/RichTextEditor')
+    // component: () => import('../views/demo/rich-text-editor/Quill')
+    component: () => import('../views/demo/rich-text-editor/EWebEditor')
   },
 
   // Markdown编辑器
   {
     path: '/demo/mde',
-    component: () => import('../views/demo/MarkdownEditor')
+    component: () => import('../views/demo/markdown-editor/SimpleMde')
   },
 
   {

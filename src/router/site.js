@@ -23,6 +23,10 @@ const routes = [
   {
     path: '/site/x-design',
     component: () => import('../views/site/XDesign')
+  },
+  {
+    path: '/site/t-design',
+    component: () => import('../views/site/TDesign')
   }
 ]
 

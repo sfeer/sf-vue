@@ -3,7 +3,7 @@
 </template>
 
 <script>
-  import SBoxView from '../../components/SBox/SBoxView'
+  import SBoxView from '../../components/Box/SBoxView'
   import {getSite} from '../../api/site'
 
   export default {

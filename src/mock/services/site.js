@@ -15,7 +15,7 @@ const templateList = [
         "id": "a2cbbcccb4a0456ebd5779ec7f693214",
         "x": 0,
         "y": 0,
-        "w": 100,
+        "w": 800,
         "h": 650
       }
     ]

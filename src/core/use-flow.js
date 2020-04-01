@@ -6,7 +6,7 @@ import './antdv'
 
 // 额外组件
 import {Breadcrumb} from 'ant-design-vue'
-import SFlow from '../components/SFlow/SFlow'
+import SFlow from '../components/Flow/SFlow'
 
 Vue.use(Breadcrumb)
 Vue.component(SFlow.name, SFlow)

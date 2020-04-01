@@ -44,7 +44,6 @@ const vueConfig = {
   },
 
   devServer: {
-    port: 8000,
     proxy: {
       '/ewebeditor': {
         target: 'http://192.168.0.78:8080/ewebeditor/',

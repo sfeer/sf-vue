@@ -21,11 +21,11 @@ const routes = [
     component: () => import('../views/site/View')
   },
   {
-    path: '/site/x-design',
+    path: '/site/x',
     component: () => import('../views/site/XDesign')
   },
   {
-    path: '/site/t-design',
+    path: '/site/t',
     component: () => import('../views/site/TDesign')
   }
 ]

@@ -6,7 +6,7 @@
 </template>
 
 <script>
-  import XBox from '../../components/XBox/XBox'
+  import XBox from '../../components/Box/XBox'
   import {v4 as uuid} from 'uuid'
 
   export default {

@@ -119,7 +119,7 @@
 </template>
 
 <script>
-  import SBox from '../../components/SBox/SBox'
+  import SBox from '../../components/Box/SBox'
   import {getSite, publishSite, saveSite} from '../../api/site'
   import {Menu, Dropdown, Slider, Drawer} from 'ant-design-vue'
   import {timeFormat} from '../../utils/util'

@@ -168,6 +168,7 @@
 
     created() {
       setTimeout(() => {
+        this.siteId = '4Cbb97fC66f4EB77b5d461d5A01CdcA6'
         this.siteName = '哈哈'
         this.boxs = [{id: 'a2cbbcccb4a0456ebd5779ec7f693214', x: 0, y: 0, w: 800, h: 650}]
       }, 1200)

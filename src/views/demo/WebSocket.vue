@@ -4,8 +4,8 @@
 <script>
   export default {
     created() {
-      console.log(WebSocket, window.location.host)
-      const ws = new WebSocket(`ws://${window.location.host}/websocket/chat/Sfeer`)
+      console.log(WebSocket)
+      const ws = new WebSocket(`ws://${location.host}/websocket/chat/Sfeer`)
       ws.onopen = () => {
         ws.send('hello')
       }

@@ -14,19 +14,12 @@ const routes = [
   },
   {
     path: '/site/design/:sid',
-    component: () => import('../views/site/Design')
+    // component: () => import('../views/site/Design')
+    component: () => import('../views/site/TDesign')
   },
   {
     path: '/site/view/:sid',
     component: () => import('../views/site/View')
-  },
-  {
-    path: '/site/x',
-    component: () => import('../views/site/XDesign')
-  },
-  {
-    path: '/site/t',
-    component: () => import('../views/site/TDesign')
   }
 ]
 

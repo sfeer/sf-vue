@@ -66,19 +66,13 @@
 
       <div v-else-if="toolType==='line'" style="line-height: 32px">{{splitValue}}</div>
     </div>
-    <div
-      ref="main"
-      class="design-main"
-      :style="{height:mHeight + 'px',margin:'30px 0'}">
+    <div ref="main" class="design-main">
       <t-box
         ref="sbox"
         :boxs="boxs"
         @boxClick="boxClick"
         @boxSelect="boxSelect"
         @boxRightClick="boxRightClick"
-        @lineDown="lineDown"
-        @lineMove="lineMove"
-        @lineClick="lineClick"
         @update="mainUpdate"/>
       <a-menu
         class="content-menu"
@@ -129,6 +123,7 @@
   export default {
     data() {
       return {
+        siteId: this.$route.params.sid,
         siteName: '无标题',
 
         editTitle: false,
@@ -167,11 +162,19 @@
     },
 
     created() {
-      setTimeout(() => {
-        this.siteId = '4Cbb97fC66f4EB77b5d461d5A01CdcA6'
-        this.siteName = '哈哈'
-        this.boxs = [{id: 'a2cbbcccb4a0456ebd5779ec7f693214', x: 0, y: 0, w: 800, h: 650}]
-      }, 1200)
+      if (this.siteId) {
+        getSite(this.siteId).then(res => {
+          if (res.errcode === 0) {
+            const d = res.data
+            this.siteName = d.name
+            this.boxs = d.boxs
+          } else {
+            this.$message.error(res.errmsg)
+          }
+        })
+      }
+
+      document.title = this.siteName
     },
 
     computed: {

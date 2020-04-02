@@ -1,13 +1,9 @@
-<!--
-    <div>在SBox的基础上</div>
-    <div>#1 去除分割线调节</div>
-    <div>#2 在每个showBoxs的右下角显示可拖拽的图标</div>
-    <div>#3 在父节点有空闲空间时可以变大、也可以变小（不能小于最小高宽）</div>
-    <div>#4 空闲的高宽，可以在递归后保存在每个box属性中（freeW，freeH）</div>
--->
-
 <template>
-  <div class="tbox-view" @mousemove="handleDrag" @mouseup="handleDragEnd">
+  <div
+      class="tbox-view"
+      :style="{height:mainHeight}"
+      @mousemove="handleDrag"
+      @mouseup="handleDragEnd">
     <div class="boxs">
       <div
           v-for="box in showBoxs"
@@ -82,6 +78,11 @@
         return this.boxs.find(d => d.parent === undefined)
       },
 
+      // 主面板高度
+      mainHeight() {
+        return this.rootBox ? ((this.rootBox.h + 100) + 'px') : null
+      },
+
       // 右侧调节栏样式
       boxLineColStyle() {
         if (this.cBox) {
@@ -126,15 +127,14 @@
       // 清空根节点
       clearRoot() {
         if (this.rootBox) {
-          delete this.rootBox.line
+          delete this.rootBox.mode
           this.boxs.splice(0, this.boxs.length, this.rootBox)
           this.cBox = this.rootBox.id
         }
       },
 
       handleResize() {
-        this.rootBox.w = this.$el.clientWidth
-        this.resizeBox(this.rootBox)
+        this.autoWidthBox(this.rootBox, this.$el.clientWidth)
       },
 
       // box选择小部件
@@ -172,17 +172,18 @@
       },
 
       // 自动改变区域（递归）
-      autoBox(box, width) {
+      autoWidthBox(box, width) {
+        const vv = width / box.w, childs = this.boxs.filter(b => b.parent === box.id)
         if (box.mode === 'row') {
-          const cc = this.boxs.filter(b => b.parent === box.id).forEach(bb => {
-            this.autoBox(bb, width)
+          childs.forEach(bb => {
+            bb.x = box.x
+            this.autoWidthBox(bb, bb.w * vv)
           })
         } else if (box.mode === 'col') {
-          const cc = this.boxs.filter(b => b.parent === box.id).sort((a, b) => a.x - b.x)
-          const vv = Math.round(cc[0].w * width / box.w)
-          cc[1].x = box.x + vv
-          this.autoBox(cc[0], vv)
-          this.autoBox(cc[1], width - vv)
+          childs.forEach(bb => {
+            bb.x = bb.x * vv
+            this.autoWidthBox(bb, bb.w * vv)
+          })
         }
         box.w = width
       },
@@ -260,6 +261,7 @@
             }
           } else {
             // 根结点
+            scrollBy(0, height - box.h)
             box.h = height
           }
         }
@@ -370,10 +372,8 @@
 
 <style lang="less" scoped>
   .tbox-view {
-    width: 100%;
-    height: 100%;
-    background: #f3f3f3;
     position: relative;
+    background-color: #f3f3f3;
 
     .line {
       position: absolute;

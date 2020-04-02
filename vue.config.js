@@ -50,6 +50,14 @@ const vueConfig = {
         changeOrigin: true,
         logLevel: 'debug',
         pathRewrite: {'^/ewebeditor': ''}
+      },
+
+      '/websocket': {
+        target: 'http://127.0.0.1:9000/',
+        ws: true,
+        changeOrigin: true,
+        logLevel: 'debug',
+        pathRewrite: {'^/websocket': ''}
       }
     }
   },

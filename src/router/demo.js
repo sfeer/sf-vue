@@ -35,6 +35,12 @@ const routes = [
   {
     path: '/demo/clone',
     component: () => import('../views/demo/Clone')
+  },
+
+  // WebSocket
+  {
+    path: '/demo/ws',
+    component: ()=>import('../views/demo/WebSocket')
   }
 ]
 

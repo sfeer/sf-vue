@@ -1,4 +1,1 @@
-> 1%
-chrome 32
-not ie 11
-not op_mini all
+last 2 chrome version

@@ -3,7 +3,8 @@
       class="tbox-view"
       :style="{height:mainHeight}"
       @mousemove="handleDrag"
-      @mouseup="handleDragEnd">
+      @mouseup="handleDragEnd"
+      @mouseleave="handleLeave">
     <div class="boxs">
       <div
           v-for="box in showBoxs"
@@ -171,7 +172,7 @@
         this.$emit('boxClick', box)
       },
 
-      // 自动改变区域（递归）
+      // 自动改变区域宽度（递归），等比例缩放
       autoWidthBox(box, width) {
         const vv = width / box.w, childs = this.boxs.filter(b => b.parent === box.id)
         if (box.mode === 'row') {
@@ -186,6 +187,22 @@
           })
         }
         box.w = width
+      },
+
+      // 自动改变区域x坐标（递归）
+      autoXBox(box, add) {
+        this.boxs.filter(b => b.parent === box.id).forEach(bb => {
+          this.autoXBox(bb, add)
+        })
+        box.x += add
+      },
+
+      // 自动改变区域y坐标（递归）
+      autoYBox(box, add) {
+        this.boxs.filter(b => b.parent === box.id).forEach(bb => {
+          this.autoYBox(bb, add)
+        })
+        box.y += add
       },
 
       // 调整区域（递归）
@@ -210,7 +227,7 @@
               if (add !== 0) {
                 // 右侧区域调整横坐标
                 others.filter(d => d.x > box.x).forEach(b => {
-                  b.x += add
+                  this.autoXBox(b, add)
                 })
                 box.w += add
               }
@@ -251,7 +268,7 @@
 
               // 下侧区域调整横坐标
               others.filter(d => d.y > box.y).forEach(b => {
-                b.y += add
+                this.autoYBox(b, add)
               })
               box.h += add
             } else if (parent.mode === 'col') {
@@ -285,6 +302,11 @@
 
       // 主面板拖拽结束事件
       handleDragEnd() {
+        this.lineType = null
+      },
+
+      // 主面板鼠标离开事件
+      handleLeave() {
         this.lineType = null
       },
 

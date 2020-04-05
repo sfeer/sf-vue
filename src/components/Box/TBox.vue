@@ -409,7 +409,7 @@
           }
 
           this.boxs.splice(this.boxs.findIndex(b => b.id === box.id), 1)
-          this.cBox = others[0].id
+          this.cBox = null
         }
       }
     }

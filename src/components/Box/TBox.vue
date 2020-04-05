@@ -250,6 +250,13 @@
             }
           }
         }
+
+        // 防抖处理
+        this.bBoxTimeout && clearTimeout(this.bBoxTimeout)
+        this.bBoxTimeout = setTimeout(() => {
+          // 触发watch
+          this.boxs.splice(0, this.boxs.length, ...this.boxs)
+        }, 300)
       },
 
       // 调整区域（递归）
@@ -282,6 +289,13 @@
             box.h = height
           }
         }
+
+        // 防抖处理
+        this.bBoxTimeout && clearTimeout(this.bBoxTimeout)
+        this.bBoxTimeout = setTimeout(() => {
+          // 触发watch
+          this.boxs.splice(0, this.boxs.length, ...this.boxs)
+        }, 300)
       },
 
       // 主面板拖拽事件，须谨慎使用
@@ -366,26 +380,36 @@
         const box = this.boxMap[this.cBox]
 
         if (box.id === this.rootBox.id) {
-          console.log('不能删除根节点')
+          this.$message.error('不能删除根节点')
         } else {
           const parent = this.boxMap[box.parent],
-            next = this.boxs.find(b => b.parent === box.parent && b.id !== box.id)
+            others = this.boxs.filter(d => d.parent === box.parent && d.id !== box.id)
 
-          if (parent.id === this.rootBox.id) {
-            delete next.parent
-          } else {
-            next.parent = parent.parent
+          if (parent.mode === 'col') {
+            others.filter(d => d.x > box.x).forEach(bb => {
+              this.autoXBox(bb, -box.w)
+            })
+            this.resizeBoxW(parent, parent.w - box.w)
+          } else if (parent.mode === 'row') {
+            others.filter(d => d.y > box.y).forEach(bb => {
+              this.autoYBox(bb, -box.h)
+            })
+            this.resizeBoxH(parent, parent.h - box.h)
           }
 
-          next.x = parent.x
-          next.y = parent.y
-          next.w = parent.w
-          next.h = parent.h
+          if (others.length === 1) {
+            // 唯一节点，删除父节点
+            const other = others[0]
+            if (parent.id === this.rootBox.id) {
+              delete other.parent
+            } else {
+              other.parent = parent.parent
+            }
+            this.boxs.splice(this.boxs.findIndex(b => b.id === parent.id), 1)
+          }
 
-          this.resizeBox(next)
           this.boxs.splice(this.boxs.findIndex(b => b.id === box.id), 1)
-          this.boxs.splice(this.boxs.findIndex(b => b.id === parent.id), 1)
-          this.cBox = next.id
+          this.cBox = others[0].id
         }
       }
     }

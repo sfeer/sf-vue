@@ -1,5 +1,5 @@
 <template>
-  <div class="design-wrapper">
+  <div class="design-wrapper" @click="mainClick">
     <div class="design-header">
       <a-button icon="left" type="link" @click="goback"/>
       <a-input ref="title" class="title-input" v-show="editTitle" v-model="siteName" @blur="titleInputBlur"></a-input>
@@ -202,6 +202,10 @@
     },
 
     methods: {
+      mainClick() {
+        this.contentMenuVisible = false
+      },
+
       // 历史记录撤销
       hisRevoke() {
         this.useHistory = true
@@ -247,7 +251,7 @@
       // 获取鼠标坐标
       _getPosition(event) {
         const rect = this.$el.getBoundingClientRect()
-        return {ex: event.pageX - rect.left, ey: event.pageY - rect.top}
+        return {ex: event.clientX - rect.left, ey: event.clientY - rect.top}
       },
 
       // 右键菜单

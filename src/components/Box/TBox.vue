@@ -120,6 +120,58 @@
     },
 
     methods: {
+      // 新增一行（递归）
+      autoAddRow(box) {
+        if (box.parent) {
+          const parent = this.boxMap[box.parent]
+          if (parent.mode === 'col') {
+            this.autoAddRow(parent)
+          } else if (parent.mode === 'row') {
+            // 调整父节点
+            this.resizeBoxH(parent, parent.h + 100)
+            // 调整后续节点
+            this.boxs.filter(d => d.parent === box.parent && d.y > box.y).forEach(dd => {
+              this.autoYBox(dd, 100)
+            })
+            this.boxs.splice(this.boxs.findIndex(b => b.id === box.id) + 1, 0, {
+              id: uuid().replace(/-/g, ''),
+              x: box.x,
+              y: box.y + box.h,
+              w: parent.w,
+              h: 100,
+              parent: parent.id
+            })
+          }
+        } else {
+          const newRoot = {
+            id: uuid().replace(/-/g, ''),
+            x: box.x,
+            y: box.y,
+            w: box.w,
+            h: box.h + 100,
+            mode: 'row'
+          }
+          this.boxs.splice(0, 0, {
+            id: uuid().replace(/-/g, ''),
+            x: box.x,
+            y: box.y + box.h,
+            w: box.w,
+            h: 100,
+            parent: newRoot.id
+          }, newRoot)
+          box.parent = newRoot.id
+        }
+      },
+
+      // 新增一行
+      addRow() {
+        if (this.cBox) {
+          this.autoAddRow(this.boxMap[this.cBox])
+        } else {
+          this.$message.error('请选择区域操作！')
+        }
+      },
+
       // 调整线开始拖拽
       lineDragStart(type) {
         this.lineType = type

@@ -38,7 +38,7 @@
           <a-menu-item key="3">水平分割</a-menu-item>
           <a-menu-item key="4">垂直分割</a-menu-item>
           <a-menu-divider/>
-          <a-menu-item key="5" @click="add">全局插入区域</a-menu-item>
+          <a-menu-item key="5" @click="addRow">插入区域</a-menu-item>
           <a-menu-item key="6">删除区域</a-menu-item>
           <a-menu-divider/>
           <a-menu-item key="8" @click="clearMain">清空</a-menu-item>
@@ -82,12 +82,8 @@
         <a-menu-item key="1" @click="contentMenuClick('hh')">水平分割</a-menu-item>
         <a-menu-item key="2" @click="contentMenuClick('vv')">垂直分割</a-menu-item>
         <a-menu-divider/>
-        <a-menu-item key="3">上方插入</a-menu-item>
-        <a-menu-item key="4">下方插入</a-menu-item>
-        <a-menu-item key="5">左边插入</a-menu-item>
-        <a-menu-item key="6">右边插入</a-menu-item>
-        <a-menu-divider/>
-        <a-menu-item key="7" @click="contentMenuClick('remove')">删除</a-menu-item>
+        <a-menu-item key="3" @click="contentMenuClick('add')">新增一行</a-menu-item>
+        <a-menu-item key="4" @click="contentMenuClick('remove')">删除</a-menu-item>
       </a-menu>
     </div>
 
@@ -132,8 +128,6 @@
 
         sidebarType: null,
         sidebarVisible: false,
-
-        mHeight: 650,
 
         splitValue: 0,
         boxs: [],
@@ -202,7 +196,14 @@
     },
 
     methods: {
+      // 添加一行
+      addRow() {
+        this.$refs.sbox.addRow()
+      },
+
+      // 全局点击事件
       mainClick() {
+        // 关闭右键菜单
         this.contentMenuVisible = false
       },
 
@@ -232,6 +233,8 @@
           this.hh()
         } else if (type === 'remove') {
           this.remove()
+        } else if (type === 'add') {
+          this.addRow()
         }
         this.contentMenuVisible = false
       },
@@ -317,11 +320,6 @@
       // 垂直分割
       vv() {
         this.$refs.sbox.splitBoxV()
-      },
-
-      add() {
-        this.$refs.sbox.addRow()
-        this.mHeight = this.boxs.find(b => b.parent === undefined).h
       },
 
       remove() {

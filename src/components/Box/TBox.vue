@@ -33,7 +33,7 @@
   import {v4 as uuid} from 'uuid'
 
   export default {
-    name: 'SBox',
+    name: 'TBox',
 
     data() {
       return {

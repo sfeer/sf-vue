@@ -62,6 +62,7 @@
       <a-button-group class="group" v-if="toolType==='box'">
         <a-button @click="hh">水平分割</a-button>
         <a-button @click="vv">垂直分割</a-button>
+        <a-button @click="lock">锁定800宽度</a-button>
       </a-button-group>
 
       <div v-else-if="toolType==='line'" style="line-height: 32px">{{splitValue}}</div>
@@ -196,6 +197,11 @@
     },
 
     methods: {
+      // 锁定宽度
+      lock() {
+        this.$refs.sbox.lockWidth(800)
+      },
+
       // 添加一行
       addRow() {
         this.$refs.sbox.addRow()

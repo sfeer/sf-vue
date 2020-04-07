@@ -1,24 +1,24 @@
 <template>
   <div
-      class="tbox-view"
-      :style="{height:mainHeight}"
-      @mousemove="handleDrag"
-      @mouseup="handleDragEnd"
-      @mouseleave="handleLeave">
+    class="tbox-view"
+    :style="{height:mainHeight}"
+    @mousemove="handleDrag"
+    @mouseup="handleDragEnd"
+    @mouseleave="handleLeave">
     <div class="boxs">
       <div
-          v-for="box in showBoxs"
-          :key="box.id"
-          :class="['box', {active:cBox===box.id}]"
-          :style="boxStyle(box)"
-          @click="boxClick(box)"
-          @contextmenu.prevent="menuShow(box.id, $event)">
+        v-for="box in showBoxs"
+        :key="box.id"
+        :class="['box', {active:cBox===box.id}]"
+        :style="boxStyle(box)"
+        @click="boxClick(box)"
+        @contextmenu.prevent="menuShow(box.id, $event)">
         <a-button
-            v-if="cBox===box.id"
-            type="dashed"
-            icon="plus"
-            class="box-add"
-            @click="boxSelect">添加
+          v-if="cBox===box.id"
+          type="dashed"
+          icon="plus"
+          class="box-add"
+          @click="boxSelect">添加
         </a-button>
         <component v-else-if="box.component" :is="box.component.name"/>
       </div>
@@ -88,10 +88,14 @@
       boxLineColStyle() {
         if (this.cBox) {
           const box = this.boxMap[this.cBox]
-          return {
-            left: (box.x + box.w - 10) + 'px',
-            top: (box.y + 10) + 'px',
-            height: (box.h - 20) + 'px'
+          if (box.lw) {
+            return null
+          } else {
+            return {
+              left: (box.x + box.w - 10) + 'px',
+              top: (box.y + 10) + 'px',
+              height: (box.h - 20) + 'px'
+            }
           }
         } else {
           return null
@@ -102,10 +106,18 @@
       boxLineRowStyle() {
         if (this.cBox) {
           const box = this.boxMap[this.cBox]
-          return {
-            top: (box.y + box.h - 10) + 'px',
-            left: (box.x + 10) + 'px',
-            width: (box.w - 20) + 'px'
+          if (box.lw) {
+            return {
+              top: (box.y + box.h - 10) + 'px',
+              left: (box.lx + 10) + 'px',
+              width: (box.lw - 20) + 'px'
+            }
+          } else {
+            return {
+              top: (box.y + box.h - 10) + 'px',
+              left: (box.x + 10) + 'px',
+              width: (box.w - 20) + 'px'
+            }
           }
         } else {
           return null
@@ -120,6 +132,22 @@
     },
 
     methods: {
+      // 锁定宽度
+      lockWidth(width) {
+        if (this.cBox) {
+          const box = this.boxMap[this.cBox]
+          if (width > box.w) {
+            this.$message.error('锁定宽度不能大于原宽度')
+          } else {
+            box.lx = box.x + (box.w - width) / 2
+            box.lw = width
+            this.boxs.splice(this.boxs.findIndex(b => b.id === box.id), box)
+          }
+        } else {
+          this.$message.error('请选择区域操作！')
+        }
+      },
+
       // 新增一行（递归）
       autoAddRow(box) {
         if (box.parent) {
@@ -180,8 +208,13 @@
       // 清空根节点
       clearRoot() {
         if (this.rootBox) {
-          delete this.rootBox.mode
-          this.boxs.splice(0, this.boxs.length, this.rootBox)
+          this.boxs.splice(0, this.boxs.length, {
+            id: this.rootBox.id,
+            x: 0,
+            y: 0,
+            w: this.$el.clientWidth,
+            h: this.rootBox.h
+          })
           this.cBox = this.rootBox.id
         }
       },
@@ -211,11 +244,21 @@
       },
 
       boxStyle(box) {
-        return {
-          top: box.y + 'px',
-          left: box.x + 'px',
-          width: box.w + 'px',
-          height: box.h + 'px'
+        if (box.lw) {
+          // 锁定宽度
+          return {
+            top: box.y + 'px',
+            left: box.lx + 'px',
+            width: box.lw + 'px',
+            height: box.h + 'px'
+          }
+        } else {
+          return {
+            top: box.y + 'px',
+            left: box.x + 'px',
+            width: box.w + 'px',
+            height: box.h + 'px'
+          }
         }
       },
 
@@ -224,21 +267,38 @@
         this.$emit('boxClick', box)
       },
 
-      // 自动改变区域宽度（递归），等比例缩放
+      // 自动改变区域宽度（递归）
       autoWidthBox(box, width) {
-        const vv = width / box.w, childs = this.boxs.filter(b => b.parent === box.id)
-        if (box.mode === 'row') {
-          childs.forEach(bb => {
-            bb.x = box.x
-            this.autoWidthBox(bb, bb.w * vv)
-          })
-        } else if (box.mode === 'col') {
-          childs.forEach(bb => {
-            bb.x = bb.x * vv
-            this.autoWidthBox(bb, bb.w * vv)
-          })
+        if (width !== box.w) {
+          const childs = this.boxs.filter(b => b.parent === box.id)
+          if (box.lw) {
+            // 锁定宽度
+            if (width < box.lw) {
+              width = box.lw
+            }
+            const add = box.x + (width - box.lw) / 2 - box.lx
+            childs.forEach(b => {
+              this.autoXBox(b, add)
+            })
+            box.lx += add
+          } else {
+            // 等比例缩放
+            const vv = width / box.w
+            if (box.mode === 'row') {
+              childs.forEach(bb => {
+                bb.x = box.x
+                this.autoWidthBox(bb, bb.w * vv)
+              })
+            } else if (box.mode === 'col') {
+              childs.forEach(bb => {
+                bb.x = bb.x * vv
+                this.autoWidthBox(bb, bb.w * vv)
+              })
+            }
+          }
+
+          box.w = width
         }
-        box.w = width
       },
 
       // 自动改变区域x坐标（递归）
@@ -266,16 +326,28 @@
         if (box.w !== width) {
           if (box.parent) {
             const parent = this.boxMap[box.parent],
-              others = this.boxs.filter(d => d.parent === box.parent && d.id !== box.id)
+              others = this.boxs.filter(d => d.parent === box.parent && d.id !== box.id),
+              ws = others.map(d => d.w)
             if (parent.mode === 'col') {
               let add = width - box.w // 期望变动距离
-              const ow = parent.w
-              this.resizeBoxW(parent, parent.w + add)
 
-              if (add > parent.w - ow) {
-                // 实际变动距离
-                add = parent.w - ow
+              if (parent.lw) {
+                // 锁定宽度
+                const sum = ws.reduce((a, b) => a + b)
+                if (width + sum > parent.lw) {
+                  // 实际变动距离
+                  add = parent.lw - sum - box.w
+                }
+              } else {
+                const ow = parent.w
+                this.resizeBoxW(parent, parent.w + add)
+
+                if (add > parent.w - ow) {
+                  // 实际变动距离
+                  add = parent.w - ow
+                }
               }
+
               if (add !== 0) {
                 // 右侧区域调整横坐标
                 others.filter(d => d.x > box.x).forEach(b => {
@@ -284,13 +356,21 @@
                 box.w += add
               }
             } else if (parent.mode === 'row') {
-              const max = Math.max(width, ...others.map(x => x.w))
-              this.resizeBoxW(parent, max)
-
-              if (width < parent.w) {
-                box.w = width
+              if (parent.lw) {
+                if (width < parent.lw) {
+                  box.w = width
+                } else {
+                  box.w = parent.lw
+                }
               } else {
-                box.w = parent.w
+                const max = Math.max(width, ...ws)
+                this.resizeBoxW(parent, max)
+
+                if (width < parent.w) {
+                  box.w = width
+                } else {
+                  box.w = parent.w
+                }
               }
             }
           } else {
@@ -302,13 +382,6 @@
             }
           }
         }
-
-        // 防抖处理
-        this.bBoxTimeout && clearTimeout(this.bBoxTimeout)
-        this.bBoxTimeout = setTimeout(() => {
-          // 触发watch
-          this.boxs.splice(0, this.boxs.length, ...this.boxs)
-        }, 300)
       },
 
       // 调整区域（递归）
@@ -341,13 +414,6 @@
             box.h = height
           }
         }
-
-        // 防抖处理
-        this.bBoxTimeout && clearTimeout(this.bBoxTimeout)
-        this.bBoxTimeout = setTimeout(() => {
-          // 触发watch
-          this.boxs.splice(0, this.boxs.length, ...this.boxs)
-        }, 300)
       },
 
       // 主面板拖拽事件，须谨慎使用
@@ -363,6 +429,13 @@
           } else if (this.lineType === 'row') {
             this.resizeBoxH(box, ey)
           }
+
+          // 防抖处理
+          this.bBoxTimeout && clearTimeout(this.bBoxTimeout)
+          this.bBoxTimeout = setTimeout(() => {
+            // 触发watch
+            this.boxs.splice(0, this.boxs.length, ...this.boxs)
+          }, 300)
         }
       },
 
@@ -379,21 +452,22 @@
       // 对当前节点进行水平分割
       splitBoxH() {
         const pp = this.boxMap[this.cBox],
-          hh = Math.round(pp.h / 2)
+          xx = pp.lw ? pp.lx : pp.x,
+          ww = pp.lw ? pp.lw : pp.w
         const box1 = {
           id: uuid().replace(/-/g, ''),
-          x: pp.x,
+          x: xx,
           y: pp.y,
-          w: pp.w,
-          h: hh,
+          w: ww,
+          h: pp.h / 2,
           parent: pp.id
         }
         const box2 = {
           id: uuid().replace(/-/g, ''),
-          x: pp.x,
-          y: pp.y + hh,
-          w: pp.w,
-          h: pp.h - hh,
+          x: xx,
+          y: pp.y + pp.h / 2,
+          w: ww,
+          h: pp.h / 2,
           parent: pp.id
         }
 
@@ -405,20 +479,21 @@
       // 对当前节点进行垂直分割
       splitBoxV() {
         const pp = this.boxMap[this.cBox],
-          vv = Math.round(pp.w / 2)
+          xx = pp.lw ? pp.lx : pp.x,
+          ww = pp.lw ? pp.lw : pp.w
         const box1 = {
           id: uuid().replace(/-/g, ''),
-          x: pp.x,
+          x: xx,
           y: pp.y,
-          w: vv,
+          w: ww / 2,
           h: pp.h,
           parent: pp.id
         }
         const box2 = {
           id: uuid().replace(/-/g, ''),
-          x: pp.x + vv,
+          x: xx + ww / 2,
           y: pp.y,
-          w: pp.w - vv,
+          w: ww / 2,
           h: pp.h,
           parent: pp.id
         }

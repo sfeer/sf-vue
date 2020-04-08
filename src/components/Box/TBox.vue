@@ -221,6 +221,7 @@
 
       handleResize() {
         if (this.rootWidth !== this.$el.clientWidth) {
+          // 组件宽度发生变化
           this.rootWidth = this.$el.clientWidth
           this.autoWidthBox(this.rootBox, this.$el.clientWidth)
         }

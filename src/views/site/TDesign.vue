@@ -379,6 +379,10 @@
 </script>
 
 <style lang="less" scoped>
+  .design-wrapper {
+    height: 100vh;
+  }
+
   .design-header {
     padding: 3px;
     height: 40px;
@@ -428,6 +432,10 @@
   }
 
   .design-main {
+    height: calc(100vh - 92px);
+    overflow-x: hidden;
+    overflow-y: scroll;
+
     .content-menu {
       width: 150px;
       position: absolute;

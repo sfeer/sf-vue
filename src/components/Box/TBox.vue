@@ -414,7 +414,7 @@
             }
           } else {
             // 根结点
-            scrollBy(0, height - box.h)
+            this.$el.parentElement.scrollBy(0, height - box.h)
             box.h = height
           }
         }

@@ -220,7 +220,10 @@
       },
 
       handleResize() {
-        this.autoWidthBox(this.rootBox, this.$el.clientWidth)
+        if (this.rootWidth !== this.$el.clientWidth) {
+          this.rootWidth = this.$el.clientWidth
+          this.autoWidthBox(this.rootBox, this.$el.clientWidth)
+        }
       },
 
       // box选择小部件
@@ -269,6 +272,7 @@
 
       // 自动改变区域宽度（递归）
       autoWidthBox(box, width) {
+        console.log(111)
         if (width !== box.w) {
           const childs = this.boxs.filter(b => b.parent === box.id)
           if (box.lw) {

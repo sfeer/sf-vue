@@ -45,11 +45,21 @@
 
     methods: {
       boxStyle(box) {
-        return {
-          top: box.y + 'px',
-          left: box.x + 'px',
-          width: box.w + 'px',
-          height: box.h + 'px'
+        if (box.lw) {
+          // 锁定宽度
+          return {
+            top: box.y + 'px',
+            left: box.lx + 'px',
+            width: box.lw + 'px',
+            height: box.h + 'px'
+          }
+        } else {
+          return {
+            top: box.y + 'px',
+            left: box.x + 'px',
+            width: box.w + 'px',
+            height: box.h + 'px'
+          }
         }
       },
 

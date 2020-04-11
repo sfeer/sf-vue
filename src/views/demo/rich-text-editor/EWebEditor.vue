@@ -8,6 +8,9 @@
 </template>
 
 <script>
+  window.EWEBEDITOR_BASEPATH = '/ewebeditor/'
+  require('../../../assets/demo/ewebeditor.js')
+
   export default {
     data() {
       return {
@@ -17,10 +20,8 @@
     },
 
     mounted() {
-      window.EWEBEDITOR_BASEPATH = '/ewebeditor/'
-      require('../../../assets/demo/ewebeditor.js')
       this.editor = EWEBEDITOR.Append('editor1',
-        {style: 'coolblue', width: '550', height: '350'}, this.initData)
+        {style: 'coolblue', width: 550, height: 350}, this.initData)
       console.log(this.editor)
     },
 

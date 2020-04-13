@@ -46,8 +46,8 @@ const vueConfig = {
   devServer: {
     proxy: {
       '/ewebeditor': {
-        // target: 'http://192.168.0.78:8080/ewebeditor/',
-        target: 'http://117.149.2.233:8081/ewebeditor/',
+        target: 'http://192.168.0.78:8080/ewebeditor/',
+        // target: 'http://117.149.2.233:8081/ewebeditor/',
         changeOrigin: true,
         logLevel: 'debug',
         pathRewrite: {'^/ewebeditor': ''}

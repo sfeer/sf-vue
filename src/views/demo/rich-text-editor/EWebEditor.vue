@@ -1,37 +1,41 @@
 <template>
   <div>
-    <div id="editor1"></div>
-    <button @click="test">test</button>
-    <button @click="hello">hello</button>
+    <e-web-editor ref="ed1" id="editor1"></e-web-editor>
+    <e-web-editor ref="ed2" id="editor2"></e-web-editor>
+    <button @click="test1">test1</button>
+    <button @click="test2">test2</button>
+    <button @click="hello1">hello1</button>
+    <button @click="hello2">hello2</button>
   </div>
 
 </template>
 
 <script>
-  window.EWEBEDITOR_BASEPATH = '/ewebeditor/'
-  require('../../../assets/demo/ewebeditor.js')
+  import EWebEditor from '../../../components/RichTextEditor/EWebEditor'
 
   export default {
-    data() {
-      return {
-        editor: null,
-        initData: '<p>初始化数据!!!</p>'
-      }
-    },
+    components: {EWebEditor},
 
     mounted() {
-      this.editor = EWEBEDITOR.Append('editor1',
-        {style: 'coolblue', width: 550, height: 350}, this.initData)
-      console.log(this.editor)
+      this.$refs.ed1.initHTML('1111init')
+      this.$refs.ed2.initHTML('2222init')
     },
 
     methods: {
-      test() {
-        alert(this.editor.getHTML())
+      test1() {
+        alert(this.$refs.ed1.getHTML())
       },
 
-      hello() {
-        this.editor.setHTML('<p>hello world</p><p>ewebeditor showtime!!!</p>')
+      test2() {
+        alert(this.$refs.ed2.getHTML())
+      },
+
+      hello1() {
+        this.$refs.ed1.setHTML('<p>hello world</p><p>ewebeditor showtime!!!111111</p>')
+      },
+
+      hello2() {
+        this.$refs.ed2.setHTML('<p>hello world</p><p>ewebeditor showtime!!!222222</p>')
       }
     }
   }

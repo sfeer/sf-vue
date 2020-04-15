@@ -10,14 +10,14 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "ant-design-vue": "^1.5.2",
+    "ant-design-vue": "^1.5.3",
     "axios": "^0.19.2",
     "core-js": "^3.6.5",
     "github-markdown-css": "^4.0.0",
     "jsoneditor": "^8.6.4",
     "mockjs": "^1.1.0",
     "uuid": "^7.0.3",
-    "vant": "^2.6.0",
+    "vant": "^2.6.1",
     "vconsole": "^3.3.4",
     "vue": "^2.6.11",
     "vue-ls": "^3.2.1",

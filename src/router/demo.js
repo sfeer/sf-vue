@@ -41,6 +41,12 @@ const routes = [
   {
     path: '/demo/ws',
     component: ()=>import('../views/demo/WebSocket')
+  },
+
+  // 分享
+  {
+    path: '/demo/share',
+    component: ()=>import('../views/demo/Share')
   }
 ]
 

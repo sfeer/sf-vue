@@ -47,6 +47,12 @@ const routes = [
   {
     path: '/demo/share',
     component: ()=>import('../views/demo/Share')
+  },
+
+  // 打印
+  {
+    path: '/demo/print',
+    component: ()=>import('../views/demo/Print')
   }
 ]
 

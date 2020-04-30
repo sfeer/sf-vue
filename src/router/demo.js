@@ -52,7 +52,11 @@ const routes = [
   // 打印
   {
     path: '/demo/print',
-    component: ()=>import('../views/demo/Print')
+    component: ()=>import('../views/demo/print/Main')
+  },
+  {
+    path: '/demo/print/ticket',
+    component: ()=>import('../views/demo/print/Print')
   }
 ]
 

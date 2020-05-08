@@ -36,6 +36,7 @@ const vueConfig = {
   },
 
   css: {
+    extract: {ignoreOrder: true},
     loaderOptions: {
       less: {
         javascriptEnabled: true

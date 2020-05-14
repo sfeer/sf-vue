@@ -1,5 +1,3 @@
-const path = require('path')
-
 const pageNames = []
 if (process.env.VUE_APP_PAGES) {
   pageNames.push(...process.env.VUE_APP_PAGES.split(','))
@@ -17,23 +15,21 @@ if (process.env.NODE_ENV === 'production') {
 
 const vueConfig = {
   configureWebpack: config => {
-    if (process.env.VUE_APP_PRERENDER === 'true') {
-      // 网站预渲染
-      const PrerenderSPAPlugin = require('prerender-spa-plugin')
-      const Renderer = PrerenderSPAPlugin.PuppeteerRenderer
-
+    if (process.env.NODE_ENV === 'production') { // 生产环境
+      // 配置gizp压缩 https://github.com/webpack-contrib/compression-webpack-plugin
+      const CompressionWebpackPlugin = require('compression-webpack-plugin')
+      const productionGzipExtensions = ['js', 'css'] // 定义压缩文件类型
       config.plugins.push(
-        new PrerenderSPAPlugin({
-          staticDir: path.join(__dirname, 'dist'),
-          routes: ['/'],
-          renderer: new Renderer({
-            headless: false,
-            renderAfterDocumentEvent: 'render-event'
-          })
+        new CompressionWebpackPlugin({
+          test: new RegExp('\\.(' + productionGzipExtensions.join('|') + ')$'),
+          threshold: 10240 // 大于10kb的会压缩
         })
       )
+    } else { // 开发环境
     }
   },
+
+  publicPath: process.env.NODE_ENV === 'production' ? '/sf-vue/' : '/',
 
   css: {
     extract: {ignoreOrder: true},
@@ -66,7 +62,7 @@ const vueConfig = {
 
   pages: pages,
 
-  productionSourceMap: false,
+  productionSourceMap: false, // 是否提供sourcemap
 
   // transpileDependencies: ['ant-design-vue']
 }

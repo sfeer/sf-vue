@@ -1,10 +1,13 @@
 const isProd = process.env.NODE_ENV === 'production' // 生产环境
 
+// 多页打包配置
 const pageNames = process.env.VUE_APP_PAGES ? process.env.VUE_APP_PAGES.split(',') : []
 const pages = {index: 'src/main.js'}
 pageNames.forEach(d => {
   pages[d] = `src/main-${d}.js`
 })
+
+// cdn配置
 const assetsCDN = {
   externals: {
     vue: 'Vue',
@@ -25,7 +28,7 @@ const assetsCDN = {
 
 const vueConfig = {
   configureWebpack: config => {
-    if (isProd) { // 生产环境
+    if (isProd) {
       // 配置gizp压缩 https://github.com/webpack-contrib/compression-webpack-plugin
       const CompressionWebpackPlugin = require('compression-webpack-plugin')
       const productionGzipExtensions = ['js', 'css'] // 定义压缩文件类型
@@ -36,12 +39,17 @@ const vueConfig = {
         })
       )
       config.externals = assetsCDN.externals
-    } else { // 开发环境
     }
   },
 
   chainWebpack: config => {
     if (isProd) {
+      config.optimization.splitChunks({
+        cacheGroups: {
+          vendors: {},
+          common: {}
+        }
+      })
       Object.keys(pages).forEach(d=>{
         config.plugin('html-' + d).tap(args => {
           args[0].cdn = assetsCDN
@@ -54,7 +62,6 @@ const vueConfig = {
   publicPath: isProd ? '/sf-vue/' : '/',
 
   css: {
-    extract: {ignoreOrder: true},
     loaderOptions: {
       less: {
         javascriptEnabled: true

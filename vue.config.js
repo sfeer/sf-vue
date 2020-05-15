@@ -1,21 +1,31 @@
-const pageNames = []
-if (process.env.VUE_APP_PAGES) {
-  pageNames.push(...process.env.VUE_APP_PAGES.split(','))
-}
+const isProd = process.env.NODE_ENV === 'production' // 生产环境
 
-let pages
-if (process.env.NODE_ENV === 'production') {
-  pages = {index: 'src/main.js'}
-  pageNames.forEach(d => {
-    pages[d] = `src/main-${d}.js`
-  })
-} else {
-  pages = undefined
+const pageNames = process.env.VUE_APP_PAGES ? process.env.VUE_APP_PAGES.split(',') : []
+const pages = {index: 'src/main.js'}
+pageNames.forEach(d => {
+  pages[d] = `src/main-${d}.js`
+})
+const assetsCDN = {
+  externals: {
+    vue: 'Vue',
+    'vue-router': 'VueRouter',
+    vuex: 'Vuex',
+    axios: 'axios',
+    'vue-ls': 'VueStorage'
+  },
+  css: [],
+  js: [
+    '//cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js',
+    '//cdn.jsdelivr.net/npm/vue-router@3.1.6/dist/vue-router.min.js',
+    '//cdn.jsdelivr.net/npm/vuex@3.4.0/dist/vuex.min.js',
+    '//cdn.jsdelivr.net/npm/axios@0.19.2/dist/axios.min.js',
+    '//cdn.jsdelivr.net/npm/vue-ls@3.2.1/dist/vue-ls.min.js'
+  ]
 }
 
 const vueConfig = {
   configureWebpack: config => {
-    if (process.env.NODE_ENV === 'production') { // 生产环境
+    if (isProd) { // 生产环境
       // 配置gizp压缩 https://github.com/webpack-contrib/compression-webpack-plugin
       const CompressionWebpackPlugin = require('compression-webpack-plugin')
       const productionGzipExtensions = ['js', 'css'] // 定义压缩文件类型
@@ -25,11 +35,23 @@ const vueConfig = {
           threshold: 10240 // 大于10kb的会压缩
         })
       )
+      config.externals = assetsCDN.externals
     } else { // 开发环境
     }
   },
 
-  publicPath: process.env.NODE_ENV === 'production' ? '/sf-vue/' : '/',
+  chainWebpack: config => {
+    if (isProd) {
+      Object.keys(pages).forEach(d=>{
+        config.plugin('html-' + d).tap(args => {
+          args[0].cdn = assetsCDN
+          return args
+        })
+      })
+    }
+  },
+
+  publicPath: isProd ? '/sf-vue/' : '/',
 
   css: {
     extract: {ignoreOrder: true},
@@ -60,7 +82,7 @@ const vueConfig = {
     }
   },
 
-  pages: pages,
+  pages: isProd ? pages : undefined,
 
   productionSourceMap: false, // 是否提供sourcemap
 

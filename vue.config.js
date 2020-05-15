@@ -44,12 +44,6 @@ const vueConfig = {
 
   chainWebpack: config => {
     if (isProd) {
-      config.optimization.splitChunks({
-        cacheGroups: {
-          vendors: {},
-          common: {}
-        }
-      })
       Object.keys(pages).forEach(d=>{
         config.plugin('html-' + d).tap(args => {
           args[0].cdn = assetsCDN

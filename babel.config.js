@@ -10,13 +10,7 @@ module.exports = {
     // ]
   ],
   plugins: [
-    [
-      'import',
-      {
-        libraryName: 'ant-design-vue',
-        libraryDirectory: 'es',
-        style: true // 按需引入样式文件
-      }
-    ]
+    ['import', {libraryName: 'ant-design-vue', libraryDirectory: 'es', style: true}, 'antdv'],
+    ['import', {libraryName: 'vant', libraryDirectory: 'es', style: true}, 'vant']
   ]
 }

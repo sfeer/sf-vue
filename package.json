@@ -9,7 +9,7 @@
     "serve:qywx": "vue-cli-service serve src/main-qywx.js",
     "serve:site": "vue-cli-service serve --open src/main-site.js",
     "serve:login": "vue-cli-service serve src/main-login.js",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --report",
     "build:login": "vue-cli-service build src/main-login.js"
   },
   "dependencies": {

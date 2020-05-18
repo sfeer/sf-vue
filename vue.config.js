@@ -1,3 +1,5 @@
+const webpack = require('webpack')
+
 const isProd = process.env.NODE_ENV === 'production' // 生产环境
 
 // 多页打包配置
@@ -28,6 +30,8 @@ const assetsCDN = {
 
 const vueConfig = {
   configureWebpack: config => {
+    config.plugins.push(new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/))
+
     if (isProd) {
       // 配置gizp压缩 https://github.com/webpack-contrib/compression-webpack-plugin
       const CompressionWebpackPlugin = require('compression-webpack-plugin')
@@ -39,6 +43,12 @@ const vueConfig = {
         })
       )
       config.externals = assetsCDN.externals
+      config.optimization.splitChunks.cacheGroups['ant-design-vue'] = {
+        name: 'ant-design-vue',
+        test: /[\\/]node_modules[\\/]ant-design-vue[\\/]/,
+        priority: -9,
+        chunks: 'initial'
+      }
     }
   },
 

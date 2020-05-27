@@ -1,3 +1,16 @@
+# Json编辑器
+
+## 技术选型
+
+[jsoneditor](https://github.com/josdejong/jsoneditor/)
+
+## 使用
+
+```
+npm i -S jsoneditor
+```
+
+```vue
 <template>
   <div>
     <h2>使用HTML原生标签pre</h2>
@@ -21,7 +34,7 @@
 
   export default {
     components: {
-      // jsonView
+      jsonView
     },
 
     data() {
@@ -66,3 +79,4 @@
     }
   }
 </style>
+```

@@ -5,7 +5,7 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/demo/table',
+    path: '/demo/table/11',
     component: () => import('../views/antdv/table')
   },
   {
@@ -13,23 +13,11 @@ const routes = [
     component: () => import('../views/antdv/menu')
   },
 
-  // JSON 编辑器
-  {
-    path: '/demo/json',
-    component: () => import('../views/demo/Json')
-  },
-
   // 富文本编辑器
   {
     path: '/demo/rte',
     // component: () => import('../views/demo/rich-text-editor/Quill')
     component: () => import('../views/demo/rich-text-editor/EWebEditor')
-  },
-
-  // Markdown编辑器
-  {
-    path: '/demo/mde',
-    component: () => import('../views/demo/markdown-editor/SimpleMde')
   },
 
   {

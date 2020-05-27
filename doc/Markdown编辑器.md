@@ -1,3 +1,16 @@
+# Markdown编辑器
+
+## 技术选型
+
+[simplemde](https://simplemde.com/)
+
+## 使用方式
+
+```
+npm i -S vue-simplemde github-markdown-css
+```
+
+```vue
 <template>
   <div>
     <vue-simplemde v-model="content" preview-class="markdown-body"/>
@@ -24,3 +37,4 @@
   @import "~simplemde/dist/simplemde.min.css";
   @import '~github-markdown-css';
 </style>
+```

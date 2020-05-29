@@ -3,10 +3,10 @@
     <div v-if="isDesignMode" class="sflow-header">
       <div class="sflow-tools">
         <div
-            class="tool"
-            v-for="(tool,index) in tools"
-            :key="'tool-'+index"
-            :title="tool.name">
+          class="tool"
+          v-for="(tool,index) in tools"
+          :key="'tool-'+index"
+          :title="tool.name">
           <slot name="tool" :tool="tool">
             <a-icon :class="['tool-icon',{disabled:tool.disabled}]" :type="tool.icon" @click="toolClick(tool)"/>
           </slot>
@@ -41,10 +41,10 @@
       <div v-if="isDesignMode" class="sflow-sidebar">
         <div class="sflow-opers">
           <div
-              class="oper"
-              title="选择"
-              :class="activeOper===null?'active':null"
-              @click="operClick(null)">
+            class="oper"
+            title="选择"
+            :class="activeOper===null?'active':null"
+            @click="operClick(null)">
             <a-icon class="oper-icon" style="transform:rotate(-45deg)" type="arrow-up"/>
             <span v-show="!sideBarCollapse" class="oper-name">选择</span>
           </div>
@@ -56,24 +56,24 @@
 
         <div class="sflow-items">
           <div
-              class="item"
-              v-for="(item,index) in items"
-              :title="item.name"
-              :key="'item-'+index"
-              @mousedown="itemDragStart(item)">
+            class="item"
+            v-for="(item,index) in items"
+            :title="item.name"
+            :key="'item-'+index"
+            @mousedown="itemDragStart(item)">
             <a-icon class="item-icon" :type="item.icon?item.icon:'setting'"/>
             <span v-show="!sideBarCollapse" class="item-name">{{item.name}}</span>
           </div>
         </div>
       </div>
       <div
-          ref="flow"
-          class="sflow-view"
-          :class="[isDrawLink?'draw-link':null, mode+'-mode']"
-          @mousedown="handleDragStart"
-          @mousemove="handleDrag"
-          @mouseup="handleDragEnd"
-          @click="handleClick">
+        ref="flow"
+        class="sflow-view"
+        :class="[isDrawLink?'draw-link':null, mode+'-mode']"
+        @mousedown="handleDragStart"
+        @mousemove="handleDrag"
+        @mouseup="handleDragEnd"
+        @click="handleClick">
         <div :style="{height:'100%', transform:subSize?`translate(${subOffset.x}px,${subOffset.y}px)`:null}">
           <div v-if="subSize" class="sub-box" :style="{width:subSize.w+'px',height:subSize.h+'px',zIndex:-100}"></div>
           <div class="link-layer">
@@ -99,54 +99,54 @@
 
               <g v-for="link in links" :key="link.id">
                 <path
-                    :class="linkClassData(link)"
-                    :d="link.path"/>
+                  :class="linkClassData(link)"
+                  :d="link.path"/>
                 <path
-                    v-if="isDesignMode"
-                    class="link-selecter"
-                    :d="link.path"
-                    @click.stop="linkClick(link)"
-                    @dblclick.stop="linkDblclick(link)"/>
+                  v-if="isDesignMode"
+                  class="link-selecter"
+                  :d="link.path"
+                  @click.stop="linkClick(link)"
+                  @dblclick.stop="linkDblclick(link)"/>
                 <text
-                    class="link-name"
-                    :x="link.cx"
-                    :y="link.cy"
-                    dy="-4">{{link.name}}
+                  class="link-name"
+                  :x="link.cx"
+                  :y="link.cy"
+                  dy="-4">{{link.name}}
                 </text>
               </g>
 
               <path
-                  v-if="isDesignMode"
-                  class="link-draw"
-                  :d="drawLinkPath"/>
+                v-if="isDesignMode"
+                class="link-draw"
+                :d="drawLinkPath"/>
             </svg>
 
             <template v-if="isDesignMode">
               <div
-                  v-show="activeLink"
-                  class="link-tools"
-                  :style="linkToolStyle">
+                v-show="activeLink"
+                class="link-tools"
+                :style="linkToolStyle">
                 <div class="tool tool-v" @click="switchVLink"></div>
                 <div class="tool tool-h" @click="switchHLink"></div>
                 <div class="tool tool-l" @click="switchLLink"></div>
                 <div class="tool tool-x" @click="deleteLink"></div>
               </div>
               <div
-                  v-show="activeLink"
-                  class="link-drag"
-                  @mousedown.prevent="linkDragStart"
-                  :style="linkDragStyle">
+                v-show="activeLink"
+                class="link-drag"
+                @mousedown.prevent="linkDragStart"
+                :style="linkDragStyle">
               </div>
             </template>
           </div>
           <div class="node-layer">
             <div
-                v-for="node in nodes"
-                :key="node.id"
-                :class="nodeClassData(node)"
-                :style="nodeStyle(node)"
-                @click.stop="nodeClick(node)"
-                @dblclick.stop="nodeDblclick(node)">
+              v-for="node in nodes"
+              :key="node.id"
+              :class="nodeClassData(node)"
+              :style="nodeStyle(node)"
+              @click.stop="nodeClick(node)"
+              @dblclick.stop="nodeDblclick(node)">
 
               <template v-if="node.free">
                 <div class="node-drag" v-show="!node.free.show">
@@ -154,18 +154,18 @@
                 </div>
                 <div class="node-inner">
                   <s-flow
-                      v-if="node.free.show"
-                      :nodes="node.free.nodes"
-                      :links="node.free.links"
-                      :node-class="nodeClass"
-                      mode="view"/>
+                    v-if="node.free.show"
+                    :nodes="node.free.nodes"
+                    :links="node.free.links"
+                    :node-class="nodeClass"
+                    mode="view"/>
                   <div v-else>{{node.name}}</div>
                   <a-button
-                      shape="circle"
-                      :icon="node.free.show?'minus':'plus'"
-                      type="primary"
-                      class="free-flow-btn"
-                      @click="showFreeFlow(node)"/>
+                    shape="circle"
+                    :icon="node.free.show?'minus':'plus'"
+                    type="primary"
+                    class="free-flow-btn"
+                    @click="showFreeFlow(node)"/>
                 </div>
               </template>
 
@@ -175,11 +175,11 @@
                 </div>
                 <div class="node-inner">
                   <s-flow
-                      v-if="node.sub"
-                      :nodes="node.sub.nodes"
-                      :links="node.sub.links"
-                      :node-class="nodeClass"
-                      mode="view"/>
+                    v-if="node.sub"
+                    :nodes="node.sub.nodes"
+                    :links="node.sub.links"
+                    :node-class="nodeClass"
+                    mode="view"/>
                 </div>
               </template>
 
@@ -196,15 +196,15 @@
 
               <template v-if="isDesignMode">
                 <a-icon
-                    class="node-close"
-                    v-show="activeNode===node.id"
-                    type="close"
-                    @click="deleteNode"/>
+                  class="node-close"
+                  v-show="activeNode===node.id"
+                  type="close"
+                  @click="deleteNode"/>
                 <a-icon
-                    class="node-resize"
-                    v-show="activeNode===node.id"
-                    type="arrows-alt"
-                    @mousedown="nodeResizeStart(node)"/>
+                  class="node-resize"
+                  v-show="activeNode===node.id"
+                  type="arrows-alt"
+                  @mousedown="nodeResizeStart(node)"/>
               </template>
             </div>
           </div>
@@ -631,7 +631,7 @@
           if (this.isDrawLink && this.drawLinkNode) { // 绘制连线
             if (this.highlightNode) {
               // 判断连线是否存在
-              if (!this.links.some(l => (l.s === this.drawLinkNode && l.t === this.highlightNode) || (l.s === this.highlightNode && l.t === this.drawLinkNode))) {
+              if (!this.links.some(l => (l.s === this.drawLinkNode && l.t === this.highlightNode))) {
                 if (this.highlightNode !== this.drawLinkNode) {
                   const link = {
                     id: 'link_' + uuid().replace(/-/g, ''),

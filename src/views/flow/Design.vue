@@ -91,6 +91,10 @@
               {
                 id: 'link-3', name: 'ta', way: 'l',
                 s: 'node-3', t: 'node-4'
+              },
+              {
+                id: 'link-4', name: 'at', way: 'l',
+                s: 'node-4', t: 'node-3'
               }
             ]
           }

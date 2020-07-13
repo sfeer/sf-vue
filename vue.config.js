@@ -54,7 +54,7 @@ const vueConfig = {
 
   chainWebpack: config => {
     if (isProd) {
-      Object.keys(pages).forEach(d=>{
+      Object.keys(pages).forEach(d => {
         config.plugin('html-' + d).tap(args => {
           args[0].cdn = assetsCDN
           return args
@@ -68,7 +68,9 @@ const vueConfig = {
   css: {
     loaderOptions: {
       less: {
-        javascriptEnabled: true
+        lessOptions: {
+          javascriptEnabled: true
+        }
       }
     }
   },
